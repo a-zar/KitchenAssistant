@@ -3,11 +3,37 @@
 
     <div class="contentProduct">
         <div *ngFor="let tempProduct of products" class="productItem">
-            <a routerLink="/products/{{ tempProduct.id }}">
-                <img src="../assets/image/placeholder.png" alt="">
-                <p>{{tempProduct.name}}</p>
-            </a>
+            <div class="product-box">
+                <a routerLink="/products/{{ tempProduct.id }}">
+                    <img src="../assets/image/placeholder.png" alt="">
+                    <p>{{tempProduct.name}}</p>
+                </a>
+                
+            </div>
+
+            <!-- footer-->
+
         </div>
+
+        <div class="footer-pagination">
+            <div class="row">
+                <div class="col-md-6"></div>
+
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-9" style="padding-left:30%">
+
+                            <ngb-pagination [(page)]="thePageNumber"
+                                            [pageSize]="thePageSize"
+                                            [collectionSize]="theTotalElements"
+                                            (pageChange)="listProducts()">
+                            </ngb-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

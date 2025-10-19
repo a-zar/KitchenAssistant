@@ -16,6 +16,9 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 const routes: Routes = [
+
+  {path: 'shoppingList', component: ProductListComponent},
+
   {path: 'products/:id', component: ProductDetailsComponent},
   {path: 'search/:keyword', component: ProductListComponent},
   {path:'category/:id', component: ProductListComponent},

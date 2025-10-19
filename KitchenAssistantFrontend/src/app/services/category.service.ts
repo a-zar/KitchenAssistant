@@ -13,7 +13,14 @@ export class CategoryService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getCategoryList(): Observable<Category[]>{
-    return this.httpClient.get<any>(this.baseUrl);
+  getCategoryList(): Observable<GetResponseCategories>{
+    return this.httpClient.get<GetResponseCategories>(this.baseUrl);
   }
 }
+
+interface GetResponseCategories {
+  _embedded: {
+    categories: Category[];
+  }
+}
+

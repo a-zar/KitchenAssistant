@@ -1,6 +1,7 @@
 export class Nutrient {
     
-    constructor(public id: number,
+    constructor(
+                public id: number,
                 public energy: string,
                 public fat: string,
                 public saturatedFat: string,
@@ -8,6 +9,6 @@ export class Nutrient {
                 public sugar: string,
                 public protein: string,
                 public fiber: string,
-                public nutritionGrade: string,
+                public nutritionGrade: string
     ){}
 }

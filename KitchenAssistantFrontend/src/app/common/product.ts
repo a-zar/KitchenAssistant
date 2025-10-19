@@ -9,7 +9,5 @@ export class Product {
                 public codeBar: string,
                 public category: Category,
                 public nutrients: Nutrient
-    ){
-
-    }
+            ){}
 }
