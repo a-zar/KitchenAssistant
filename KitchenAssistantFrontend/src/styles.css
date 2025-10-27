@@ -152,6 +152,23 @@ li.top-menu-item a {
   margin-bottom: 10px;
 }
 
+.grade-a {
+  color: #008000; /* Ciemna zieleń (Doskonale) */
+}
+
+.grade-b {
+  color: #3399ff; /* Jasny niebieski (Dobrze) */
+}
+
+.grade-c {
+  color: #ff9900; /* Pomarańczowy (Średnio) */
+}
+
+.grade-d-e {
+  color: #cc0000; /* Ciemna czerwień (Źle) */
+}
+
+
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
