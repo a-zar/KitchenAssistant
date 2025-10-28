@@ -169,6 +169,13 @@ li.top-menu-item a {
   color: #cc0000; /* Ciemna czerwień (Źle) */
 }
 
+.nowrap-label{
+  white-space: nowrap;
+}
+
+.form-group-space .row{
+  padding: 0.5rem;
+}
 
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}

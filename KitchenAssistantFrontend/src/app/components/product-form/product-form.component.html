@@ -1,8 +1,126 @@
 <app-category-list></app-category-list>
 <div class="container-fluid">
     <div class="row">
-        <main class="contentProduct col-sm-10">
-            <span> działa! </span>
+        <main class="contentProduct col-sm-10 d-flex flex-column align-items-center">
+            <form [formGroup]="productFormGroup" class="align-items-center">
+
+                <!--product form group-->
+                <div class="card ">
+                    <legend class="text-center card-header">Produkt</legend>
+                    <fieldset formGroupName="product" class="form-group-space form-area p-4">
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Nazwa produktu</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="productName" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Kategoria</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="categoryName" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Kod kreskowy</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="codeBar" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Obrazek</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="productImage" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!--nutrients form group-->
+                    <fieldset formGroupName="nutrients" class="form-group-space form-area border p-4 mx-5">
+                        <legend class="float-none w-auto p-2">Składniki odżywcze</legend>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Energia</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="energy" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Weglowodany</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="carbohydrate" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Cukry</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="sugar" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Tłuszcze</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="fat" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Nasycone tłuszcze</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="saturatedFat" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label class="nowrap-label">Błonnik</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="fiber" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-4"> <label>Ocena wartości odżywczej</label></div>
+                            <div class="col-12 col-md-8">
+                                <div class="input-space">
+                                    <input formControlName="nutritionGrade" type="text" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- submit button-->
+                    <div class="text-center m-3">
+                        <button type="submit" class="btn btn-info"> Zapisz </button>
+                    </div>
+
+                </div>
+
+            </form>
         </main>
     </div>
 <div>

@@ -21,6 +21,16 @@ export class ProductFormComponent implements OnInit {
         categoryName: [''],
         codeBar: [''],
         productImage: ['']
+      }),
+
+      nutrients: this.formBuilder.group({
+        energy: [''],
+        carbohydrate: [''],
+        sugar: [''],
+        fat: [''],
+        saturatedFat: [''],
+        fiber: [''],
+        nutritionGrade: [''],
       })
     });
   }
