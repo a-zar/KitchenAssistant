@@ -6,7 +6,7 @@
         <a routerLink="/products" routerLinkActive="active-link">Wszystkie produkty</a>
     </div>
     <div *ngFor="let tempCategory of categories">
-        <a routerLink="/category/{{tempCategory.id}}" routerLinkActive="active-link">{{tempCategory.name}}</a>
+        <a [routerLink]="['/category', tempCategory.id]" routerLinkActive="active-link">{{tempCategory.name}}</a>
     </div>
 </div>
 

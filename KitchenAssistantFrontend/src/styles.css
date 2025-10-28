@@ -69,7 +69,7 @@ li.top-menu-item a {
   position: fixed;
   z-index: 1;
   top: 120px;
-  /* padding-top: 20px; */
+  padding-top: 20px;
   padding-bottom: 150px;
   overflow-y: auto;
 }
@@ -85,15 +85,16 @@ li.top-menu-item a {
   color: #5d5d5d;
 }
 
-.contentProduct{
-  margin-left: 200px; /* Same as the width of the sidebar */
-  }
 
-  .footer-pagination{
-  margin-left: 200px; /* Same as the width of the sidebar */
-  }
+.container-fluid{
+    margin-left: 200px;
+    padding-left: 0; /* Zapewniamy, że treść zaczyna się od krawędzi kontenera */
+    max-width: calc(100% - 200px);
+}
 
+  
 .contentProduct{
+  
   padding-top: 120px;
   float: center;
   padding-bottom: 100px;
@@ -101,8 +102,8 @@ li.top-menu-item a {
   padding-left: 20px;
 
   display: flex; 
-  flex-wrap: wrap; /* Pozwala na zawijanie elementów o stałej szerokości */
-  gap: 1rem; /* Ustawienie spójnego odstępu między produktami (można dostosować) */
+  flex-wrap: wrap;
+  gap: 1rem; 
   justify-content: flex-start;
 }
 
