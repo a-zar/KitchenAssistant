@@ -4,12 +4,12 @@
         <ng-container class="container-fluid">
             <div  class="contentProduct d-flex flex-column align-items-center">
                 <div class="container text-end mb-3">
-                    <a routerLink="#">
+                    <a [routerLink]="[]">
                         <img class="mx-4 rounded" style="height: 35px; width: auto; border: 2px solid green;"
                         src="../assets/image/food-basket.png" alt="edit" title="Kliknij, aby dodać do listy zakupów"> 
                     </a>
                     
-                    <a routerLink="/edit-product/#">
+                    <a [routerLink]="['/products/edit', product?.id]">
                         <img style="height: 30px; width: auto" 
                         src="../assets/image/edit.png" alt="edit" title="Edytuj"> 
                     </a>               
