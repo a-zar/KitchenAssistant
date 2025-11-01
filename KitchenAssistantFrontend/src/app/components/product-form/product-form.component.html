@@ -18,10 +18,14 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-12 col-md-6"> <label class="nowrap-label">Kategoria</label></div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 <div class="input-space">
-                                    <input formControlName="categoryName" type="text" class="form-control">
+                                    <select formControlNamae="categoryName" class="form-select text-center" size="5">
+                                        <option selected disabled>Kategoria produktu</option>
+                                        <option *ngFor="let category of categoryList">
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -104,18 +108,14 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-12 col-md-6"> <label class="nowrap-label">Ocena wartości odżywczej</label></div>
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 <div class="input-space">
-                                    <select formControlName="nutritionGrade">
-                                        <option selected>...</option>
+                                    <select formControlName="nutritionGrade" class="form-select text-center">
+                                        <option disabled value=""> Ocena wartości odżywczej</option>
                                         <option *ngFor="let grade of nutriGrades">
                                             {{ grade }}
                                         </option>
-                                    </select>
-                            
-                                    <!-- <input formControlName="nutritionGrade" type="text" class="form-control"> -->
-                                    
+                                    </select>                                    
                                 </div>
                             </div>
                         </div>
