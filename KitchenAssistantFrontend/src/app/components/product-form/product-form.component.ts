@@ -10,6 +10,7 @@ export class ProductFormComponent implements OnInit {
 
 
   productFormGroup!: FormGroup;
+  nutriGrades: string[] = ["A", "B", "C", "D", "E"];
 
   constructor(private formBuilder: FormBuilder) { }
 
@@ -33,6 +34,12 @@ export class ProductFormComponent implements OnInit {
         nutritionGrade: [''],
       })
     });
+  }
+
+  onSubmit(){
+    console.log("handling the submit button");
+    console.log(this.productFormGroup.get('product')?.value);
+    console.log(this.productFormGroup.get('nutrients')?.value);
   }
 
 }
