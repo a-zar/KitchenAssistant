@@ -15,18 +15,29 @@
                                     <input formControlName="productName" type="text" class="form-control">
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="productName?.invalid && (productName?.dirty || productName?.touched)">
+                                <div *ngIf="productName?.errors?.['required']"> Nazwa produktu jest wymagana</div>
+                                <div *ngIf="productName?.errors?.['minlength']"> Nazwa produktu musi mieć co najmniej {{ productName?.errors?.['minlength']?.requiredLength }} znaki</div>
+                                <div *ngIf="productName?.errors?.['pattern']"> Nazwa porduktu jest nie prawidłowa 
+                                    <p style="font-size: 0.7rem"> *Nazwa musi zaczynać się od litery i może zawierać dodatkowo tylko cyfry oraz spacje. </p>
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="row">
                             <div class="col-12">
                                 <div class="input-space">
-                                    <select formControlNamae="categoryName" class="form-select text-center" size="5">
-                                        <option selected disabled>Kategoria produktu</option>
+                                    <select formControlName="categoryName" class="form-select text-center" size="5">
+                                        <option selected disabled value="">Kategoria produktu</option>
                                         <option *ngFor="let category of categoryList">
                                             {{ category.name }}
                                         </option>
                                     </select>
                                 </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="categoryName?.invalid && categoryName?.touched">
+                                <div *ngIf="categoryName?.errors?.['required']"> Proszę wyrać kategorię produktu</div>
                             </div>
                         </div>
 
@@ -60,6 +71,10 @@
                                     <input formControlName="energy" type="text" class="form-control">
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="energy?.invalid && energy?.touched">
+                                <div *ngIf="energy?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="energy?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -68,6 +83,10 @@
                                 <div class="input-space">
                                     <input formControlName="carbohydrate" type="text" class="form-control">
                                 </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="carbohydrate?.invalid && carbohydrate?.touched">
+                                <div *ngIf="carbohydrate?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="carbohydrate?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
                             </div>
                         </div>
 
@@ -78,6 +97,11 @@
                                     <input formControlName="sugar" type="text" class="form-control">
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="sugar?.invalid && sugar?.touched">
+                                <div *ngIf="sugar?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="sugar?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+
+                            </div>
                         </div>
 
                         <div class="row">
@@ -86,6 +110,11 @@
                                 <div class="input-space">
                                     <input formControlName="fat" type="text" class="form-control">
                                 </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fat?.invalid && fat?.touched">
+                                <div *ngIf="fat?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fat?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+
                             </div>
                         </div>
 
@@ -96,6 +125,11 @@
                                     <input formControlName="saturatedFat" type="text" class="form-control">
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="saturatedFat?.invalid && saturatedFat?.touched">
+                                <div *ngIf="saturatedFat?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="saturatedFat?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+
+                            </div>
                         </div>
 
                         <div class="row">
@@ -104,6 +138,11 @@
                                 <div class="input-space">
                                     <input formControlName="fiber" type="text" class="form-control">
                                 </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
+                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fiber?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+
                             </div>
                         </div>
 
@@ -118,8 +157,10 @@
                                     </select>                                    
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="nutritionGrade?.invalid && nutritionGrade?.touched">
+                                <div *ngIf="nutritionGrade?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                            </div>
                         </div>
-
                     </fieldset>
 
                     <!-- submit button-->
