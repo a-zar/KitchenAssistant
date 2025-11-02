@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from '../../services/category.service';
 
@@ -25,20 +25,20 @@ export class ProductFormComponent implements OnInit {
 
     this.productFormGroup = this.formBuilder.group({
       product: this.formBuilder.group({
-        productName: [''],
-        categoryName: [''],
+        productName: new FormControl('', [Validators.required, Validators.minLength(2)]),
+        categoryName: new FormControl('', [Validators.required]),
         codeBar: [''],
         productImage: ['']
       }),
 
       nutrients: this.formBuilder.group({
-        energy: [''],
-        carbohydrate: [''],
-        sugar: [''],
-        fat: [''],
-        saturatedFat: [''],
-        fiber: [''],
-        nutritionGrade: [''],
+        energy: new FormControl('', [Validators.required]),
+        carbohydrate: new FormControl('', [Validators.required]),
+        sugar: new FormControl('', [Validators.required]),
+        fat: new FormControl('', [Validators.required]),
+        saturatedFat: new FormControl('', [Validators.required]),
+        fiber: new FormControl('', [Validators.required]),
+        nutritionGrade: new FormControl('', [Validators.required]),
       })
     });
   }
