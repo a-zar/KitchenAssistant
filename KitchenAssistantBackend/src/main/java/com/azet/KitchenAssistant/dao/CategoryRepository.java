@@ -14,4 +14,5 @@ import java.util.Optional;
 @RepositoryRestResource(collectionResourceRel = "categories", path = "categories")
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
+    Optional<Category> findByName(String name);
 }

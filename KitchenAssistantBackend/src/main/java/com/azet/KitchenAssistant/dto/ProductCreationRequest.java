@@ -23,5 +23,5 @@ public class ProductCreationRequest {
 
     @Valid
     @NotNull(message = "Dane odżywcze są wymagane.")
-    private Nutrient nutrient;
+    private NutrientData nutrient;
 }
