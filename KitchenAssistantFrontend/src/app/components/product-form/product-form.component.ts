@@ -36,10 +36,10 @@ export class ProductFormComponent implements OnInit {
     this.productFormGroup = this.formBuilder.group({
       product: this.formBuilder.group({
         productName: new FormControl('', [Validators.required, Validators.minLength(2), 
-                                          Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+[0-9\\s]*[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]*$')]),
+                                          Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s-%()]*[^\\s]$')]),
         categoryName: new FormControl('', [Validators.required]),
-        codeBar: [''],
-        productImage: ['']
+        codeBar: new FormControl('', [Validators.pattern('^.*[^\\s]$')]),
+        productImage: new FormControl('', [Validators.pattern('^[a-zA-Z0-9_.\\-/]+(\\.[a-zA-Z0-9_.\\-/]+)+[^\\s]$')]),
       }),
 
       nutrients: this.formBuilder.group({

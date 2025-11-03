@@ -48,6 +48,9 @@
                                     <input formControlName="codeBar" type="text" class="form-control">
                                 </div>
                             </div>
+                            <div class="alert alert-danger mt-1" *ngIf="codeBar?.invalid && codeBar?.touched">
+                                <div *ngIf="codeBar?.errors?.['pattern']">Proszę usunąć spację</div>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -56,6 +59,9 @@
                                 <div class="input-space">
                                     <input formControlName="productImage" type="text" class="form-control">
                                 </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="productImage?.invalid && productImage?.touched">
+                                <div *ngIf="productImage?.errors?.['pattern']">Błędna nazwa pliku</div>
                             </div>
                         </div>
                     </fieldset>
