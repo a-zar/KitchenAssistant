@@ -1,0 +1,194 @@
+<app-category-list></app-category-list>
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct col-sm-10 d-flex flex-column align-items-center">
+            <form [formGroup]="productFormGroup" class="align-items-center" (ngSubmit)="onSubmit()">
+
+                <!--product form group-->
+                <div class="card ">
+                    <legend class="text-center card-header">Produkt</legend>
+                    <fieldset formGroupName="product" class="form-group-space form-area p-4">
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Nazwa produktu</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="productName" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="productName?.invalid && (productName?.dirty || productName?.touched)">
+                                <div *ngIf="productName?.errors?.['required']"> Nazwa produktu jest wymagana</div>
+                                <div *ngIf="productName?.errors?.['minlength']"> Nazwa produktu musi mieć co najmniej {{ productName?.errors?.['minlength']?.requiredLength }} znaki</div>
+                                <div *ngIf="productName?.errors?.['pattern']"> Nazwa porduktu jest nie prawidłowa 
+                                    <p style="font-size: 0.7rem"> *Nazwa musi zaczynać się od litery i może zawierać dodatkowo tylko cyfry oraz spacje. </p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-space">
+                                    <select formControlName="categoryName" class="form-select text-center" size="5">
+                                        <option selected disabled value="">Kategoria produktu</option>
+                                        <option *ngFor="let category of categoryList">
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="categoryName?.invalid && categoryName?.touched">
+                                <div *ngIf="categoryName?.errors?.['required']"> Proszę wyrać kategorię produktu</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Kod kreskowy</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="codeBar" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="codeBar?.invalid && codeBar?.touched">
+                                <div *ngIf="codeBar?.errors?.['pattern']">Proszę usunąć spację</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Obrazek</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="productImage" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="productImage?.invalid && productImage?.touched">
+                                <div *ngIf="productImage?.errors?.['pattern']">Błędna nazwa pliku</div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!--nutrients form group-->
+                    <fieldset formGroupName="nutrients" class="form-group-space form-area border p-4 mx-5">
+                        <legend class="float-none w-auto p-2">Składniki odżywcze</legend>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Energia [kCal]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="energy" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="energy?.invalid && energy?.touched">
+                                <div *ngIf="energy?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="energy?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Weglowodany [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="carbohydrate" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="carbohydrate?.invalid && carbohydrate?.touched">
+                                <div *ngIf="carbohydrate?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="carbohydrate?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Cukry [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="sugar" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="sugar?.invalid && sugar?.touched">
+                                <div *ngIf="sugar?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="sugar?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Tłuszcze [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="fat" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fat?.invalid && fat?.touched">
+                                <div *ngIf="fat?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fat?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Nasycone tłuszcze [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="saturatedFat" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="saturatedFat?.invalid && saturatedFat?.touched">
+                                <div *ngIf="saturatedFat?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="saturatedFat?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Białko [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="protein" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
+                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fiber?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Błonnik [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="fiber" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
+                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fiber?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="input-space">
+                                    <select formControlName="nutritionGrade" class="form-select text-center">
+                                        <option disabled value=""> Ocena wartości odżywczej</option>
+                                        <option *ngFor="let grade of nutriGrades">
+                                            {{ grade }}
+                                        </option>
+                                    </select>                                    
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="nutritionGrade?.invalid && nutritionGrade?.touched">
+                                <div *ngIf="nutritionGrade?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- submit button-->
+                    <div class="text-center m-3">
+                        <button type="submit" class="btn btn-info"> Zapisz </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </main>
+    </div>
+<div>

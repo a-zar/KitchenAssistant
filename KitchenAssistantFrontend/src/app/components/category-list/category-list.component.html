@@ -1,12 +1,12 @@
 <div class="sidenav">
     <div>
-        <button type="button" class="btn btn-success mx-1 rounded-pill ">+ Dodaj nowy</button>
+        <button routerLink="/products/new" type="button" class="btn btn-success mx-1 rounded-pill">+ Dodaj nowy</button>
         <hr>        
         <app-search></app-search>
         <a routerLink="/products" routerLinkActive="active-link">Wszystkie produkty</a>
     </div>
     <div *ngFor="let tempCategory of categories">
-        <a routerLink="/category/{{tempCategory.id}}" routerLinkActive="active-link">{{tempCategory.name}}</a>
+        <a [routerLink]="['/category', tempCategory.id]" routerLinkActive="active-link">{{tempCategory.name}}</a>
     </div>
 </div>
 

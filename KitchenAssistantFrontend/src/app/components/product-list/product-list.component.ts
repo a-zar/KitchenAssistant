@@ -48,20 +48,15 @@ export class ProductListComponent implements OnInit {
       //check if "id" parameter is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
 
-    // console.log('current catergory Id: '+this.route.snapshot.paramMap.get('id'));
-      console.log('log 0')
-
      if(hasCategoryId){
      //get the "id" param string. convert string ti a number using the "+" symbol
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
 
-      console.log('log 1')
+    if(this.previousCategoryId != this.currentCategoryId){
+      this.thePageNumber = 1;
+   }
 
-  //   if(this.previousCategoryId != this.currentCategoryId){
-  //     this.thePageNumber = 1;
-  //  }
-
-  //   this.previousCategoryId = this.currentCategoryId;
+    this.previousCategoryId = this.currentCategoryId;
 
     this.productService.getProductListByCategoryPagination(this.currentCategoryId, this.thePageNumber -1, 
                                                this.thePageSize)
@@ -93,11 +88,11 @@ export class ProductListComponent implements OnInit {
                                                this.thePageSize).subscribe(this.processResult());
   }
 
-  // updatePageSize(pageSize: string) {
-  //   this.thePageSize = +pageSize;
-  //   this.thePageNumber =1;
-  //   this.listProducts();
-  //   }
+  updatePageSize(pageSize: string) {
+    this.thePageSize = +pageSize;
+    this.thePageNumber =1;
+    this.listProducts();
+    }
 
   processResult(){
     return(data: any)=>{

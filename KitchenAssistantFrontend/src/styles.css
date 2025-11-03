@@ -18,6 +18,11 @@
 .logo img{
   width: 15%;
 }
+
+a{
+  text-decoration: none;
+}
+
 .active-link {
   font-weight: bold;
 }
@@ -64,14 +69,13 @@ li.top-menu-item a {
   position: fixed;
   z-index: 1;
   top: 120px;
-  /* padding-top: 20px; */
+  padding-top: 20px;
   padding-bottom: 150px;
   overflow-y: auto;
 }
 
 .sidenav a {
   padding: 6px 8px 6px 16px;
-  text-decoration: none;
   font-size: 0.8em;
   color: #939292;
   display: block;
@@ -81,16 +85,26 @@ li.top-menu-item a {
   color: #5d5d5d;
 }
 
-.contentProduct{
-  margin-left: 200px; /* Same as the width of the sidebar */
-  }
 
+.container-fluid{
+    margin-left: 200px;
+    padding-left: 0; /* Zapewniamy, że treść zaczyna się od krawędzi kontenera */
+    max-width: calc(100% - 200px);
+}
+
+  
 .contentProduct{
+  
   padding-top: 120px;
   float: center;
   padding-bottom: 100px;
-  text-align: left;
+  text-align: center;
   padding-left: 20px;
+
+  display: flex; 
+  flex-wrap: wrap;
+  gap: 1rem; 
+  justify-content: flex-start;
 }
 
 .contentProduct img{
@@ -98,24 +112,69 @@ li.top-menu-item a {
 }
 
 .productItem{
-  display: inline-block;
-  position: relative;
+  width: 20rem; 
+  padding: 1rem;
+}
+
+.product-box{
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 1rem;
+  text-align: center;
+  transition: box-shadow 0.2s;
+  height: 100%;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+}
+
+.product-box:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+.productItem img{
+  box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  width: 100px;
+  height: 100px;
+  border-radius: 0.5rem;
 }
 
 .productItem p{
-  position: absolute; /* Position the background text */
-  bottom: 0; /* At the bottom. Use top:0 to append it to the top */
-  /* background: rgb(0, 0, 0); Fallback color */
-  background: rgba(86, 86, 86, 0.3); /* Black background with 0.5 opacity */
-  color: #f1f1f1; /* Grey text */
-  width: 96%; /* Full width */
-  padding: 20px; /* Some padding */
-  font-size: 0.7em;
+  color:#374151;
+  font-size: 1em;
+  margin-top: 0.75rem;
+  font-weight: 600; 
+  line-height: 1.2; 
+  max-width: 100%;
 }
 
 .search-form{
   max-width: max-content;
   margin-bottom: 10px;
+}
+
+.grade-a {
+  color: #008000; /* Ciemna zieleń (Doskonale) */
+}
+
+.grade-b {
+  color: #3399ff; /* Jasny niebieski (Dobrze) */
+}
+
+.grade-c {
+  color: #ff9900; /* Pomarańczowy (Średnio) */
+}
+
+.grade-d-e {
+  color: #cc0000; /* Ciemna czerwień (Źle) */
+}
+
+.nowrap-label{
+  white-space: nowrap;
+}
+
+.form-group-space .row{
+  padding: 0.5rem;
 }
 
 @media screen and (max-height: 450px) {

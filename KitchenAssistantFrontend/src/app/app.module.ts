@@ -14,10 +14,15 @@ import { SearchComponent } from './components/search/search.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ProductFormComponent } from './components/product-form/product-form.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes: Routes = [
 
   {path: 'shoppingList', component: ProductListComponent},
+
+  {path: 'products/new', component: ProductFormComponent},
+  {path: 'products/edit/:id', component: ProductFormComponent},
 
   {path: 'products/:id', component: ProductDetailsComponent},
   {path: 'search/:keyword', component: ProductListComponent},
@@ -35,14 +40,16 @@ const routes: Routes = [
     ProductListComponent,
     CategoryListComponent,
     SearchComponent,
-    ProductDetailsComponent
+    ProductDetailsComponent,
+    ProductFormComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule
   ],
   providers: [ProductService],
   bootstrap: [AppComponent]

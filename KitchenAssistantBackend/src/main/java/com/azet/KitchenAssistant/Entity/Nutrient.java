@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name="nutrient")
 @Getter
 @Setter
+@ToString(exclude = "product")
 public class Nutrient {
 
     //data for 100g of products
@@ -19,22 +21,22 @@ public class Nutrient {
 
     private int energy;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double fat;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double saturatedFat;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double carbohydrate;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double sugar;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double protein;
 
-    @Column(columnDefinition="Decimal(4,2)")
+    @Column(columnDefinition="Decimal(5,2)")
     private double fiber;
 
     private String nutritionGrade;

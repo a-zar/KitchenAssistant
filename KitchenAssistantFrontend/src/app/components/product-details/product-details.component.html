@@ -1,51 +1,59 @@
-<div class="wraper">
-    <app-category-list></app-category-list>
+<app-category-list></app-category-list>
 
-        <ng-container class="container-fluid">
-            <div  class="contentProduct">
-                <div class="container text-end mb-3">
-                    <a routerLink="#">
-                        <img class="mx-4 rounded" style="height: 35px; width: auto; border: 2px solid green;"
-                        src="../assets/image/food-basket.png" alt="edit" title="Kliknij, aby dodać do listy zakupów"> 
-                    </a>
-                    
-                    <a routerLink="/edit-product/#">
-                        <img style="height: 30px; width: auto" 
-                        src="../assets/image/edit.png" alt="edit" title="Edytuj"> 
-                    </a>               
-                </div> 
 
-                <div class="row text-center">
-                    <h2> {{product?.name | uppercase}} </h2>
-                    <h6> {{product?.category?.name}} - {{product?.category?.description}}</h6>
-                    <h6 *ngIf="product?.codeBar"> Kod kreskowy: {{ product?.codeBar}} </h6>
-                </div>
+<main class="container-fluid">
+    <div class="row">
+        <div  class="contentProduct d-flex flex-column align-items-center">
+            <div class="container text-end mb-3">
+                <a routerLink="[]">
+                    <img class="mx-4 rounded" style="height: 35px; width: auto; border: 2px solid green;"
+                    src="../assets/image/food-basket.png" alt="edit" title="Kliknij, aby dodać do listy zakupów"> 
+                </a>
+                
+                <a [routerLink]="['/products/edit', product?.id]">
+                    <img style="height: 30px; width: auto" 
+                    src="../assets/image/edit.png" alt="edit" title="Edytuj"> 
+                </a>               
+            </div> 
 
+            <div class="col-10 text-center p-3">
+                <h2> {{product?.name | uppercase}} </h2>
+                <h6> {{product?.category?.name}} - {{product?.category?.description}}</h6>
+                <h6 *ngIf="product?.codeBar"> Kod kreskowy: {{ product?.codeBar}} </h6>
                 <hr>
-
-                <div  class="row pt-3">
-                    <img class ="col-6 mx-auto"style="height: 200px; width: auto" [src]="'../assets/' + product?.image" alt="{{ product?.name }}"> 
-                    <div  class="col-6 text-start mx-auto">
-                        <ng-container *ngIf="product?.nutrients as nut">
-                            <h5>Składniki odżywcze </h5>
-                            <h6>energia: {{ nut?.energy}}kcal</h6>
-                            <h6>weglowodany: {{ nut?.carbohydrate}}g</h6>
-                            <h6>&nbsp;&nbsp;cukry: {{nut?.sugar}}g</h6>
-                            <h6>tłuszcze: {{ nut?.fat}}g</h6>
-                            <h6>&nbsp;&nbsp;tłuszcze nasycone: {{ nut?.saturatedFat}}g</h6>
-                            <h6>błonnik: {{ nut?.fiber}}</h6>
-                            <h6>ocena wartości odżywczej: {{ nut?.nutritionGrade}}</h6>
-                        </ng-container>
-
-                        <ng-container *ngIf="!product?.nutrients">
-                            <p>Brak szczegółowych danych odżywczych.</p>
-                        </ng-container>
-    
-
-                    </div>
-
-                </div>
-
             </div>
-</ng-container>
-</div>
+
+            <div class="d-flex flex-row align-items-start pt-3">
+                <img class ="col-4 me-5 p-3"style="height: 200px; width: auto" [src]="'../assets/' + product?.image" alt="{{ product?.name }}"> 
+                <div  class="col-6 text-start mx-auto">
+                    <ng-container *ngIf="product?.nutrients as nut">
+                        <h5>Składniki odżywcze </h5>
+                        <h6>energia: {{ nut?.energy}} kcal</h6>
+                        <h6>weglowodany: {{ nut?.carbohydrate}} g</h6>
+                        <h6>&nbsp;&nbsp;cukry: {{nut?.sugar}} g</h6>
+                        <h6>tłuszcze: {{ nut?.fat}} g</h6>
+                        <h6>&nbsp;&nbsp;tłuszcze nasycone: {{ nut?.saturatedFat}} g</h6>
+                        <h6>błonnik: {{ nut?.fiber}} g</h6>
+                        <h6>ocena wartości odżywczej: 
+                            <span 
+                                [ngClass]="{
+                                    'grade-a': nut?.nutritionGrade === 'A', 
+                                    'grade-b': nut?.nutritionGrade === 'B', 
+                                    'grade-c': nut?.nutritionGrade === 'C', 
+                                    'grade-d-e': nut?.nutritionGrade !== 'A' && nut?.nutritionGrade !== 'B' && nut?.nutritionGrade !== 'C',
+                                    'fw-bold': true  
+                                }"
+                            >
+                                {{ nut?.nutritionGrade }}
+                            </span>
+                        </h6>
+                    </ng-container>
+
+                    <ng-container *ngIf="!product?.nutrients">
+                        <p>Brak szczegółowych danych odżywczych.</p>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

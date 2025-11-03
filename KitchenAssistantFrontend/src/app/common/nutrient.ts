@@ -1,14 +1,14 @@
 export class Nutrient {
     
     constructor(
-                public id: number,
-                public energy: string,
-                public fat: string,
-                public saturatedFat: string,
-                public carbohydrate: string,
-                public sugar: string,
-                public protein: string,
-                public fiber: string,
-                public nutritionGrade: string
+        public id: number,
+        public energy: number,
+        public fat: number,
+        public saturatedFat: number,
+        public carbohydrate: number,
+        public sugar: number,
+        public protein: number,
+        public fiber: number,
+        public nutritionGrade: number
     ){}
 }
