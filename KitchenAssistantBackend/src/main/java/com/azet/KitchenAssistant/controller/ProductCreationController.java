@@ -23,7 +23,6 @@ public class ProductCreationController {
 
     @PostMapping("/new")
     public ResponseEntity<ProductCreationResponse> saveProduct(@Valid @RequestBody ProductCreationRequest req){
-        ProductCreationResponse productCreationResponse = productCreationService.createProduct(req);
 
         // Delegacja logiki do Serwisu
         ProductCreationResponse response = productCreationService.createProduct(req);

@@ -10,6 +10,7 @@ import lombok.ToString;
 @Table(name = "product")
 @Getter
 @Setter
+@ToString(exclude = {"category", "nutrients"})
 public class Product {
 
     @Id

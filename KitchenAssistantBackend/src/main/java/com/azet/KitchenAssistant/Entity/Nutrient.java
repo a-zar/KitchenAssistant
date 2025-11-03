@@ -10,6 +10,7 @@ import lombok.ToString;
 @Table(name="nutrient")
 @Getter
 @Setter
+@ToString(exclude = "product")
 public class Nutrient {
 
     //data for 100g of products

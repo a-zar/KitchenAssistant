@@ -12,6 +12,7 @@ import java.util.Set;
 @Table(name = "category")
 @Getter
 @Setter
+@ToString (exclude = "products")
 public class Category {
 
     @Id

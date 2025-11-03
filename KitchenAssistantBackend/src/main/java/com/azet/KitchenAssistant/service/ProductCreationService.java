@@ -33,7 +33,10 @@ public class ProductCreationService {
         //save to DB
         Product savedProduct = productRepository.save(newProduct);
 
-        return mapProductEntityToResponse(savedProduct);
+        System.out.println("savedProduct: " +
+                savedProduct + " " + savedProduct.getCategory() + " " + savedProduct.getNutrients() );
+
+        return mapProductEntityToResponse(savedProduct );
     }
 
     private ProductCreationResponse mapProductEntityToResponse(Product savedProduct){
@@ -52,7 +55,7 @@ public class ProductCreationService {
         newProduct.setCodeBar(request.getCodeBar());
         newProduct.setCategory(category);
 
-        if(request.getProductImage().isEmpty()){
+        if(request.getProductImage().isBlank()){
             newProduct.setImage("image/placeholder.png");
         }
         else{
