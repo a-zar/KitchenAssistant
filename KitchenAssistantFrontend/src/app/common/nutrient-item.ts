@@ -6,5 +6,5 @@ export class NutrientItem {
     public sugar!: number;
     public protein!: number;
     public fiber!: number;
-    public nutritionGrade!: number
+    public nutritionGrade!: string;
 }

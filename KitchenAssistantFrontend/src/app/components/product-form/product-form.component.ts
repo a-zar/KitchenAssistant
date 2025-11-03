@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from '../../services/category.service';
+import { ProductFormService } from '../../services/product-form.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NutrientItem } from 'src/app/common/nutrient-item';
+import { ProductForm } from 'src/app/common/product-form';
 
 @Component({
   selector: 'app-product-form',
@@ -15,9 +19,15 @@ export class ProductFormComponent implements OnInit {
   nutriGrades: string[] = ["-","A", "B", "C", "D", "E"];
   categoryList: Category[] = [];
 
+  productForm!: ProductForm;
+  nutrientsItem!: NutrientItem;
+
 
   constructor(private formBuilder: FormBuilder,
-                      private categoryService: CategoryService) { }
+              private categoryService: CategoryService,
+              private productFormService: ProductFormService,
+              private route: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit(): void {
 
@@ -33,12 +43,13 @@ export class ProductFormComponent implements OnInit {
       }),
 
       nutrients: this.formBuilder.group({
-        energy: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$')]),
-        carbohydrate: new FormControl('', [Validators.required, Validators.pattern('^\\d+$')]),
-        sugar: new FormControl('', [Validators.required, Validators.pattern('^\\d+$')]),
-        fat: new FormControl('', [Validators.required, Validators.pattern('^\\d+$')]),
-        saturatedFat: new FormControl('', [Validators.required, Validators.pattern('^\\d+$')]),
-        fiber: new FormControl('', [Validators.required, Validators.pattern('^\\d+$')]),
+        energy: new FormControl('', [Validators.required, Validators.pattern('^^\\d+(\\.\\d+)?$')]),
+        carbohydrate: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
+        sugar: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
+        fat: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
+        saturatedFat: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
+        fiber: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
+        protein: new FormControl('', [Validators.required, Validators.pattern('^\\d+(\\.\\d+)?$')]),
         nutritionGrade: new FormControl('', [Validators.required]),
       })
     });
@@ -63,9 +74,8 @@ export class ProductFormComponent implements OnInit {
   get fat(){return this.productFormGroup.get('nutrients.fat');}
   get saturatedFat(){return this.productFormGroup.get('nutrients.saturatedFat');}
   get fiber(){return this.productFormGroup.get('nutrients.fiber');}
+  get protein(){return this.productFormGroup.get('nutrients.protein');}
   get nutritionGrade(){return this.productFormGroup.get('nutrients.nutritionGrade');}
-
-
 
   onSubmit(){
     console.log("handling the submit button");
@@ -73,8 +83,50 @@ export class ProductFormComponent implements OnInit {
     if(this.productFormGroup.invalid) {
       this.productFormGroup.markAllAsTouched();
     }
-    console.log(this.productFormGroup.get('product')?.value);
-    console.log(this.productFormGroup.get('nutrients')?.value);
+
+    //set up and populate nutrientItem
+    let nutrientItem= new NutrientItem();
+
+    nutrientItem.energy = parseInt(this.productFormGroup.get('nutrients.energy')?.value);
+    nutrientItem.carbohydrate = parseFloat(this.productFormGroup.get('nutrients.carbohydrate')?.value);
+    nutrientItem.sugar = parseFloat(this.productFormGroup.get('nutrients.sugar')?.value);
+    nutrientItem.fat = parseFloat(this.productFormGroup.get('nutrients.fat')?.value);
+    nutrientItem.saturatedFat = parseFloat(this.productFormGroup.get('nutrients.saturatedFat')?.value);
+    nutrientItem.fiber = parseFloat(this.productFormGroup.get('nutrients.fiber')?.value);
+    nutrientItem.protein = parseFloat(this.productFormGroup.get('nutrients.protein')?.value);
+    nutrientItem.nutritionGrade = this.productFormGroup.get('nutrients.nutritionGrade')?.value;
+
+    let productForm = new ProductForm();
+
+    productForm.productName = this.productFormGroup.get('product.productName')?.value;
+    productForm.codeBar = this.productFormGroup.get('product.codeBar')?.value;
+    productForm.productImage = this.productFormGroup.get('product.productImage')?.value;
+    productForm.categoryName = this.productFormGroup.get('product.categoryName')?.value;
+
+    //copy object
+    productForm.nutrient = JSON.parse(JSON.stringify(nutrientItem));
+
+    //call rest api 
+    this.productFormService.createProduct(productForm).subscribe(
+      {
+        next: response => {
+          alert(`Nowy produkt został zapisany: ${response.productName}`);
+
+          this.resetProductForm();
+        },
+        error: err => {
+          alert(`Error: ${err.message}`);
+        }
+      }
+    );
+    console.log(JSON.stringify(productForm))
+  }
+
+  resetProductForm() {
+    this.productFormGroup.reset();
+
+    //navigate back to products list
+    this.router.navigateByUrl("/products")
   }
 
 }

@@ -133,6 +133,19 @@
                         </div>
 
                         <div class="row">
+                            <div class="col-12 col-md-6"> <label class="nowrap-label">Białko [g]</label></div>
+                            <div class="col-12 col-md-6">
+                                <div class="input-space">
+                                    <input formControlName="protein" type="text" class="form-control">
+                                </div>
+                            </div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
+                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                                <div *ngIf="fiber?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="col-12 col-md-6"> <label class="nowrap-label">Błonnik [g]</label></div>
                             <div class="col-12 col-md-6">
                                 <div class="input-space">
@@ -142,7 +155,6 @@
                             <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
                                 <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
                                 <div *ngIf="fiber?.errors?.['pattern']"> Wymagane są tylko cyfry 0-9</div>
-
                             </div>
                         </div>
 

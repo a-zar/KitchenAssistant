@@ -5,5 +5,5 @@ export class ProductForm {
     productImage!: string; 
     codeBar!: string;
     categoryName!:string;
-    nutrientItem!: NutrientItem[];
+    nutrient!: NutrientItem;
 }
