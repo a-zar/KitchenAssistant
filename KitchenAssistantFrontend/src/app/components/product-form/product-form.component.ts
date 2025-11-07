@@ -6,6 +6,7 @@ import { ProductFormService } from '../../services/product-form.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NutrientItem } from 'src/app/common/nutrient-item';
 import { ProductForm } from 'src/app/common/product-form';
+import { Product } from 'src/app/common/product';
 
 @Component({
   selector: 'app-product-form',
@@ -18,6 +19,7 @@ export class ProductFormComponent implements OnInit {
   productFormGroup!: FormGroup;
   nutriGrades: string[] = ["-","A", "B", "C", "D", "E"];
   categoryList: Category[] = [];
+  productEdited!: Product;
 
   productForm!: ProductForm;
   nutrientsItem!: NutrientItem;
