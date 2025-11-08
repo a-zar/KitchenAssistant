@@ -5,6 +5,8 @@ import com.azet.KitchenAssistant.dto.ProductCreationRequest;
 import com.azet.KitchenAssistant.dto.ProductCreationResponse;
 import com.azet.KitchenAssistant.service.ProductCreationService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ public class ProductCreationController {
     private final ProductCreationService productCreationService;
     private final ProductRepository productRepository;
 
+    private static final Logger logger = LoggerFactory.getLogger(ProductCreationResponse.class);
     ProductCreationResponse response = null;
 
     public ProductCreationController(ProductCreationService productCreationService, ProductRepository productRepository){
@@ -32,6 +35,8 @@ public class ProductCreationController {
         // Delegacja logiki do Serwisu
         ProductCreationResponse response = productCreationService.createProduct(req);
 
+        logger.info("new product created: " + req.getProductName());
+
         // Zwracamy status 201 Created
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -40,13 +45,12 @@ public class ProductCreationController {
     public ResponseEntity<ProductCreationResponse> editProduct(@PathVariable int id, @RequestBody ProductCreationRequest toEdit) {
 
         if (!productRepository.existsById(id)) {
+            logger.info("product not found id: " + id );
             return ResponseEntity.notFound().build();
         }
 
-//        productRepository.findById(id).ifPresent(prod ->
-//                productCreationService.editProduct(id, toEdit));
-
         if (productRepository.findById(id).isPresent()) {
+            logger.info("product id " +id + "edited");
             response = productCreationService.editProduct(id, toEdit);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);

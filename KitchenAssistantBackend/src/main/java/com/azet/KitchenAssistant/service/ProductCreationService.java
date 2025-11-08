@@ -59,14 +59,12 @@ public class ProductCreationService {
         response.setId(savedProduct.getId());
         response.setProductName(savedProduct.getName());
         response.setCategoryName(savedProduct.getCategory().getName());
-
         return response;
     }
 
     private Product mapRequestToProductEntity(ProductCreationRequest request) {
 
         Product newProduct = new Product();
-
         newProduct.setName(request.getProductName());
         newProduct.setCodeBar(request.getCodeBar());
 
@@ -92,7 +90,6 @@ public class ProductCreationService {
 
     private Nutrient mapNutrientDataToEntity(NutrientData data){
         Nutrient nutrient = new Nutrient();
-
         nutrient.setEnergy(data.getEnergy());
         nutrient.setCarbohydrate(data.getCarbohydrate());
         nutrient.setSugar(data.getSugar());
@@ -101,7 +98,6 @@ public class ProductCreationService {
         nutrient.setFiber(data.getFiber());
         nutrient.setProtein(data.getProtein());
         nutrient.setNutritionGrade(data.getNutritionGrade());
-
         return nutrient;
     }
 }
