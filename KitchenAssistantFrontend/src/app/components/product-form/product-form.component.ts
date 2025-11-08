@@ -22,7 +22,6 @@ export class ProductFormComponent implements OnInit {
   nutrientsItem!: NutrientItem;
 
   oldProductToEdit?: Product;
-  product!: Product;
   productForm!: ProductForm;
 
   constructor(private formBuilder: FormBuilder,
@@ -35,9 +34,7 @@ export class ProductFormComponent implements OnInit {
   ngOnInit(): void {
 
     this.handleProductToEdit()
-
     this.getCategoryList();
-
     this.initializeForm();
   }
 
@@ -118,19 +115,37 @@ export class ProductFormComponent implements OnInit {
     //call rest api 
     if(this.productFormGroup.valid){
 
-      this.productFormService.createProduct(productForm).subscribe(
-        {
-          next: response => {
-            alert(`Nowy produkt został zapisany: ${response.productName}`);
+      //#TODO create or edit
 
-            this.resetProductForm();
-          },
-          error: err => {
-            alert(`Error: ${err.message}`);
+      if(this.oldProductToEdit?.id){
+        const theProductId = this.oldProductToEdit?.id;
+        this.productFormService.editProduct(theProductId, productForm).subscribe(
+          {
+            next: response => {
+                alert(`Zmiany zostały zapisane: ${response.productName}`);
+                this.resetProductForm();
+            },
+            error: err => {
+              alert(`Error: ${err.message}`);
+            }
           }
-        }
-      );
-    console.log(JSON.stringify(productForm))
+        );
+      }
+      else{
+        this.productFormService.createProduct(productForm).subscribe(
+          {
+            next: response => {
+              alert(`Nowy produkt został zapisany: ${response.productName}`);
+
+              this.resetProductForm();
+            },
+            error: err => {
+              alert(`Error: ${err.message}`);
+            }
+          }
+        );
+      }
+    // console.log(JSON.stringify(productForm))
     }
   }
 
@@ -157,12 +172,11 @@ export class ProductFormComponent implements OnInit {
           this.oldProductToEdit!.category = data;
 
           this.productFormGroup.get('product')?.patchValue({
-              productName: this.oldProductToEdit!.name, // W Pani HTML: oldProductToEdit?.name, używam productName z TS
-              categoryName: this.oldProductToEdit!.category?.name, // Używamy nazwy kategorii
+              productName: this.oldProductToEdit!.name, 
+              categoryName: this.oldProductToEdit!.category?.name, 
               codeBar: this.oldProductToEdit!.codeBar,
-              productImage: this.oldProductToEdit!.image, // W Pani HTML: oldProductToEdit?.image, używam productImage z TS
+              productImage: this.oldProductToEdit!.image
           });
-
         }
       );
 

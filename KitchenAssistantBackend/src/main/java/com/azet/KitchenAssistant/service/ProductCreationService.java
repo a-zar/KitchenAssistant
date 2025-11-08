@@ -4,6 +4,7 @@ import com.azet.KitchenAssistant.Entity.Category;
 import com.azet.KitchenAssistant.Entity.Nutrient;
 import com.azet.KitchenAssistant.Entity.Product;
 import com.azet.KitchenAssistant.dao.CategoryRepository;
+import com.azet.KitchenAssistant.dao.NutrientsRepository;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dto.NutrientData;
 import com.azet.KitchenAssistant.dto.ProductCreationRequest;
@@ -17,9 +18,10 @@ public class ProductCreationService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private NutrientsRepository nutrientsRepository;
 
     public ProductCreationResponse createProduct(ProductCreationRequest request){
         //tworzenie głownej encji produktu
@@ -28,9 +30,40 @@ public class ProductCreationService {
         return saveProductWithResponse(newProduct);
     }
 
-    public ProductCreationResponse editProduct(int id, ProductCreationRequest req) {
-        Product editedProduct = mapRequestToProductEntity(req);
-        editedProduct.setId(id);
+    public ProductCreationResponse editProduct(int id, ProductCreationRequest request) {
+        Product editedProduct = null;
+        Category newCategory = getCategory(request);
+        NutrientData newNutrient = request.getNutrient();
+
+        if (productRepository.findById(id).isPresent()){
+            editedProduct = productRepository.findById(id).get();
+
+            Nutrient nutrient = editedProduct.getNutrients();
+
+            nutrient.setEnergy(newNutrient.getEnergy());
+            nutrient.setCarbohydrate(newNutrient.getCarbohydrate());
+            nutrient.setSugar(newNutrient.getSugar());
+            nutrient.setFat(newNutrient.getFat());
+            nutrient.setSaturatedFat(newNutrient.getSaturatedFat());
+            nutrient.setFiber(newNutrient.getFiber());
+            nutrient.setProtein(newNutrient.getProtein());
+            nutrient.setNutritionGrade(newNutrient.getNutritionGrade());
+
+            editedProduct.setName(request.getProductName());
+            editedProduct.setCodeBar(request.getCodeBar());
+            editedProduct.setCategory(newCategory);
+            if(request.getProductImage().isBlank()){
+                editedProduct.setImage("image/placeholder.png");
+            }
+            else{
+                editedProduct.setImage(request.getProductImage());
+            }
+
+
+            //ustawienie relacji nutrient dwustronnej
+            editedProduct.setNutrients(nutrient);
+            nutrient.setProduct(editedProduct);
+        }
         return saveProductWithResponse(editedProduct);
     }
 
@@ -48,7 +81,7 @@ public class ProductCreationService {
     }
 
     private Product mapRequestToProductEntity(ProductCreationRequest request) {
-        Nutrient newNutrient = mapNutrientDataToEntity(request.getNutrient());
+        Nutrient nutrient = mapNutrientDataToEntity(request.getNutrient());
         Category category = getCategory(request);
 
         Product newProduct = new Product();
@@ -62,8 +95,8 @@ public class ProductCreationService {
             newProduct.setImage(request.getProductImage());
         }
         //ustawienie relacji nutrient dwustronnej
-        newProduct.setNutrients(newNutrient);
-        newNutrient.setProduct(newProduct);
+        newProduct.setNutrients(nutrient);
+        nutrient.setProduct(newProduct);
         return newProduct;
     }
 
@@ -72,7 +105,11 @@ public class ProductCreationService {
                 .orElseThrow(() -> new EntityNotFoundException("Kategoria nie znaleziona: " + request.getCategoryName()));
     }
 
+
     private Nutrient mapNutrientDataToEntity(NutrientData data){
+
+        //#TODO sprawdz czy istnieje a jak nie to utwórz
+
         Nutrient nutrient = new Nutrient();
         nutrient.setEnergy(data.getEnergy());
         nutrient.setCarbohydrate(data.getCarbohydrate());

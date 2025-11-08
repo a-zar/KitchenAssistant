@@ -14,13 +14,14 @@ export class ProductFormService {
   constructor(private httpClient: HttpClient) { }
 
   createProduct(productForm: ProductForm): Observable<any>{
-    const newFormUrl = this.productFormUrl + "/new"
+    const newFormUrl = `${this.productFormUrl}/new`
     return this.httpClient.post<ProductForm>(newFormUrl, productForm);
   }
 
   //#TODO to verify
   editProduct(theProductId : number, productForm: ProductForm): Observable<any> {
-    const editFormUrl = this.productFormUrl + "/edit/" + {theProductId};
+    const editFormUrl = `${this.productFormUrl}/edit/${theProductId}`;
     return this.httpClient.put<ProductForm>(editFormUrl, productForm); 
+    
   }
 }

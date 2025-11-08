@@ -14,4 +14,5 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:4200")
 @RepositoryRestResource(collectionResourceRel = "nutrients", path = "nutrients")
 public interface NutrientsRepository extends JpaRepository<Nutrient,Integer> {
+    Optional<Nutrient> findByProductId(Integer productId);
 }
