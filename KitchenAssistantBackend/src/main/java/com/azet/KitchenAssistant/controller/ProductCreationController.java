@@ -1,5 +1,6 @@
 package com.azet.KitchenAssistant.controller;
 
+import com.azet.KitchenAssistant.Entity.Product;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dto.ProductCreationRequest;
 import com.azet.KitchenAssistant.dto.ProductCreationResponse;
@@ -34,7 +35,6 @@ public class ProductCreationController {
 
         // Delegacja logiki do Serwisu
         ProductCreationResponse response = productCreationService.createProduct(req);
-
         logger.info("new product created: " + req.getProductName());
 
         // Zwracamy status 201 Created
@@ -45,12 +45,12 @@ public class ProductCreationController {
     public ResponseEntity<ProductCreationResponse> editProduct(@PathVariable int id, @RequestBody ProductCreationRequest toEdit) {
 
         if (!productRepository.existsById(id)) {
-            logger.info("product not found id: " + id );
+            logger.info("product not found id= " + id );
             return ResponseEntity.notFound().build();
         }
-
         if (productRepository.findById(id).isPresent()) {
-            logger.info("product id " +id + "edited");
+            Product oldProduct = productRepository.findById(id).get();
+            logger.info("edited product: id= " + id + ", old name = " + oldProduct.getName() +", new name= " + toEdit.getProductName());
             response = productCreationService.editProduct(id, toEdit);
         }
         return new ResponseEntity<>(response, HttpStatus.CREATED);

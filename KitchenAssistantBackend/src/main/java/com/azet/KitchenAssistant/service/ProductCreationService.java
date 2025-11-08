@@ -22,40 +22,25 @@ public class ProductCreationService {
     private ProductRepository productRepository;
 
     public ProductCreationResponse createProduct(ProductCreationRequest request){
-
         //tworzenie głownej encji produktu
         Product newProduct = mapRequestToProductEntity(request);
-
         //save to DB
-        Product savedProduct = productRepository.save(newProduct);
-
-        System.out.println("savedProduct: " +
-                savedProduct + " " + savedProduct.getCategory() + " " + savedProduct.getNutrients() );
-
-        return mapProductEntityToResponse(savedProduct);
-    }
-
-    private Category getCategory(final ProductCreationRequest request) {
-        return categoryRepository.findByName(request.getCategoryName())
-                .orElseThrow(() -> new EntityNotFoundException("Kategoria nie znaleziona: " + request.getCategoryName()));
+        return saveProductWithResponse(newProduct);
     }
 
     public ProductCreationResponse editProduct(int id, ProductCreationRequest req) {
-
         Product editedProduct = mapRequestToProductEntity(req);
         editedProduct.setId(id);
+        return saveProductWithResponse(editedProduct);
+    }
 
-        Product savedProduct = productRepository.save(editedProduct);
-
-        System.out.println("editedProduct: " +
-                editedProduct + " " + editedProduct.getCategory() + " " + editedProduct.getNutrients());
-
-        return mapProductEntityToResponse(editedProduct);
+    private ProductCreationResponse saveProductWithResponse(final Product newProduct) {
+        Product savedProduct = productRepository.save(newProduct);
+        return mapProductEntityToResponse(savedProduct);
     }
 
     private ProductCreationResponse mapProductEntityToResponse(Product savedProduct){
         ProductCreationResponse response = new ProductCreationResponse();
-
         response.setId(savedProduct.getId());
         response.setProductName(savedProduct.getName());
         response.setCategoryName(savedProduct.getCategory().getName());
@@ -63,30 +48,29 @@ public class ProductCreationService {
     }
 
     private Product mapRequestToProductEntity(ProductCreationRequest request) {
+        Nutrient newNutrient = mapNutrientDataToEntity(request.getNutrient());
+        Category category = getCategory(request);
 
         Product newProduct = new Product();
         newProduct.setName(request.getProductName());
         newProduct.setCodeBar(request.getCodeBar());
-
-        Category category = getCategory(request);
         newProduct.setCategory(category);
-
         if(request.getProductImage().isBlank()){
             newProduct.setImage("image/placeholder.png");
         }
         else{
             newProduct.setImage(request.getProductImage());
         }
-
-        Nutrient newNutrient = mapNutrientDataToEntity(request.getNutrient());
-
         //ustawienie relacji nutrient dwustronnej
         newProduct.setNutrients(newNutrient);
         newNutrient.setProduct(newProduct);
-
         return newProduct;
     }
 
+    private Category getCategory(final ProductCreationRequest request) {
+        return categoryRepository.findByName(request.getCategoryName())
+                .orElseThrow(() -> new EntityNotFoundException("Kategoria nie znaleziona: " + request.getCategoryName()));
+    }
 
     private Nutrient mapNutrientDataToEntity(NutrientData data){
         Nutrient nutrient = new Nutrient();
