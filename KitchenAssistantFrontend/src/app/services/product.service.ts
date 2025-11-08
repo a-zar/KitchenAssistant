@@ -52,7 +52,7 @@ export class ProductService {
 
   
   searchProductPagination(theKeyword: string, thePage: number, 
-                           thePageSize:number): Observable<GetResponseProducts>{
+                          thePageSize:number): Observable<GetResponseProducts>{
     const searchUrl = `${this.baseUrl}/search/by-name?search=${theKeyword}`
                     + `&page=${thePage}&size=${thePageSize}`;
 
@@ -64,16 +64,15 @@ export class ProductService {
     return this.httpClient.get<Product>(productUrl);
   }
 
-    getProductCategory(theProductId: number): Observable<Category> {
-      const productCategoryUrl = `${this.baseUrl}/${theProductId}/category`;
-      return this.httpClient.get<Category>(productCategoryUrl);
-  }
-    getProductNutrients(theProductId: number): Observable<Nutrient> {
-      const productNutrientsUrl = `${this.baseUrl}/${theProductId}/nutrients`;
-      return this.httpClient.get<Nutrient>(productNutrientsUrl);
+  getProductCategory(theProductId: number): Observable<Category> {
+    const productCategoryUrl = `${this.baseUrl}/${theProductId}/category`;
+    return this.httpClient.get<Category>(productCategoryUrl);
   }
 
-
+  getProductNutrients(theProductId: number): Observable<Nutrient> {
+    const productNutrientsUrl = `${this.baseUrl}/${theProductId}/nutrients`;
+    return this.httpClient.get<Nutrient>(productNutrientsUrl);
+  }
 }
 
 interface GetResponseProducts {

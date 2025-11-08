@@ -30,23 +30,18 @@ export class ProductDetailsComponent implements OnInit {
     this.productService.getProduct(theProductId).subscribe(
       data => {
         this.product = data;
-
       }
     )
     
     this.productService.getProductCategory(theProductId).subscribe(
       data => {
         this.product.category = data;
-
-          console.log('data.category '+ this.product.category.name);
       }
     )
 
     this.productService.getProductNutrients(theProductId).subscribe(
       data => {
         this.product.nutrients = data;
-
-          console.log('data.nutrient '+ this.product.nutrients.energy);
       }
     )
 
