@@ -28,5 +28,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @RestResource(path = "by-name")
     Page<Product> findByNameContainingIgnoreCase(@Param("search") String text, Pageable pageable);
 
-
+    @Override
+    boolean existsById(Integer integer);
 }
