@@ -109,19 +109,23 @@ export class ProductFormComponent implements OnInit {
     productForm.nutrient = JSON.parse(JSON.stringify(nutrientItem));
 
     //call rest api 
-    this.productFormService.createProduct(productForm).subscribe(
-      {
-        next: response => {
-          alert(`Nowy produkt został zapisany: ${response.productName}`);
 
-          this.resetProductForm();
-        },
-        error: err => {
-          alert(`Error: ${err.message}`);
+    if(this.productFormGroup.valid){
+
+      this.productFormService.createProduct(productForm).subscribe(
+        {
+          next: response => {
+            alert(`Nowy produkt został zapisany: ${response.productName}`);
+
+            this.resetProductForm();
+          },
+          error: err => {
+            alert(`Error: ${err.message}`);
+          }
         }
-      }
-    );
+      );
     console.log(JSON.stringify(productForm))
+    }
   }
 
   resetProductForm() {
