@@ -9,6 +9,7 @@ import { ProductService } from 'src/app/services/product.service';
   templateUrl: './product-list.component.html',
   styleUrls: ['./product-list.component.css']
 })
+
 export class ProductListComponent implements OnInit {
 
   products: Product[] =[];
@@ -48,47 +49,38 @@ export class ProductListComponent implements OnInit {
       //check if "id" parameter is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
 
-     if(hasCategoryId){
-     //get the "id" param string. convert string ti a number using the "+" symbol
-      this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
+    if(hasCategoryId){
+    //get the "id" param string and convert string to a number using the "+" symbol
+    this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
 
-    if(this.previousCategoryId != this.currentCategoryId){
-      this.thePageNumber = 1;
-   }
+      if(this.previousCategoryId != this.currentCategoryId){
+        this.thePageNumber = 1;}
 
-    this.previousCategoryId = this.currentCategoryId;
-
-    this.productService.getProductListByCategoryPagination(this.currentCategoryId, this.thePageNumber -1, 
-                                               this.thePageSize)
-                                               .subscribe(data => {
-                                                this.products = data._embedded.products;
-                                                this.thePageNumber = data.page.number + 1;
-                                                this.thePageSize = data.page.size;
-                                                this.theTotalElements = data.page.totalElements;
-                                               });
-
-   }
-   else{
+      this.previousCategoryId = this.currentCategoryId;
+      this.productService.getProductListByCategoryPagination(this.currentCategoryId, this.thePageNumber -1, 
+                          this.thePageSize)
+                          .subscribe(data => {
+                          this.products = data._embedded.products;
+                          this.thePageNumber = data.page.number + 1;
+                          this.thePageSize = data.page.size;
+                          this.theTotalElements = data.page.totalElements;
+                          });
+    }
+    else{
      //not category id available .. default to category id 1
-
-     this.productService.getProductListPagination(this.thePageNumber -1, 
-                                               this.thePageSize)
-                                               .subscribe(this.processResult());
-   }
-
-   console.log(`current: ${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
-
+    this.productService.getProductListPagination(this.thePageNumber -1, this.thePageSize)
+    .subscribe(this.processResult());
+  }
+  console.log(`current: ${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
   }
 
   handleSearchProducts(){
-       const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
-
-
-  this.productService.searchProductPagination(theKeyword, this.thePageNumber -1, 
-                                               this.thePageSize).subscribe(this.processResult());
+    const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
+    this.productService.searchProductPagination(theKeyword, this.thePageNumber -1, 
+                        this.thePageSize).subscribe(this.processResult());
   }
 
-  updatePageSize(pageSize: string) {
+  updatePageSize(pageSize: string) {  
     this.thePageSize = +pageSize;
     this.thePageNumber =1;
     this.listProducts();
@@ -101,7 +93,17 @@ export class ProductListComponent implements OnInit {
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
+  }
+}
 
-
+interface GetResponseProducts {
+  _embedded: {
+    products: Product[];
+  }, 
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number;
   }
 }

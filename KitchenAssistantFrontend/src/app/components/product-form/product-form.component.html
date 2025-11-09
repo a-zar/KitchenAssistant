@@ -3,10 +3,11 @@
     <div class="row">
         <main class="contentProduct col-sm-10 d-flex flex-column align-items-center">
             <form [formGroup]="productFormGroup" class="align-items-center" (ngSubmit)="onSubmit()">
-
                 <!--product form group-->
                 <div class="card ">
-                    <legend class="text-center card-header">Produkt</legend>
+                    <legend *ngIf="!oldProductToEdit?.id" class="text-center card-header">Nowy produkt</legend>
+                    <legend *ngIf="oldProductToEdit?.id" class="text-center card-header">Edytuj produkt</legend>
+
                     <fieldset formGroupName="product" class="form-group-space form-area p-4">
                         <div class="row">
                             <div class="col-12 col-md-6"> <label class="nowrap-label">Nazwa produktu</label></div>
@@ -30,7 +31,7 @@
                                 <div class="input-space">
                                     <select formControlName="categoryName" class="form-select text-center" size="5">
                                         <option selected disabled value="">Kategoria produktu</option>
-                                        <option *ngFor="let category of categoryList">
+                                        <option *ngFor="let category of categoryList" [value]="category.name">
                                             {{ category.name }}
                                         </option>
                                     </select>
@@ -169,7 +170,7 @@
                                 <div class="input-space">
                                     <select formControlName="nutritionGrade" class="form-select text-center">
                                         <option disabled value=""> Ocena wartości odżywczej</option>
-                                        <option *ngFor="let grade of nutriGrades">
+                                        <option *ngFor="let grade of nutriGrades" [value]="grade">
                                             {{ grade }}
                                         </option>
                                     </select>                                    

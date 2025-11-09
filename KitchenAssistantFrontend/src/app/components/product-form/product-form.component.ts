@@ -6,6 +6,8 @@ import { ProductFormService } from '../../services/product-form.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NutrientItem } from 'src/app/common/nutrient-item';
 import { ProductForm } from 'src/app/common/product-form';
+import { Product } from 'src/app/common/product';
+import { ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-product-form',
@@ -14,29 +16,33 @@ import { ProductForm } from 'src/app/common/product-form';
 })
 export class ProductFormComponent implements OnInit {
 
-
   productFormGroup!: FormGroup;
   nutriGrades: string[] = ["-","A", "B", "C", "D", "E"];
   categoryList: Category[] = [];
-
-  productForm!: ProductForm;
   nutrientsItem!: NutrientItem;
 
+  oldProductToEdit?: Product;
+  productForm!: ProductForm;
 
   constructor(private formBuilder: FormBuilder,
               private categoryService: CategoryService,
               private productFormService: ProductFormService,
+              private productService: ProductService,
               private route: ActivatedRoute,
               private router: Router) { }
 
   ngOnInit(): void {
 
+    this.handleProductToEdit()
     this.getCategoryList();
+    this.initializeForm();
+  }
 
+  private initializeForm() {
     this.productFormGroup = this.formBuilder.group({
       product: this.formBuilder.group({
-        productName: new FormControl('', [Validators.required, Validators.minLength(2), 
-                                          Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s-%()]*[^\\s]$')]),
+        productName: new FormControl('', [Validators.required, Validators.minLength(2),
+        Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s-%()]*[^\\s]$')]),
         categoryName: new FormControl('', [Validators.required]),
         codeBar: new FormControl('', [Validators.pattern('^.*[^\\s]$')]),
         productImage: new FormControl('', [Validators.pattern('^[a-zA-Z0-9_.\\-/]+(\\.[a-zA-Z0-9_.\\-/]+)+[^\\s]$')]),
@@ -107,19 +113,40 @@ export class ProductFormComponent implements OnInit {
     productForm.nutrient = JSON.parse(JSON.stringify(nutrientItem));
 
     //call rest api 
-    this.productFormService.createProduct(productForm).subscribe(
-      {
-        next: response => {
-          alert(`Nowy produkt został zapisany: ${response.productName}`);
+    if(this.productFormGroup.valid){
 
-          this.resetProductForm();
-        },
-        error: err => {
-          alert(`Error: ${err.message}`);
-        }
+      //#TODO create or edit
+
+      if(this.oldProductToEdit?.id){
+        const theProductId = this.oldProductToEdit?.id;
+        this.productFormService.editProduct(theProductId, productForm).subscribe(
+          {
+            next: response => {
+                alert(`Zmiany zostały zapisane: ${response.productName}`);
+                this.resetProductForm();
+            },
+            error: err => {
+              alert(`Error: ${err.message}`);
+            }
+          }
+        );
       }
-    );
-    console.log(JSON.stringify(productForm))
+      else{
+        this.productFormService.createProduct(productForm).subscribe(
+          {
+            next: response => {
+              alert(`Nowy produkt został zapisany: ${response.productName}`);
+
+              this.resetProductForm();
+            },
+            error: err => {
+              alert(`Error: ${err.message}`);
+            }
+          }
+        );
+      }
+    // console.log(JSON.stringify(productForm))
+    }
   }
 
   resetProductForm() {
@@ -129,4 +156,47 @@ export class ProductFormComponent implements OnInit {
     this.router.navigateByUrl("/products")
   }
 
+    handleProductToEdit() {
+      //get id
+      const theProductId: number =+ this.route.snapshot.paramMap.get('id')!;
+
+      if(theProductId){
+        this.productService.getProduct(theProductId).subscribe(
+        data => {
+          this.oldProductToEdit = data;
+        }
+      );
+
+      this.productService.getProductCategory(theProductId).subscribe(
+        data => {
+          this.oldProductToEdit!.category = data;
+
+          this.productFormGroup.get('product')?.patchValue({
+              productName: this.oldProductToEdit!.name, 
+              categoryName: this.oldProductToEdit!.category?.name, 
+              codeBar: this.oldProductToEdit!.codeBar,
+              productImage: this.oldProductToEdit!.image
+          });
+        }
+      );
+
+      this.productService.getProductNutrients(theProductId).subscribe(
+        data => {
+          this.oldProductToEdit!.nutrients = data;
+
+          this.productFormGroup.get('nutrients')?.patchValue({
+            energy: this.oldProductToEdit!.nutrients.energy,
+            carbohydrate: this.oldProductToEdit!.nutrients.carbohydrate,
+            sugar: this.oldProductToEdit!.nutrients.sugar,
+            fat: this.oldProductToEdit!.nutrients.fat,
+            saturatedFat: this.oldProductToEdit!.nutrients.saturatedFat,
+            fiber: this.oldProductToEdit!.nutrients.fiber,
+            protein: this.oldProductToEdit!.nutrients.protein,
+            nutritionGrade: this.oldProductToEdit!.nutrients.nutritionGrade,
+          });
+        }
+      );
+    }
+
+  }
 }
