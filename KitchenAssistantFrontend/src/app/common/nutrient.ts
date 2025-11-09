@@ -9,6 +9,6 @@ export class Nutrient {
         public sugar: number,
         public protein: number,
         public fiber: number,
-        public nutritionGrade: number
+        public nutritionGrade: String
     ){}
 }

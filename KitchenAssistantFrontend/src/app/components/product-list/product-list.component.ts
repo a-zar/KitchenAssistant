@@ -50,7 +50,7 @@ export class ProductListComponent implements OnInit {
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
 
     if(hasCategoryId){
-    //get the "id" param string. convert string ti a number using the "+" symbol
+    //get the "id" param string and convert string to a number using the "+" symbol
     this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
 
       if(this.previousCategoryId != this.currentCategoryId){
@@ -93,5 +93,17 @@ export class ProductListComponent implements OnInit {
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
+  }
+}
+
+interface GetResponseProducts {
+  _embedded: {
+    products: Product[];
+  }, 
+  page: {
+    size: number,
+    totalElements: number,
+    totalPages: number,
+    number: number;
   }
 }

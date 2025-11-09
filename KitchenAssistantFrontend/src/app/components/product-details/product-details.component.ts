@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Product } from '../../common/product';
 import { ProductService } from '../../services/product.service';
 import { ActivatedRoute } from '@angular/router';
-import { Category } from 'src/app/common/category';
+import { forkJoin, map, switchMap, Observable } from 'rxjs';
+import { Category } from '../../common/category';
+import { Nutrient } from 'src/app/common/nutrient';
 
 @Component({
   selector: 'app-product-details',
@@ -11,41 +13,38 @@ import { Category } from 'src/app/common/category';
 })
 export class ProductDetailsComponent implements OnInit {
 
-  product: Product | any;
+  product$: Observable<CompleteProduct> | undefined;
 
   constructor(private productService: ProductService, 
               private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(() => {
-    this.handleProductDetails();
-    });
+
+    this.product$ = this.route.paramMap.pipe(
+      switchMap(params => {
+        const theProductId: number =+ params.get('id')!;
+        const relatedData$ = forkJoin ({
+          category: this.productService.getProductCategory(theProductId),
+          nutrients: this.productService.getProductNutrients(theProductId)
+        });
+        return this.productService.getProduct(theProductId).pipe(
+          switchMap(product => {
+            return relatedData$.pipe(
+              map((results): CompleteProduct=> {
+                const completeProduct = product as CompleteProduct;
+                completeProduct.category = results.category;
+                completeProduct.nutrients = results.nutrients;
+                return completeProduct;
+              })
+            );
+          })
+        );
+      })
+    );
   }
+}
 
-  handleProductDetails() {
-
-    //get id
-    const theProductId: number =+ this.route.snapshot.paramMap.get('id')!;
-
-    this.productService.getProduct(theProductId).subscribe(
-      data => {
-        this.product = data;
-      }
-    )
-    
-    this.productService.getProductCategory(theProductId).subscribe(
-      data => {
-        this.product.category = data;
-      }
-    )
-
-    this.productService.getProductNutrients(theProductId).subscribe(
-      data => {
-        this.product.nutrients = data;
-      }
-    )
-
-    
-  }
-
+interface CompleteProduct extends Product{
+ category: Category;
+ nutrients: Nutrient;
 }

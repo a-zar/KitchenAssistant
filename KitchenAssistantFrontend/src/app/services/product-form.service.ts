@@ -18,7 +18,6 @@ export class ProductFormService {
     return this.httpClient.post<ProductForm>(newFormUrl, productForm);
   }
 
-  //#TODO to verify
   editProduct(theProductId : number, productForm: ProductForm): Observable<any> {
     const editFormUrl = `${this.productFormUrl}/edit/${theProductId}`;
     return this.httpClient.put<ProductForm>(editFormUrl, productForm); 
