@@ -1,16 +1,19 @@
 package com.azet.KitchenAssistant.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Set;
 
 
 @Entity
 @Table(name = "product")
 @Getter
 @Setter
-@ToString(exclude = {"category", "nutrients"})
+@ToString(exclude = {"category", "nutrients", "shoppingListItems"})
 public class Product {
 
     @Id
@@ -29,4 +32,8 @@ public class Product {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "product")
     private Nutrient nutrients;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @JsonIgnore
+    private Set<ShoppingListItem> shoppingListItems;
 }
