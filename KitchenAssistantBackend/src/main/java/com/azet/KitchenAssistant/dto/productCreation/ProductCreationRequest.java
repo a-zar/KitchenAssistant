@@ -1,8 +1,5 @@
-package com.azet.KitchenAssistant.dto;
+package com.azet.KitchenAssistant.dto.productCreation;
 
-import com.azet.KitchenAssistant.Entity.Category;
-import com.azet.KitchenAssistant.Entity.Nutrient;
-import com.azet.KitchenAssistant.Entity.Product;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

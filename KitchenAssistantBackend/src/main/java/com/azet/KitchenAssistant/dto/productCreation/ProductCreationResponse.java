@@ -1,4 +1,4 @@
-package com.azet.KitchenAssistant.dto;
+package com.azet.KitchenAssistant.dto.productCreation;
 
 import lombok.Getter;
 import lombok.Setter;
