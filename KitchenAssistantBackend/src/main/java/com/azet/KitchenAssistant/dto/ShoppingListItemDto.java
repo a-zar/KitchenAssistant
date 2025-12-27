@@ -3,8 +3,12 @@ package com.azet.KitchenAssistant.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
-class ShoppingListItemDto {
+@Getter
+@Setter
+public class ShoppingListItemDto {
 
     @NotBlank
     @Min(value=0, message = "ilosc produktu nie moze być mniejsza niz 0")
@@ -16,5 +20,8 @@ class ShoppingListItemDto {
 
     @NotBlank(message = "nazwa produktu jest wymagana")
     private String productName;
+
+    @NotNull
+    private  Integer productId;
 }
 

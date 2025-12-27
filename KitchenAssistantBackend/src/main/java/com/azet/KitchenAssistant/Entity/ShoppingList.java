@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString(exclude = "shoppingListItems")
-class ShoppingList {
+public class ShoppingList {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
