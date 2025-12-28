@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-class ShoppingListService {
+public class ShoppingListService {
 
     @Autowired
     private ShoppingListRepository shoppingListRepository;
@@ -23,12 +23,11 @@ class ShoppingListService {
     private ProductRepository productRepository;
 
     /**
-     * tworzenie tylko nowego zbioru listy zakupów bez listy produktów
+     * tworzenie nowego zbioru listy zakupów bez listy produktów
      * @param newList nowy zbiór listy zakupów
      * @return id, listTitle
      */
     public ShoppingListResponse createShoppingList(ShoppingListDto newList){
-
         ShoppingList request = mapRequestShoppingListEntity(newList);
         ShoppingList savedList = shoppingListRepository.save(request);
         ShoppingListResponse response = new ShoppingListResponse();
