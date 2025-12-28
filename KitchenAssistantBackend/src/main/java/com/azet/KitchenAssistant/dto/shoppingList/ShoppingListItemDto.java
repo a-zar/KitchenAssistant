@@ -1,4 +1,4 @@
-package com.azet.KitchenAssistant.dto;
+package com.azet.KitchenAssistant.dto.shoppingList;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

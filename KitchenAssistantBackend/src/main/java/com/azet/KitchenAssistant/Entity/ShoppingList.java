@@ -1,6 +1,6 @@
 package com.azet.KitchenAssistant.Entity;
 
-import com.azet.KitchenAssistant.dto.RecurrencePattern;
+import com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;

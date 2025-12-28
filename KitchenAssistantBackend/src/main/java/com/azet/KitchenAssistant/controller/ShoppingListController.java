@@ -1,10 +1,8 @@
 package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
-import com.azet.KitchenAssistant.dto.ShoppingListDto;
-import com.azet.KitchenAssistant.dto.ShoppingListResponse;
-import com.azet.KitchenAssistant.dto.productCreation.ProductCreationRequest;
-import com.azet.KitchenAssistant.dto.productCreation.ProductCreationResponse;
+import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListDto;
+import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
 import com.azet.KitchenAssistant.service.ShoppingListService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
