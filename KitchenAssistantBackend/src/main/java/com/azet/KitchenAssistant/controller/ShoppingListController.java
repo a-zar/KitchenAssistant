@@ -31,6 +31,8 @@ class ShoppingListController {
         this.shoppingListService = shoppingListService;
     }
 
+    //TODO GetMapping
+
     @PostMapping(value = "/new")
     public ResponseEntity<ShoppingListResponse> saveList(@Valid @RequestBody ShoppingListDto req){
 
@@ -42,4 +44,14 @@ class ShoppingListController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PutMapping(value = "/edit/{id}")
+    public ResponseEntity<ShoppingListResponse> editList(@PathVariable int id, @Valid @RequestBody ShoppingListDto req){
+
+        // Delegacja logiki do Serwisu
+        ShoppingListResponse response = shoppingListService.editShoppingList(id, req);
+        logger.info("edited shopping list created: " + req.getListTitle() + ", id: " +  id );
+
+        //201 Created
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
 }

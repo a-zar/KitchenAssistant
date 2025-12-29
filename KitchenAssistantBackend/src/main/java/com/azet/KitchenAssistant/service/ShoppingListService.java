@@ -7,6 +7,7 @@ import com.azet.KitchenAssistant.dao.ShoppingListRepository;
 import com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListDto;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,17 @@ public class ShoppingListService {
      * @return id, listTitle, nextOccurrenceDate
      */
     public ShoppingListResponse createShoppingList(ShoppingListDto newList){
-        ShoppingList request = mapRequestShoppingListEntity(newList);
+        ShoppingList request = mapRequestShoppingListEntity(newList, null);
+        ShoppingList savedList = shoppingListRepository.save(request);
+
+        return getShoppingListResponse(savedList);
+    }
+
+    public ShoppingListResponse editShoppingList(int id, ShoppingListDto listToEdit){
+
+        ShoppingList oldList = shoppingListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("shopping list not found"));
+
+        ShoppingList request = mapRequestShoppingListEntity(listToEdit, oldList);
         ShoppingList savedList = shoppingListRepository.save(request);
 
         return getShoppingListResponse(savedList);
@@ -46,22 +57,28 @@ public class ShoppingListService {
 
     /**
      *
-     * @param newList mapuje z ShoppingListDto na encję ShoppingList
+     * @param listToMap mapuje z ShoppingListDto na encję ShoppingList
      * @return ujednolicone dane z dodanymi wartościami isRecurring i nextOccurrenceDate
      */
-    private ShoppingList mapRequestShoppingListEntity(ShoppingListDto newList) {
-        ShoppingList request = new ShoppingList();
-        request.setTitle(newList.getListTitle());
-        request.setRecurrencePattern(newList.getRecurrencePattern());
+    private ShoppingList mapRequestShoppingListEntity(ShoppingListDto listToMap, ShoppingList oldList) {
+        ShoppingList list;
 
-        RecurrencePattern recurrencePattern = request.getRecurrencePattern();
-        if(recurrencePattern != null) {
-            request.setIsRecurring(true);
-            setNextOccurrenceDateToShoppingList(recurrencePattern, request);
-        }else {
-            request.setIsRecurring(false);
+        if(oldList == null) {
+            list = new ShoppingList();
+        } else {
+            list = oldList;
         }
-        return request;
+        list.setTitle(listToMap.getListTitle());
+        list.setRecurrencePattern(listToMap.getRecurrencePattern());
+
+        RecurrencePattern recurrencePattern = list.getRecurrencePattern();
+        if (recurrencePattern != null) {
+            list.setIsRecurring(true);
+            setNextOccurrenceDateToShoppingList(recurrencePattern, list);
+        } else {
+            list.setIsRecurring(false);
+        }
+        return list;
     }
 
     private static void setNextOccurrenceDateToShoppingList(@NotNull final RecurrencePattern recurrencePattern, final ShoppingList request) {
