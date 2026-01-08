@@ -32,7 +32,6 @@ public class ShoppingListService {
     public ShoppingListResponse createShoppingList(ShoppingListDto newList){
         ShoppingList request = mapRequestShoppingListEntity(newList, null);
         ShoppingList savedList = shoppingListRepository.save(request);
-
         return getShoppingListResponse(savedList);
     }
 
@@ -42,7 +41,6 @@ public class ShoppingListService {
 
         ShoppingList request = mapRequestShoppingListEntity(listToEdit, oldList);
         ShoppingList savedList = shoppingListRepository.save(request);
-
         return getShoppingListResponse(savedList);
     }
 
@@ -74,6 +72,8 @@ public class ShoppingListService {
             setNextOccurrenceDateToShoppingList(startOccurrenceDate,recurrencePattern, list);
         } else {
             list.setIsRecurring(false);
+            list.setRecurrencePattern(null);
+            list.setNextOccurrenceDate(null);
         }
         return list;
     }
