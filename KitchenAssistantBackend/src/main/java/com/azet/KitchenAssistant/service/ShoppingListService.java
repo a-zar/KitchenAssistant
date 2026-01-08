@@ -8,7 +8,6 @@ import com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListDto;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -61,33 +60,37 @@ public class ShoppingListService {
      * @return ujednolicone dane z dodanymi wartościami isRecurring i nextOccurrenceDate
      */
     private ShoppingList mapRequestShoppingListEntity(ShoppingListDto listToMap, ShoppingList oldList) {
-        ShoppingList list;
+        ShoppingList list = oldList == null ? new ShoppingList() : oldList;
 
-        if(oldList == null) {
-            list = new ShoppingList();
-        } else {
-            list = oldList;
-        }
         list.setTitle(listToMap.getListTitle());
         list.setRecurrencePattern(listToMap.getRecurrencePattern());
 
         RecurrencePattern recurrencePattern = list.getRecurrencePattern();
+
+        LocalDate startOccurrenceDate = listToMap.getStartOccurrenceDate();
+
         if (recurrencePattern != null) {
             list.setIsRecurring(true);
-            setNextOccurrenceDateToShoppingList(recurrencePattern, list);
+            setNextOccurrenceDateToShoppingList(startOccurrenceDate,recurrencePattern, list);
         } else {
             list.setIsRecurring(false);
         }
         return list;
     }
 
-    private static void setNextOccurrenceDateToShoppingList(@NotNull final RecurrencePattern recurrencePattern, final ShoppingList request) {
+    private static void setNextOccurrenceDateToShoppingList(final LocalDate startOccurrenceDate, final RecurrencePattern recurrencePattern, final ShoppingList request) {
         switch (recurrencePattern) {
             case DAILY -> request.setNextOccurrenceDate(LocalDate.now().plusDays(1));
-            case MONTHLY -> request.setNextOccurrenceDate(LocalDate.now().plusMonths(1));
-            case WEEKLY -> request.setNextOccurrenceDate(LocalDate.now().plusWeeks(1));
-            case YEARLY -> request.setNextOccurrenceDate(LocalDate.now().plusYears(1));
+            case MONTHLY -> request.setNextOccurrenceDate(startOccurrenceDate.plusMonths(1));
+            case WEEKLY -> request.setNextOccurrenceDate(startOccurrenceDate.plusWeeks(1));
+            case YEARLY -> request.setNextOccurrenceDate(startOccurrenceDate.plusYears(1));
         }
+    }
+
+    public ShoppingListResponse deleteShoppingList(final int id) {
+        ShoppingList list = shoppingListRepository.findById(id).orElseThrow(() -> new
+        EntityNotFoundException("shopping list not found"));
+        return getShoppingListResponse(list);
     }
 
 //    private Set<ShoppingListItem> getShoppingListItems(final ShoppingListDto newList) {
