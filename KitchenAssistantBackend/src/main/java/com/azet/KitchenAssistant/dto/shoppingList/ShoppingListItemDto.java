@@ -9,19 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ShoppingListItemDto {
-
-    @NotBlank
-    @Min(value=0, message = "ilosc produktu nie moze być mniejsza niz 0")
-    private int quantity;
-
-    @NotBlank
-    private Boolean isPurchased;
-    private String note;
-
-    @NotBlank(message = "nazwa produktu jest wymagana")
-    private String productName;
-
     @NotNull
     private  Integer productId;
+
+    @NotNull
+    private  Integer listId;
+
+    @Min(value=0, message = "ilość produktu nie może być mniejsza niz 0")
+    private int quantity;
+
+    private Boolean isPurchased;
+    private String note;
 }
 

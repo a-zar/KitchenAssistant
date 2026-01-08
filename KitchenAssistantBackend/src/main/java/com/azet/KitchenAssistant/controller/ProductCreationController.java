@@ -20,6 +20,7 @@ public class ProductCreationController {
 
     @Autowired
     private final ProductCreationService productCreationService;
+    @Autowired
     private final ProductRepository productRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductCreationResponse.class);

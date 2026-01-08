@@ -1,9 +1,14 @@
 package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.ShoppingList;
+import com.azet.KitchenAssistant.Entity.ShoppingListItem;
+import com.azet.KitchenAssistant.dao.ShoppingListItemRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListDto;
+import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemDto;
+import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemResponse;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
+import com.azet.KitchenAssistant.service.ShoppingListItemService;
 import com.azet.KitchenAssistant.service.ShoppingListService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -28,17 +33,51 @@ class ShoppingListController {
     @Autowired
     private final ShoppingListService shoppingListService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ShoppingListService.class);
-    ShoppingListResponse response = null;
+    @Autowired
+    private final ShoppingListItemRepository shoppingListItemRepository;
 
-    ShoppingListController(ShoppingListRepository shoppingListRepository, ShoppingListService shoppingListService) {
+    @Autowired
+    private final ShoppingListItemService shoppingListItemService;
+
+
+    private static final Logger listLogger = LoggerFactory.getLogger(ShoppingListService.class);
+
+    private static final Logger itemLogger = LoggerFactory.getLogger(ShoppingListItemService.class);
+
+
+    ShoppingListResponse listResponse = null;
+    ShoppingListItemResponse itemResponse = null;
+
+    ShoppingListController(ShoppingListRepository shoppingListRepository, ShoppingListService shoppingListService, ShoppingListItemRepository shoppingListItemRepository, ShoppingListItemService shoppingListItemService) {
         this.shoppingListRepository = shoppingListRepository;
         this.shoppingListService = shoppingListService;
+        this.shoppingListItemRepository = shoppingListItemRepository;
+        this.shoppingListItemService = shoppingListItemService;
     }
 
+//item ---->
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/{id}/items")
+    ResponseEntity<List<ShoppingListItem>> readAllListItems(@PathVariable int id){
+        itemLogger.info("all list items");
+        return ResponseEntity.ok(shoppingListItemRepository.findByShoppingListId(id));
+    }
+
+    @PostMapping(value = "/items/new")
+    public ResponseEntity<ShoppingListItemResponse> saveList(@Valid @RequestBody ShoppingListItemDto req){
+
+        // Delegacja logiki do Serwisu
+        ShoppingListItemResponse response = shoppingListItemService.createListItem(req);
+        itemLogger.info("new list item added id: " + req.getProductId()+ " to list id: " + req.getListId());
+
+        //201 Created
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+
+    //list ---->
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<ShoppingList>> readAllProducts(){
-        logger.info("all shopping lists");
+    ResponseEntity<List<ShoppingList>> readAllShoppingLists(){
+        listLogger.info("all shopping lists");
         return ResponseEntity.ok(shoppingListRepository.findAll());
     }
 
@@ -47,7 +86,7 @@ class ShoppingListController {
 
         // Delegacja logiki do Serwisu
         ShoppingListResponse response = shoppingListService.createShoppingList(req);
-        logger.info("new shopping list created: " + req.getListTitle());
+        listLogger.info("new shopping list created: " + req.getListTitle());
 
         //201 Created
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -58,7 +97,7 @@ class ShoppingListController {
 
         // Delegacja logiki do Serwisu
         ShoppingListResponse response = shoppingListService.editShoppingList(id, req);
-        logger.info("edited shopping list created: " + req.getListTitle() + ", id: " +  id );
+        listLogger.info("edited shopping list created: " + req.getListTitle() + ", id: " +  id );
 
         //201 Created
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -68,11 +107,11 @@ class ShoppingListController {
     public ResponseEntity<ShoppingListResponse> deleteList(@PathVariable int id){
 
         // Delegacja logiki do Serwisu
-        logger.info("all shopping lists");
+        listLogger.info("all shopping lists");
         ShoppingList list = shoppingListRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("shopping list not found"));
 
         shoppingListRepository.deleteById(id);
-        logger.info("deleted shopping list: " + list.getTitle() + ", id: " +  id );
+        listLogger.info("deleted shopping list: " + list.getTitle() + ", id: " +  id );
 
         ShoppingListResponse response = shoppingListService.deleteShoppingList(id);
         //201 Created

@@ -1,5 +1,6 @@
 package com.azet.KitchenAssistant.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,9 +22,11 @@ public class ShoppingListItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "product_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name= "list_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ShoppingList shoppingList;
 }
