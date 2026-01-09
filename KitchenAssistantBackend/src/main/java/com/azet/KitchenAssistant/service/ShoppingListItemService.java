@@ -1,11 +1,13 @@
 package com.azet.KitchenAssistant.service;
 
+import com.azet.KitchenAssistant.Entity.ShoppingList;
 import com.azet.KitchenAssistant.Entity.ShoppingListItem;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListItemRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemDto;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemResponse;
+import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,21 @@ public class ShoppingListItemService {
         response.setId(request.getId());
         response.setShoppingListName(request.getShoppingList().getTitle());
         response.setProductName(request.getProduct().getName());
+        return response;
+    }
+
+    public ShoppingListItemResponse deleteShoppingListItem(final int id) {
+        ShoppingListItem item = shoppingListItemRepository.findById(id).orElseThrow(() -> new
+                EntityNotFoundException("item not found id: "+id));
+        shoppingListItemRepository.deleteById(id);
+        return getShoppingListItemResponse(item);
+    }
+
+    private static ShoppingListItemResponse getShoppingListItemResponse(final ShoppingListItem savedItem) {
+        ShoppingListItemResponse response = new ShoppingListItemResponse();
+        response.setId(savedItem.getId());
+        response.setProductName(savedItem.getProduct().getName());
+        response.setShoppingListName(savedItem.getShoppingList().getTitle());
         return response;
     }
 }

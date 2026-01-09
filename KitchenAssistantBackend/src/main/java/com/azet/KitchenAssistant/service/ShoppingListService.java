@@ -90,6 +90,7 @@ public class ShoppingListService {
     public ShoppingListResponse deleteShoppingList(final int id) {
         ShoppingList list = shoppingListRepository.findById(id).orElseThrow(() -> new
         EntityNotFoundException("shopping list not found"));
+        shoppingListRepository.deleteById(id);
         return getShoppingListResponse(list);
     }
 
