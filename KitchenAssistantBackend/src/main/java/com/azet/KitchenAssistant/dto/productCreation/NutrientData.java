@@ -1,4 +1,4 @@
-package com.azet.KitchenAssistant.dto;
+package com.azet.KitchenAssistant.dto.productCreation;
 
 import com.azet.KitchenAssistant.Entity.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;

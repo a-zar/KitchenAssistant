@@ -43,7 +43,6 @@
 //
 //        logger.info("custom pageable for products in selected category");
 //
-//        //TODO info when id not exist
 //
 //        return ResponseEntity.ok(productRepository.findByCategoryId(id, page).getContent());
 //        //http://localhost:8080/api/products?categoryId=5&page=0&size=10
@@ -53,7 +52,6 @@
 //    ResponseEntity<List<Product>> readProductsByName(@RequestParam("search") String textToSearch, Pageable page){
 //
 //        logger.info("searching by name of product");
-//        //TODO info when text is not present anywhere
 //
 //        return ResponseEntity.ok(productRepository.findByNameContaining(textToSearch, page).getContent());
 //        //http://localhost:8080/api/products?search=ml&page=0&size=10
@@ -96,5 +94,4 @@
 //        return ResponseEntity.noContent().build();
 //    }
 //
-//    //#TODO delete selected products
 //}

@@ -2,8 +2,8 @@ package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.Product;
 import com.azet.KitchenAssistant.dao.ProductRepository;
-import com.azet.KitchenAssistant.dto.ProductCreationRequest;
-import com.azet.KitchenAssistant.dto.ProductCreationResponse;
+import com.azet.KitchenAssistant.dto.productCreation.ProductCreationRequest;
+import com.azet.KitchenAssistant.dto.productCreation.ProductCreationResponse;
 import com.azet.KitchenAssistant.service.ProductCreationService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -20,6 +20,7 @@ public class ProductCreationController {
 
     @Autowired
     private final ProductCreationService productCreationService;
+    @Autowired
     private final ProductRepository productRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductCreationResponse.class);
