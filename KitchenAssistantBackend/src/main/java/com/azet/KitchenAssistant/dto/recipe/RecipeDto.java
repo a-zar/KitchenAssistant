@@ -13,6 +13,5 @@ public class RecipeDto {
     @NotBlank(message = "Tytuł przepisu jest wymagany.")
     private String title;
     private String instruction;
-    @NotNull
     private LocalDate created_at;
 }
