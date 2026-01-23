@@ -108,21 +108,15 @@ class RecipeController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-//    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-//    ResponseEntity<List<Recipe>> readAllRecipes(){
-//        recipeLogger.info("read all recipes");
-//        return ResponseEntity.ok(recipeRepository.findAll());
-//    }
-//
-//    @PostMapping(value = "/new")
-//    public ResponseEntity<RecipeResponse> saveRecipe(@Valid @RequestBody RecipeDto req){
-//        // Delegacja logiki do Serwisu
-//        RecipeResponse response = recipeService.createRecipe(req);
-//        recipeLogger.info("new recipe created: " + req.getTitle());
-//        //201 Created
-//        return new ResponseEntity<>(response, HttpStatus.CREATED);
-//    }
+    @DeleteMapping(value = "/delete/recipeItemId/{recipeItemId}")
+    public ResponseEntity<RecipeItem>deleteRecipeItem(@PathVariable int recipeItemId){
+        if(recipeItemRepository.findById(recipeItemId).isPresent()){
+            recipeItemRepository.deleteById(recipeItemId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 
-
+    //todo add badRequest and logger.info
 
 }
