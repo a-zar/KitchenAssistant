@@ -32,4 +32,20 @@ public class RecipeService {
         return response;
     }
 
+    public RecipeResponse editRecipe(int id, RecipeDto recipeToEdit){
+
+        //verify if recipe exist in db
+        Recipe oldRecipe = recipeRepository.findById(id).orElseThrow(()-> new RuntimeException("recipe not found id: "+ id));
+
+
+        RecipeResponse response = new RecipeResponse();
+        return response;
+    }
+
+    public RecipeResponse deleteRecipe(int id){
+
+        RecipeResponse response = new RecipeResponse();
+        return response;
+    }
+
 }
