@@ -19,32 +19,40 @@ public class RecipeService {
 
 
     public RecipeResponse createRecipe(RecipeDto newRecipe){
-        RecipeResponse response = new RecipeResponse();
-
-        Recipe recipe = new Recipe();
-
-        recipe.setTitle(newRecipe.getTitle());
-        recipe.setInstruction(newRecipe.getInstruction());
-        recipeRepository.save(recipe);
-
-        response.setId(recipe.getId());
-        response.setRecipeTitle(recipe.getTitle());
-        return response;
+        Recipe request = new Recipe();
+        Recipe requestToSave= mapRecipeDtoToEntity(newRecipe, request);
+        recipeRepository.save(requestToSave);
+        return getRecipeResponse(request);
     }
 
     public RecipeResponse editRecipe(int id, RecipeDto recipeToEdit){
-
         //verify if recipe exist in db
-        Recipe oldRecipe = recipeRepository.findById(id).orElseThrow(()-> new RuntimeException("recipe not found id: "+ id));
-
-
-        RecipeResponse response = new RecipeResponse();
-        return response;
+        Recipe request = getRequestOrElseThrow(id);
+        Recipe requestToSave = mapRecipeDtoToEntity(recipeToEdit, request);
+        recipeRepository.save(requestToSave);
+        return getRecipeResponse(request);
     }
 
     public RecipeResponse deleteRecipe(int id){
+        Recipe request = getRequestOrElseThrow(id);
+        recipeRepository.deleteById(id);
+        return getRecipeResponse(request);
+    }
 
+    private Recipe getRequestOrElseThrow(final int id) {
+        return recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("recipe not found id: " + id));
+    }
+
+    private static Recipe mapRecipeDtoToEntity(final RecipeDto newRecipe, final Recipe request) {
+        request.setTitle(newRecipe.getTitle());
+        request.setInstruction(newRecipe.getInstruction());
+        return request;
+    }
+
+    private static RecipeResponse getRecipeResponse(final Recipe request) {
         RecipeResponse response = new RecipeResponse();
+        response.setRecipeTitle(request.getTitle());
+        response.setId(response.getId());
         return response;
     }
 
