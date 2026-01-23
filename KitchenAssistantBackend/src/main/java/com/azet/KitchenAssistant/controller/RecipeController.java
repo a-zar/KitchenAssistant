@@ -1,8 +1,11 @@
 package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.Recipe;
+import com.azet.KitchenAssistant.Entity.RecipeItem;
+import com.azet.KitchenAssistant.dao.RecipeItemRepository;
 import com.azet.KitchenAssistant.dao.RecipeRepository;
 import com.azet.KitchenAssistant.dto.recipe.RecipeDto;
+import com.azet.KitchenAssistant.dto.recipe.RecipeItemDto;
 import com.azet.KitchenAssistant.dto.recipe.RecipeResponse;
 import com.azet.KitchenAssistant.service.RecipeService;
 import jakarta.validation.Valid;
@@ -27,22 +30,26 @@ class RecipeController {
     @Autowired
     private final RecipeRepository recipeRepository;
 
+    @Autowired
+    private final RecipeItemRepository recipeItemRepository;
+
     private static final Logger recipeLogger = LoggerFactory.getLogger(RecipeService.class);
 
-    RecipeController(RecipeService recipeService, RecipeRepository recipeRepository) {
+    RecipeController(RecipeService recipeService, RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository) {
         this.recipeService = recipeService;
         this.recipeRepository = recipeRepository;
+        this.recipeItemRepository = recipeItemRepository;
     }
 
     RecipeResponse recipeResponse = null;
 
+    //recipe --->
+
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<Recipe>> readAllRecipes(){
+    public ResponseEntity<List<Recipe>> readAllRecipes(){
         recipeLogger.info("read all recipes");
         return ResponseEntity.ok(recipeRepository.findAll());
     }
-
-    //recipe --->
 
     @PostMapping(value = "/new")
     public ResponseEntity<RecipeResponse> saveRecipe(@Valid @RequestBody RecipeDto req){
@@ -87,5 +94,35 @@ class RecipeController {
         }
         return result;
     }
+
+    // recipeItem data --->
+    @GetMapping(value = "/recipeId/{recipeId}/recipeItems")
+    public ResponseEntity<List<RecipeItem>> readAllItemsForRecipe(@PathVariable int recipeId){
+        return ResponseEntity.ok(recipeItemRepository.findByRecipeId(recipeId));
+    }
+
+    @PostMapping(value = "/recipeItem/new")
+    public ResponseEntity<RecipeItem> saveRecipeItem(@Valid @RequestBody RecipeItemDto req){
+        recipeService.createRecipeItem(req);
+        recipeLogger.info("added new recipe item, productId: " + req.getProductId() + " recipeId: "+ req.getRecipeId());
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+//    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+//    ResponseEntity<List<Recipe>> readAllRecipes(){
+//        recipeLogger.info("read all recipes");
+//        return ResponseEntity.ok(recipeRepository.findAll());
+//    }
+//
+//    @PostMapping(value = "/new")
+//    public ResponseEntity<RecipeResponse> saveRecipe(@Valid @RequestBody RecipeDto req){
+//        // Delegacja logiki do Serwisu
+//        RecipeResponse response = recipeService.createRecipe(req);
+//        recipeLogger.info("new recipe created: " + req.getTitle());
+//        //201 Created
+//        return new ResponseEntity<>(response, HttpStatus.CREATED);
+//    }
+
+
 
 }

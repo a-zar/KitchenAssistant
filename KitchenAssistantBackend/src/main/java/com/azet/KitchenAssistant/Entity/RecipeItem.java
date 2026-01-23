@@ -1,6 +1,7 @@
 package com.azet.KitchenAssistant.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,9 @@ public class RecipeItem {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
+	@JsonIgnore
 	private Product product;
 
 	@Column(name = "weight_grams")
-	private int weightGrams;
+	private double weightGrams;
 }

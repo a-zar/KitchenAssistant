@@ -133,4 +133,5 @@ class ShoppingListController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    //TODO add HttpStatus.BAD_REQUEST
 }

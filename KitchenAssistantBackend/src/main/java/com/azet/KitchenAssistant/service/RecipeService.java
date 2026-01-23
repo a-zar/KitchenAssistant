@@ -1,10 +1,14 @@
 package com.azet.KitchenAssistant.service;
 
 import com.azet.KitchenAssistant.Entity.Recipe;
+import com.azet.KitchenAssistant.Entity.RecipeItem;
+import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dao.RecipeItemRepository;
 import com.azet.KitchenAssistant.dao.RecipeRepository;
 import com.azet.KitchenAssistant.dto.recipe.RecipeDto;
+import com.azet.KitchenAssistant.dto.recipe.RecipeItemDto;
 import com.azet.KitchenAssistant.dto.recipe.RecipeResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +21,11 @@ public class RecipeService {
     @Autowired
     private RecipeItemRepository recipeItemRepository;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+
+    //recipe data --->
 
     public RecipeResponse createRecipe(RecipeDto newRecipe){
         Recipe request = new Recipe();
@@ -55,5 +64,26 @@ public class RecipeService {
         response.setId(request.getId());
         return response;
     }
+
+    //recipeItem data --->
+
+    public void createRecipeItem(RecipeItemDto newRecipeItem){
+        RecipeItem request = new RecipeItem();
+        RecipeItem requestToSave= mapRecipeItemDtoToEntity(newRecipeItem, request);
+        recipeItemRepository.save(requestToSave);
+    }
+
+    private RecipeItem mapRecipeItemDtoToEntity(final RecipeItemDto newRecipeItem, final RecipeItem request) {
+
+        int productId = newRecipeItem.getProductId();
+        int recipeId = newRecipeItem.getRecipeId();
+
+        request.setProduct(productRepository.findById(productId).orElseThrow(()-> new EntityNotFoundException("product not found with id: "+ productId)));
+        request.setWeightGrams(newRecipeItem.getWeight_grams());
+        request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new EntityNotFoundException("recipe not found with id: "+ recipeId)));
+
+        return request;
+    }
+
 
 }
