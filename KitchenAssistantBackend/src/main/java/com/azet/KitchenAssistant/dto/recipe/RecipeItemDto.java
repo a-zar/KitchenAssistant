@@ -1,7 +1,5 @@
 package com.azet.KitchenAssistant.dto.recipe;
 
-import com.azet.KitchenAssistant.Entity.Recipe;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,11 +9,13 @@ import lombok.Setter;
 @Setter
 public class RecipeItemDto {
 
+    private Integer id;
+
     @NotNull(message = "recipeId jest wymagany")
     private Integer recipeId;
 
     @Min(value=0, message = "waga produktu nie może być mniejsza niz 0g")
-    double weight_grams;
+    double weightGrams;
 
     @NotNull(message = "productId jest wymagany")
     private  Integer productId;

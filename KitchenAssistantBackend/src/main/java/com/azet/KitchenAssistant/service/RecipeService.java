@@ -82,7 +82,7 @@ public class RecipeService {
 
     public void deleteRecipeItem(int id){
         RecipeItem request = getRecipeItemOrElseThrow(id);
-        recipeRepository.deleteById(id);
+        recipeItemRepository.deleteById(id);
     }
 
     private RecipeItem getRecipeItemOrElseThrow(final int id) {
@@ -94,7 +94,7 @@ public class RecipeService {
         int recipeId = newRecipeItem.getRecipeId();
 
         request.setProduct(productRepository.findById(productId).orElseThrow(()-> new EntityNotFoundException("product not found with id: "+ productId)));
-        request.setWeightGrams(newRecipeItem.getWeight_grams());
+        request.setWeightGrams(newRecipeItem.getWeightGrams());
         request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new EntityNotFoundException("recipe not found with id: "+ recipeId)));
         return request;
     }

@@ -42,6 +42,7 @@ class RecipeController {
     }
 
     RecipeResponse recipeResponse = null;
+    String responseMessage ="";
 
     //recipe --->
 
@@ -97,9 +98,19 @@ class RecipeController {
 
     // recipeItem data --->
     @GetMapping(value = "/recipeId/{recipeId}/recipeItems")
-    public ResponseEntity<List<RecipeItem>> readAllItemsForRecipe(@PathVariable int recipeId){
+    public ResponseEntity<List<RecipeItemDto>> readAllItemsForRecipe(@PathVariable int recipeId){
         recipeLogger.info("read all items for selected recipes");
-        return ResponseEntity.ok(recipeItemRepository.findByRecipeId(recipeId));
+        List<RecipeItem> recipeItems = recipeItemRepository.findByRecipeId(recipeId);
+
+        List<RecipeItemDto> recipeItemDtos = recipeItems.stream().map(item ->{
+            RecipeItemDto itemDto = new RecipeItemDto();
+            itemDto.setId(item.getId());
+            itemDto.setRecipeId(item.getRecipe().getId());
+            itemDto.setProductId(item.getProduct().getId());
+            itemDto.setWeightGrams(item.getWeightGrams());
+            return itemDto;
+        }).toList();
+        return ResponseEntity.ok(recipeItemDtos);
     }
 
     @PostMapping(value = "/recipeItem/new")
@@ -112,24 +123,24 @@ class RecipeController {
     @DeleteMapping(value = "/delete/recipeItemId/{recipeItemId}")
     public ResponseEntity<String>deleteRecipeItem(@PathVariable int recipeItemId){
         recipeLogger.info("preparing recipe item to delete recipeItem id: " + recipeItemId);
-        String message ="";
-        if(recipeItemRepository.findById(recipeItemId).isPresent()){
+        if(verifyIfExistRecipeItem(recipeItemId)){
             recipeService.deleteRecipeItem(recipeItemId);
             recipeLogger.info("deleted recipe item id: " + recipeItemId);
-            message= "deleted recipe item id: " + recipeItemId;
-            return new ResponseEntity<>(message,HttpStatus.OK);
+            responseMessage= "deleted recipe item id: " + recipeItemId;
+            return new ResponseEntity<>(responseMessage,HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping(value = "/edit/recipeItemId/{recipeItemId}")
-    public ResponseEntity<RecipeResponse> editRecipeItem(@PathVariable int recipeItemId, @Valid @RequestBody RecipeItemDto req){
+    public ResponseEntity<String> editRecipeItem(@PathVariable int recipeItemId, @Valid @RequestBody RecipeItemDto req){
         recipeLogger.info("preparing recipe item to edit id: "+ recipeItemId);
         if(verifyIfExistRecipeItem(recipeItemId)){
             recipeService.editRecipeItem(recipeItemId, req);
             recipeLogger.info("edited recipe item id: "+ recipeItemId);
+            responseMessage = "edited recipe item id: "+ recipeItemId + " with product id: "+req.getProductId();
             //201
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(responseMessage,HttpStatus.OK);
         }
         //400
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
