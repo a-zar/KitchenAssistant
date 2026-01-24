@@ -36,19 +36,19 @@ public class RecipeService {
 
     public RecipeResponse editRecipe(int id, RecipeDto recipeToEdit){
         //verify if recipe exist in db
-        Recipe request = getRequestOrElseThrow(id);
+        Recipe request = getRecipeOrElseThrow(id);
         Recipe requestToSave = mapRecipeDtoToEntity(recipeToEdit, request);
         recipeRepository.save(requestToSave);
         return getRecipeResponse(requestToSave);
     }
 
     public RecipeResponse deleteRecipe(int id){
-        Recipe request = getRequestOrElseThrow(id);
+        Recipe request = getRecipeOrElseThrow(id);
         recipeRepository.deleteById(id);
         return getRecipeResponse(request);
     }
 
-    private Recipe getRequestOrElseThrow(final int id) {
+    private Recipe getRecipeOrElseThrow(final int id) {
         return recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("recipe not found id: " + id));
     }
 
@@ -73,6 +73,21 @@ public class RecipeService {
         recipeItemRepository.save(requestToSave);
     }
 
+    public void editRecipeItem(int id, RecipeItemDto recipeItemToEdit){
+        //verify if recipe exist in db
+        RecipeItem request = getRecipeItemOrElseThrow(id);
+        RecipeItem requestToSave = mapRecipeItemDtoToEntity(recipeItemToEdit, request);
+        recipeItemRepository.save(requestToSave);
+    }
+
+    public void deleteRecipeItem(int id){
+        RecipeItem request = getRecipeItemOrElseThrow(id);
+        recipeRepository.deleteById(id);
+    }
+
+    private RecipeItem getRecipeItemOrElseThrow(final int id) {
+        return recipeItemRepository.findById(id).orElseThrow(() -> new RuntimeException("recipe item not found id: " + id));
+    }
     private RecipeItem mapRecipeItemDtoToEntity(final RecipeItemDto newRecipeItem, final RecipeItem request) {
 
         int productId = newRecipeItem.getProductId();
@@ -81,9 +96,7 @@ public class RecipeService {
         request.setProduct(productRepository.findById(productId).orElseThrow(()-> new EntityNotFoundException("product not found with id: "+ productId)));
         request.setWeightGrams(newRecipeItem.getWeight_grams());
         request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new EntityNotFoundException("recipe not found with id: "+ recipeId)));
-
         return request;
     }
-
 
 }
