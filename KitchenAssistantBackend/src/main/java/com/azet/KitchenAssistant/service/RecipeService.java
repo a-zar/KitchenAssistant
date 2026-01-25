@@ -2,6 +2,7 @@ package com.azet.KitchenAssistant.service;
 
 import com.azet.KitchenAssistant.Entity.Recipe;
 import com.azet.KitchenAssistant.Entity.RecipeItem;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dao.RecipeItemRepository;
 import com.azet.KitchenAssistant.dao.RecipeRepository;
@@ -36,20 +37,16 @@ public class RecipeService {
 
     public RecipeResponse editRecipe(int id, RecipeDto recipeToEdit){
         //verify if recipe exist in db
-        Recipe request = getRecipeOrElseThrow(id);
+        Recipe request = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe not found id: " + id));
         Recipe requestToSave = mapRecipeDtoToEntity(recipeToEdit, request);
         recipeRepository.save(requestToSave);
         return getRecipeResponse(requestToSave);
     }
 
     public RecipeResponse deleteRecipe(int id){
-        Recipe request = getRecipeOrElseThrow(id);
+        Recipe request = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe not found id: " + id));
         recipeRepository.deleteById(id);
         return getRecipeResponse(request);
-    }
-
-    private Recipe getRecipeOrElseThrow(final int id) {
-        return recipeRepository.findById(id).orElseThrow(() -> new RuntimeException("recipe not found id: " + id));
     }
 
     private static Recipe mapRecipeDtoToEntity(final RecipeDto newRecipe, final Recipe request) {
@@ -75,28 +72,25 @@ public class RecipeService {
 
     public void editRecipeItem(int id, RecipeItemDto recipeItemToEdit){
         //verify if recipe exist in db
-        RecipeItem request = getRecipeItemOrElseThrow(id);
+        RecipeItem request = recipeItemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe item not found with id:"+ id));
         RecipeItem requestToSave = mapRecipeItemDtoToEntity(recipeItemToEdit, request);
         recipeItemRepository.save(requestToSave);
     }
 
     public void deleteRecipeItem(int id){
-        RecipeItem request = getRecipeItemOrElseThrow(id);
+//        RecipeItem request = getRecipeItemOrElseThrow(id);
+        recipeItemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe item not found with id:"+ id));
         recipeItemRepository.deleteById(id);
     }
 
-    private RecipeItem getRecipeItemOrElseThrow(final int id) {
-        return recipeItemRepository.findById(id).orElseThrow(() -> new RuntimeException("recipe item not found id: " + id));
-    }
     private RecipeItem mapRecipeItemDtoToEntity(final RecipeItemDto newRecipeItem, final RecipeItem request) {
 
         int productId = newRecipeItem.getProductId();
         int recipeId = newRecipeItem.getRecipeId();
 
-        request.setProduct(productRepository.findById(productId).orElseThrow(()-> new EntityNotFoundException("product not found with id: "+ productId)));
+        request.setProduct(productRepository.findById(productId).orElseThrow(()-> new ResourceNotFoundException("Product not found with id: "+ productId)));
         request.setWeightGrams(newRecipeItem.getWeightGrams());
-        request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new EntityNotFoundException("recipe not found with id: "+ recipeId)));
+        request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new ResourceNotFoundException("recipe not found with id: "+ recipeId)));
         return request;
     }
-
 }
