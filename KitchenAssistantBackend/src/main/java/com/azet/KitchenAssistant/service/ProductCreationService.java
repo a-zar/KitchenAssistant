@@ -3,6 +3,7 @@ package com.azet.KitchenAssistant.service;
 import com.azet.KitchenAssistant.Entity.Category;
 import com.azet.KitchenAssistant.Entity.Nutrient;
 import com.azet.KitchenAssistant.Entity.Product;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.CategoryRepository;
 import com.azet.KitchenAssistant.dao.NutrientsRepository;
 import com.azet.KitchenAssistant.dao.ProductRepository;
@@ -102,14 +103,10 @@ public class ProductCreationService {
 
     private Category getCategory(final ProductCreationRequest request) {
         return categoryRepository.findByName(request.getCategoryName())
-                .orElseThrow(() -> new EntityNotFoundException("Kategoria nie znaleziona: " + request.getCategoryName()));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + request.getCategoryName()));
     }
 
-
     private Nutrient mapNutrientDataToEntity(NutrientData data){
-
-        //#TODO sprawdz czy istnieje a jak nie to utwórz
-
         Nutrient nutrient = new Nutrient();
         nutrient.setEnergy(data.getEnergy());
         nutrient.setCarbohydrate(data.getCarbohydrate());

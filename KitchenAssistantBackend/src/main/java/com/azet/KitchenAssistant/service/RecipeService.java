@@ -13,6 +13,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RecipeService {
 
@@ -92,5 +94,20 @@ public class RecipeService {
         request.setWeightGrams(newRecipeItem.getWeightGrams());
         request.setRecipe(recipeRepository.findById(recipeId).orElseThrow(()-> new ResourceNotFoundException("recipe not found with id: "+ recipeId)));
         return request;
+    }
+
+    private RecipeItemDto mapToRecipeItemDto(RecipeItem item){
+        RecipeItemDto dto = new RecipeItemDto();
+        dto.setId(item.getId());
+        dto.setRecipeId(item.getRecipe().getId());
+        dto.setProductId(item.getProduct().getId());
+        dto.setWeightGrams(item.getWeightGrams());
+        return dto;
+    }
+
+    public List<RecipeItemDto> findByRecipeId (int id) {
+        return recipeItemRepository.findByRecipeId(id)
+                .stream()
+                .map(this::mapToRecipeItemDto).toList();
     }
 }

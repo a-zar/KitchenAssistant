@@ -64,53 +64,27 @@ class RecipeController {
     @PutMapping(value = "/edit/recipeId/{recipeId}")
     public ResponseEntity<RecipeResponse> editRecipe(@PathVariable int recipeId, @Valid @RequestBody RecipeDto req){
         recipeLogger.info("Attempting to edit recipe id: {}", recipeId);
-
-        if(verifyIfExistRecipe(recipeId)){
             RecipeResponse response = recipeService.editRecipe(recipeId, req);
             recipeLogger.info("Edited recipe id: "+ recipeId + ", titled: "+ req.getTitle());
             //201
             return new ResponseEntity<>(response,HttpStatus.OK);
-        }
-        //400
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/delete/recipeId/{recipeId}")
-    public ResponseEntity<RecipeResponse> deleteRecipe(@PathVariable int recipeId){
+    public ResponseEntity<Void> deleteRecipe(@PathVariable int recipeId) {
         recipeLogger.info("Attempting to delete recipe id: {}", recipeId);
-        if (verifyIfExistRecipe(recipeId)) {
-            RecipeResponse response = recipeService.deleteRecipe(recipeId);
-            recipeLogger.info("Deleted recipe id: {}", recipeId);
-            //201
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        //400
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    private Boolean verifyIfExistRecipe(final int recipeId) {
-        boolean result = recipeRepository.findById(recipeId).isPresent();
-        if(!result){
-            recipeLogger.info("Recipe not exist with id: {}", recipeId);
-        }
-        return result;
+        RecipeResponse response = recipeService.deleteRecipe(recipeId);
+        recipeLogger.info("Deleted recipe id: {}", recipeId);
+        //201
+        return ResponseEntity.noContent().build();
     }
 
     // recipeItem data --->
     @GetMapping(value = "/recipeId/{recipeId}/recipeItems")
     public ResponseEntity<List<RecipeItemDto>> readAllItemsForRecipe(@PathVariable int recipeId){
         recipeLogger.info("Read all items for selected recipes");
-        List<RecipeItem> recipeItems = recipeItemRepository.findByRecipeId(recipeId);
-
-        List<RecipeItemDto> recipeItemDtos = recipeItems.stream().map(item ->{
-            RecipeItemDto itemDto = new RecipeItemDto();
-            itemDto.setId(item.getId());
-            itemDto.setRecipeId(item.getRecipe().getId());
-            itemDto.setProductId(item.getProduct().getId());
-            itemDto.setWeightGrams(item.getWeightGrams());
-            return itemDto;
-        }).toList();
-        return ResponseEntity.ok(recipeItemDtos);
+        List<RecipeItemDto> recipeItemsDtos = recipeService.findByRecipeId(recipeId);
+        return ResponseEntity.ok(recipeItemsDtos);
     }
 
     @PostMapping(value = "/recipeItem/new")
@@ -121,11 +95,11 @@ class RecipeController {
     }
 
     @DeleteMapping(value = "/delete/recipeItemId/{recipeItemId}")
-    public ResponseEntity<String>deleteRecipeItem(@PathVariable int recipeItemId){
+    public ResponseEntity<Void>deleteRecipeItem(@PathVariable int recipeItemId){
         recipeLogger.info("Attempting to delete recipeItem id: {}", recipeItemId);
             recipeService.deleteRecipeItem(recipeItemId);
             recipeLogger.info("Deleted recipe item id: {}", recipeItemId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build(); //code 204
     }
 
     @PutMapping(value = "/edit/recipeItemId/{recipeItemId}")
