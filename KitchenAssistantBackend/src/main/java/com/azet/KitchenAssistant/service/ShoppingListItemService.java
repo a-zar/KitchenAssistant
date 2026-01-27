@@ -2,6 +2,7 @@ package com.azet.KitchenAssistant.service;
 
 import com.azet.KitchenAssistant.Entity.ShoppingList;
 import com.azet.KitchenAssistant.Entity.ShoppingListItem;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListItemRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
@@ -29,8 +30,8 @@ public class ShoppingListItemService {
         ShoppingListItem request = new ShoppingListItem();
         request.setQuantity(newListItem.getQuantity());
         request.setIsPurchased(newListItem.getIsPurchased());
-        request.setProduct(productRepository.findById(newListItem.getProductId()).orElseThrow(() -> new EntityNotFoundException("product not found with id: "+ newListItem.getProductId())));
-        request.setShoppingList(shoppingListRepository.findById(newListItem.getListId()).orElseThrow(()-> new EntityNotFoundException("shopping list not found")));
+        request.setProduct(productRepository.findById(newListItem.getProductId()).orElseThrow(() -> new ResourceNotFoundException("product not found with id: "+ newListItem.getProductId())));
+        request.setShoppingList(shoppingListRepository.findById(newListItem.getListId()).orElseThrow(()-> new ResourceNotFoundException("shopping list not found")));
 
         shoppingListItemRepository.save(request);
 
@@ -41,8 +42,8 @@ public class ShoppingListItemService {
     }
 
     public ShoppingListItemResponse deleteShoppingListItem(final int id) {
-        ShoppingListItem item = shoppingListItemRepository.findById(id).orElseThrow(() -> new
-                EntityNotFoundException("item not found id: "+id));
+        ShoppingListItem item = shoppingListItemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found id: "+id));
         shoppingListItemRepository.deleteById(id);
         return getShoppingListItemResponse(item);
     }

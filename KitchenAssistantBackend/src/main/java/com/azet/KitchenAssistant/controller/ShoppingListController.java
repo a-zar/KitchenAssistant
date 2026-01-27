@@ -64,73 +64,46 @@ class ShoppingListController {
 
     @PostMapping(value = "/items/new")
     public ResponseEntity<ShoppingListItemResponse> saveList(@Valid @RequestBody ShoppingListItemDto req){
-
-        // Delegacja logiki do Serwisu
         ShoppingListItemResponse response = shoppingListItemService.createListItem(req);
-        itemLogger.info("new item added id: " + req.getProductId()+ " to list id: " + req.getListId());
-
-        //201 Created
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        itemLogger.info("New item added id: " + req.getProductId()+ " to list id: " + req.getListId());
+        return new ResponseEntity<>(response, HttpStatus.CREATED); //code 201
     }
 
     @DeleteMapping(value = "/listId/{listId}/delete/itemId/{itemId}")
-    public ResponseEntity<ShoppingListItemResponse> deleteItem(@PathVariable int listId,@PathVariable int itemId){
-        listLogger.info("delete item id: " + itemId + " from shopping list: " + listId);
-        ShoppingListItem item = shoppingListItemRepository.findById(itemId).orElseThrow(()-> new EntityNotFoundException("item not found id: "+ itemId));
-
-        if (item.getShoppingList().getId() == listId){
-        listLogger.info("deleted item id: " +itemId);
-        ShoppingListItemResponse response = shoppingListItemService.deleteShoppingListItem(itemId);
-        //201 Created
-        return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        else {
-            listLogger.info("selected item id: " +itemId+ "is not on that list id: "+ listId);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Void> deleteItem(@PathVariable int listId,@PathVariable int itemId){
+        listLogger.info("Attempting to delete item id: " + itemId + " from shopping list: " + listId);
+        ShoppingListItemResponse response = shoppingListItemService.deleteShoppingListItem(itemId); //if not found code 404
+        listLogger.info("Deleted item id: " +itemId);
+        return  ResponseEntity.noContent().build(); //code 204
     }
 
     //list ---->
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<ShoppingList>> readAllShoppingLists(){
-        listLogger.info("all shopping lists");
+        listLogger.info("Read all shopping lists");
         return ResponseEntity.ok(shoppingListRepository.findAll());
     }
 
     @PostMapping(value = "/new")
     public ResponseEntity<ShoppingListResponse> saveList(@Valid @RequestBody ShoppingListDto req){
-
-        // Delegacja logiki do Serwisu
         ShoppingListResponse response = shoppingListService.createShoppingList(req);
-        listLogger.info("new shopping list created: " + req.getListTitle());
-
-        //201 Created
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        listLogger.info("Created new shopping list id: {}",req.getListTitle());
+        return new ResponseEntity<>(response, HttpStatus.CREATED); //201
     }
 
     @PutMapping(value = "/edit/listId/{listId}")
     public ResponseEntity<ShoppingListResponse> editList(@PathVariable int listId, @Valid @RequestBody ShoppingListDto req){
-
-        // Delegacja logiki do Serwisu
-        ShoppingListResponse response = shoppingListService.editShoppingList(listId, req);
-        listLogger.info("edited shopping list created: " + req.getListTitle() + ", id: " +  listId );
-
-        //201 Created
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        listLogger.info("Attempting to edit list id: {}", listId);
+        ShoppingListResponse response = shoppingListService.editShoppingList(listId, req); //if not found code 404
+        listLogger.info("Edited shopping list: " + req.getListTitle() + ", id: " +  listId );
+        return new ResponseEntity<>(response, HttpStatus.CREATED); //201
     }
 
     @DeleteMapping(value = "/delete/listId/{listId}")
-    public ResponseEntity<ShoppingListResponse> deleteList(@PathVariable int listId){
-
-        // Delegacja logiki do Serwisu
-        listLogger.info("delete shopping list id: " + listId);
-
-//        shoppingListRepository.deleteById(listId);
+    public ResponseEntity<Void> deleteList(@PathVariable int listId){
+        listLogger.info("Attempting to delete list id: {}", listId);
         ShoppingListResponse response = shoppingListService.deleteShoppingList(listId);
         listLogger.info("deleted shopping list id: " +  listId );
-
-        //201 Created
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.noContent().build(); //204
     }
-
 }

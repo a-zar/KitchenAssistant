@@ -1,6 +1,7 @@
 package com.azet.KitchenAssistant.service;
 
 import com.azet.KitchenAssistant.Entity.ShoppingList;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListItemRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
@@ -35,13 +36,20 @@ public class ShoppingListService {
         return getShoppingListResponse(savedList);
     }
 
-    public ShoppingListResponse editShoppingList(int id, ShoppingListDto listToEdit){
+    public ShoppingListResponse editShoppingList(final int id, ShoppingListDto listToEdit){
 
-        ShoppingList oldList = shoppingListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("shopping list not found"));
+        ShoppingList oldList = shoppingListRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Shopping list not found id: "+ id));
 
         ShoppingList request = mapRequestShoppingListEntity(listToEdit, oldList);
         ShoppingList savedList = shoppingListRepository.save(request);
         return getShoppingListResponse(savedList);
+    }
+
+    public ShoppingListResponse deleteShoppingList(final int id) {
+        ShoppingList list = shoppingListRepository.findById(id).orElseThrow(() -> new
+                ResourceNotFoundException("Shopping list not found id: "+ id));
+        shoppingListRepository.deleteById(id);
+        return getShoppingListResponse(list);
     }
 
     private static ShoppingListResponse getShoppingListResponse(final ShoppingList savedList) {
@@ -86,23 +94,4 @@ public class ShoppingListService {
             case YEARLY -> request.setNextOccurrenceDate(startOccurrenceDate.plusYears(1));
         }
     }
-
-    public ShoppingListResponse deleteShoppingList(final int id) {
-        ShoppingList list = shoppingListRepository.findById(id).orElseThrow(() -> new
-        EntityNotFoundException("shopping list not found"));
-        shoppingListRepository.deleteById(id);
-        return getShoppingListResponse(list);
-    }
-
-//    private Set<ShoppingListItem> getShoppingListItems(final ShoppingListDto newList) {
-//        Set<ShoppingListItem> items = newList.getShoppingListItems().stream().map(dto -> {
-//            ShoppingListItem item = new ShoppingListItem();
-//            item.setNote(dto.getNote());
-//            item.setQuantity(dto.getQuantity());
-//            item.setIsPurchased(dto.getIsPurchased());
-//            item.setProduct(productRepository.findById(dto.getProductId()).orElseThrow(() -> new EntityNotFoundException("Product not found")));
-//            return item;
-//        }).collect(Collectors.toSet());
-//        return items;
-//    }
 }
