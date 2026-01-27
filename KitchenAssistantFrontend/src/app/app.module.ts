@@ -16,6 +16,7 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProductFormComponent } from './components/product-form/product-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 
 const routes: Routes = [
 
@@ -41,7 +42,8 @@ const routes: Routes = [
     CategoryListComponent,
     SearchComponent,
     ProductDetailsComponent,
-    ProductFormComponent
+    ProductFormComponent,
+    ShoppingListComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

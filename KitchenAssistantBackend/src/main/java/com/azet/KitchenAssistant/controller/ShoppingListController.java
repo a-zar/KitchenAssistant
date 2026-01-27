@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -57,9 +58,22 @@ class ShoppingListController {
 
     //item ---->
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/listId/{listId}/items")
-    ResponseEntity<List<ShoppingListItem>> readAllListItems(@PathVariable int listId){
+    ResponseEntity<List<ShoppingListItemDto>> readAllListItems(@PathVariable int listId){
         itemLogger.info("all list items");
-        return ResponseEntity.ok(shoppingListItemRepository.findByShoppingListId(listId));
+
+        List<ShoppingListItem> items = shoppingListItemRepository.findByShoppingListId(listId);
+
+        List<ShoppingListItemDto> dtos = items.stream().map(item -> {
+            ShoppingListItemDto dto = new ShoppingListItemDto();
+            dto.setProductId(item.getProduct().getId());
+            dto.setListId(item.getShoppingList().getId());
+            dto.setQuantity(item.getQuantity());
+            dto.setIsPurchased(item.getIsPurchased());
+            dto.setNote(item.getNote());
+            return dto;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping(value = "/items/new")
@@ -79,9 +93,20 @@ class ShoppingListController {
 
     //list ---->
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<List<ShoppingList>> readAllShoppingLists(){
+    ResponseEntity<List<ShoppingListDto>> readAllShoppingLists(){
         listLogger.info("Read all shopping lists");
-        return ResponseEntity.ok(shoppingListRepository.findAll());
+
+        List<ShoppingList> list = shoppingListRepository.findAll();
+
+        List<ShoppingListDto> dtos = list.stream().map(entity ->{
+                ShoppingListDto dto = new ShoppingListDto();
+                dto.setListTitle(entity.getTitle());
+                dto.setRecurrencePattern(entity.getRecurrencePattern());
+                dto.setStartOccurrenceDate(entity.getNextOccurrenceDate());
+                return dto;
+        }).toList();
+        
+        return ResponseEntity.ok(dtos);
     }
 
     @PostMapping(value = "/new")
