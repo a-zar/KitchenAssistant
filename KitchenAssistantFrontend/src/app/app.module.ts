@@ -20,7 +20,10 @@ import { ShoppingListComponent } from './components/shopping-list/shopping-list.
 
 const routes: Routes = [
 
-  {path: 'shoppingList', component: ProductListComponent},
+  {path: 'shoppingList', component: ShoppingListComponent},
+  {path: 'shoppingList/:id', component: ShoppingListComponent},
+  {path: 'shoppingList/delete/:id', component: ShoppingListComponent},
+  // {path: 'shoppingList/**', redirectTo: '/shoppingList', pathMatch: 'full'},
 
   {path: 'products/new', component: ProductFormComponent},
   {path: 'products/edit/:id', component: ProductFormComponent},

@@ -99,11 +99,12 @@ class ShoppingListController {
         List<ShoppingList> list = shoppingListRepository.findAll();
 
         List<ShoppingListDto> dtos = list.stream().map(entity ->{
-                ShoppingListDto dto = new ShoppingListDto();
-                dto.setListTitle(entity.getTitle());
-                dto.setRecurrencePattern(entity.getRecurrencePattern());
-                dto.setStartOccurrenceDate(entity.getNextOccurrenceDate());
-                return dto;
+            ShoppingListDto dto = new ShoppingListDto();
+            dto.setId(entity.getId());
+            dto.setListTitle(entity.getTitle());
+            dto.setRecurrencePattern(entity.getRecurrencePattern());
+            dto.setStartOccurrenceDate(entity.getNextOccurrenceDate());
+            return dto;
         }).toList();
         
         return ResponseEntity.ok(dtos);

@@ -1,1 +1,25 @@
-<p>shopping-list works!</p>
+
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct">
+            <div class="productItem">
+                <div class="product-box text-success">
+                    <h4>Utwórz nową</h4>
+                    <h4>listę zakupów</h4>
+                    <h2>+</h2>
+                </div>
+            </div>
+            <div *ngFor="let list of shoppingList" class="productItem">
+                <div class="product-box position-relative">
+                    <button [routerLink]="['/shoppingList/delete', list.id]" 
+                        type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" aria-label="Close">×</button>
+                    <a [routerLink]="['/shoppingList/', list.id]">
+                        <h3>{{list.listTitle}}</h3>
+                        <p>{{list.recurrencePattern}}</p>
+                        <p>{{list.startOccurrenceDate}}</p>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
