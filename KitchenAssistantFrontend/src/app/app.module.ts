@@ -22,7 +22,6 @@ const routes: Routes = [
 
   {path: 'shoppingList', component: ShoppingListComponent},
   {path: 'shoppingList/:id', component: ShoppingListComponent},
-  {path: 'shoppingList/delete/:id', component: ShoppingListComponent},
   // {path: 'shoppingList/**', redirectTo: '/shoppingList', pathMatch: 'full'},
 
   {path: 'products/new', component: ProductFormComponent},

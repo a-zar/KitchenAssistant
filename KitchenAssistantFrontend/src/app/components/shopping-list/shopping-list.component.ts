@@ -29,6 +29,7 @@ export class ShoppingListComponent implements OnInit {
 
   onDelete(event: MouseEvent, listId: number) {
     event.stopPropagation();
+
     // optionally confirm
     if (!confirm('Czy na pewno usunąć tę listę?')) return;
 
