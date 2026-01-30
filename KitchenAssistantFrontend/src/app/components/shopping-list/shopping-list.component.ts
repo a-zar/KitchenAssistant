@@ -27,9 +27,11 @@ export class ShoppingListComponent implements OnInit {
     });
   }
 
-  onDelete(event: MouseEvent, listId: number) {
-    event.stopPropagation();
+  onEdit( listId: number) {
 
+  }
+
+  onDelete(listId: number) {
     // optionally confirm
     if (!confirm('Czy na pewno usunąć tę listę?')) return;
 
