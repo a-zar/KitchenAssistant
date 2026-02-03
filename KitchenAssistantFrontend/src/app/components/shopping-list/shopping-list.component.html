@@ -2,22 +2,47 @@
 <div class="container-fluid">
     <div class="row">
         <main class="contentProduct">
-            <div class="productItem">
-                <div class="product-box text-success">
+            <div class="items-box" >
+                <div class="elem-box text-success" (click)="onCreate()">
                     <h4>Utwórz nową</h4>
                     <h4>listę zakupów</h4>
                     <h2>+</h2>
                 </div>
             </div>
-            <div *ngFor="let list of shoppingList" class="productItem">
-                <div class="product-box position-relative">
-                    <button click-stop-propagation (click)="list.id !== undefined && onDelete(list.id)" 
-                        type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2" aria-label="Close">×</button>
-                    <a [routerLink]="['/shoppingList/', list.id]">
-                        <h3>{{list.listTitle}}</h3>
-                        <p>{{list.recurrencePattern}}</p>
-                        <p>{{list.startOccurrenceDate}}</p>
-                    </a>
+            <div *ngFor="let list of shoppingList" class="items-box">
+                <div class="elem-box">
+                    <div class="shoppingListElem" [class.d-none]="editingListId === list.id">
+                            <div class="mb-3 ms-auto">
+                                <button class= "btn btn-secondary btn-sm m-1" aria-label="Edit" title="Kliknij, aby edytować listę zakupów"
+                                click-stop-propagation (click)="onEdit(list.id!)">
+                                ...</button>
+                                <button click-stop-propagation (click)="onDelete(list.id!)" 
+                                type="button" class="btn btn-danger btn-sm m-1" aria-label="Close" 
+                                title="Kliknij, aby usunąć listę zakupów">×
+                                </button>
+                            </div>
+                        <a [routerLink]="['/shoppingList/', list.id]">
+                            <h3>{{list.listTitle}}</h3>
+                            <p>cykl: {{list.recurrencePattern}}</p>
+                            <p>start: {{list.startOccurrenceDate}}</p>
+                        </a>
+                    </div>
+                    <div class= "d-none shoppingListEdit" [class.d-none]="editingListId !== list.id" >
+                        <input type="text" [value]="list.listTitle" class="m-1 form-control" />
+                        <select size ="3" [value]="list.recurrencePattern" class="m-1 form-select text-center">
+                            <option disabled>Wybierz cykliczność</option>
+                            <option>Brak </option>
+                            <option>DAILY </option>
+                            <option>WEEKLY </option>
+                            <option>YEARLY </option>
+                        </select>
+                        <input type="Date" [value]="list.startOccurrenceDate" class="m-1 form-control"/>
+                        
+                        <!-- submit button-->
+                        <div class="text-center m-3">
+                            <button type="submit" class="btn btn-info" (click)="toggleEditMode()"> Zapisz </button>
+                        </div>
+                    </div> 
                 </div>
             </div>
         </main>

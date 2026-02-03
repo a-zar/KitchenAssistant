@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 export class ShoppingListComponent implements OnInit {
 
   shoppingList: ShoppingList[] = [];
+  editingListId: number | null = null;
 
   constructor(private shoppingListService: ShoppingListService, 
     private route: ActivatedRoute
@@ -27,11 +28,15 @@ export class ShoppingListComponent implements OnInit {
     });
   }
 
-  onEdit( listId: number) {
+  onCreate(): void{
 
   }
 
-  onDelete(listId: number) {
+  onEdit(listId: number) {
+    this.editingListId = this.editingListId === listId ? null : listId;  
+  } 
+
+  onDelete(listId: number){
     // optionally confirm
     if (!confirm('Czy na pewno usunąć tę listę?')) return;
 
@@ -40,4 +45,7 @@ export class ShoppingListComponent implements OnInit {
     error: err => console.error('Delete failed', err)});
   }
 
+  toggleEditMode(): void {
+    this.editingListId = null;
+  }
 }
