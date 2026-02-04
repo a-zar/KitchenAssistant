@@ -15,7 +15,7 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ProductFormComponent } from './components/product-form/product-form.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 import { ClickStopPropagationDirective } from './shared/directives/click-stop-propagation.directive';
 
@@ -55,7 +55,8 @@ const routes: Routes = [
     HttpClientModule,
     NgbModule,
     ReactiveFormsModule,
-    ClickStopPropagationDirective
+    ClickStopPropagationDirective,
+    FormsModule
   ],
   providers: [ProductService],
   bootstrap: [AppComponent]

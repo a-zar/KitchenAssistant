@@ -86,7 +86,7 @@ public class ShoppingListService {
             setNextOccurrenceDateToShoppingList(startOccurrenceDate,recurrencePattern, list);
         } else {
             list.setIsRecurring(false);
-            list.setRecurrencePattern(null);
+            list.setRecurrencePattern(BRAK);
             list.setNextOccurrenceDate(null);
             list.setStartOccurrenceDate(null);
         }

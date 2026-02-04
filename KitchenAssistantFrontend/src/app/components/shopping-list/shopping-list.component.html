@@ -14,7 +14,7 @@
                     <div class="shoppingListElem" [class.d-none]="editingListId === list.id">
                             <div class="mb-3 ms-auto">
                                 <button class= "btn btn-secondary btn-sm m-1" aria-label="Edit" title="Kliknij, aby edytować listę zakupów"
-                                click-stop-propagation (click)="onEdit(list.id!)">
+                                click-stop-propagation (click)="setEditingListId(list.id!)">
                                 ...</button>
                                 <button click-stop-propagation (click)="onDelete(list.id!)" 
                                 type="button" class="btn btn-danger btn-sm m-1" aria-label="Close" 
@@ -23,24 +23,30 @@
                             </div>
                         <a [routerLink]="['/shoppingList/', list.id]">
                             <h3>{{list.listTitle}}</h3>
-                            <p>cykl: {{list.recurrencePattern}}</p>
-                            <p>start: {{list.startOccurrenceDate}}</p>
+                            <div *ngIf="list?.recurrencePattern !== 'BRAK'">
+                                <p>cykl: {{list.recurrencePattern}}</p>
+                                <p>początek cyklu: {{list.startOccurrenceDate}}</p>
+                                <p>koniec cyklu: {{list.nextOccurrenceDate}}</p>
+                            </div>    
                         </a>
                     </div>
                     <div class= "d-none shoppingListEdit" [class.d-none]="editingListId !== list.id" >
-                        <input type="text" [value]="list.listTitle" class="m-1 form-control" />
-                        <select size ="3" [value]="list.recurrencePattern" class="m-1 form-select text-center">
+                        <input type="text" [(ngModel)]="list.listTitle" class="m-1 form-control" />
+                        <select size ="3" [(ngModel)]="list.recurrencePattern" class="m-1 form-select text-center">
                             <option disabled>Wybierz cykliczność</option>
-                            <option>Brak </option>
+                            <option>BRAK </option>
                             <option>DAILY </option>
                             <option>WEEKLY </option>
+                            <option>MONTHLY </option>
                             <option>YEARLY </option>
                         </select>
-                        <input type="Date" [value]="list.startOccurrenceDate" class="m-1 form-control"/>
-                        
+                        <div *ngIf="list.recurrencePattern !== 'BRAK'">
+                            <p>Ustaw datę zaczynającą cykl:
+                            <input type="Date" [(ngModel)]="list.startOccurrenceDate" class="m-1 form-control"/>
+                        </div>    
                         <!-- submit button-->
                         <div class="text-center m-3">
-                            <button type="submit" class="btn btn-info" (click)="toggleEditMode()"> Zapisz </button>
+                            <button type="submit" class="btn btn-info" (click)="onUpdate(list)"> Zapisz </button>
                         </div>
                     </div> 
                 </div>

@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 export class ShoppingListComponent implements OnInit {
 
   shoppingList: ShoppingList[] = [];
-  editingListId: number | null = null;
+  editingListId: number = -1;
 
   constructor(private shoppingListService: ShoppingListService, 
     private route: ActivatedRoute
@@ -32,8 +32,8 @@ export class ShoppingListComponent implements OnInit {
 
   }
 
-  onEdit(listId: number) {
-    this.editingListId = this.editingListId === listId ? null : listId;  
+  setEditingListId(listId: number) {
+    this.editingListId = this.editingListId === listId ? -1 : listId;  
   } 
 
   onDelete(listId: number){
@@ -45,7 +45,15 @@ export class ShoppingListComponent implements OnInit {
     error: err => console.error('Delete failed', err)});
   }
 
+  onUpdate(list: ShoppingList) {
+    this.shoppingListService.updateList(list).subscribe({
+      next: () => this.loadLists(),
+      error: err => console.error('Update failed', err)
+    });
+    this.toggleEditMode();
+  }
+
   toggleEditMode(): void {
-    this.editingListId = null;
+    this.editingListId = -1;
   }
 }
