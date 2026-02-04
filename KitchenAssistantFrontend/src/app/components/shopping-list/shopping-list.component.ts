@@ -55,6 +55,10 @@ export class ShoppingListComponent implements OnInit {
     this.createMode = true;
   }
 
+  cancelCreateMode(): void {
+    this.createMode = false;
+  }
+
   setEditingListId(listId: number) {
     this.editingListId = this.editingListId === listId ? -1 : listId;  
   } 
