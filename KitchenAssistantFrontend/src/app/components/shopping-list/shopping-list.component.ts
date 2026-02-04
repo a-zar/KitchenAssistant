@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ShoppingList } from 'src/app/common/shopping-list';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { ActivatedRoute } from '@angular/router';
+import { ShoppingListItem } from '../../common/shopping-list-item';
 
 @Component({
   selector: 'app-shopping-list',
@@ -10,9 +11,11 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ShoppingListComponent implements OnInit {
 
-  shoppingList: ShoppingList[] = [];
+  shoppingLists: ShoppingList[] = [];
+  shoppingList: ShoppingList = new ShoppingList('');
   editingListId: number = -1;
-
+  createMode : boolean = false; 
+  
   constructor(private shoppingListService: ShoppingListService, 
     private route: ActivatedRoute
   ) { }
@@ -23,13 +26,21 @@ export class ShoppingListComponent implements OnInit {
 
   loadLists(): void {
     this.shoppingListService.getShoppingList().subscribe({
-      next: data => this.shoppingList = data,
+      next: data => this.shoppingLists = data,
       error: err => console.error('Failed to load shopping lists', err)
     });
   }
 
-  onCreate(): void{
+  onCreate(list: ShoppingList): void{
+    this.createMode = false;
+    this.shoppingListService.createList(list).subscribe({
+      next: () => this.loadLists(),
+      error: err => console.error('Create failed', err)
+    });
+  }
 
+  showCreateView(): void {
+    this.createMode = true;
   }
 
   setEditingListId(listId: number) {

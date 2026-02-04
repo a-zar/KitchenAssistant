@@ -8,6 +8,7 @@ import { ShoppingListItem } from '../common/shopping-list-item';
   providedIn: 'root'
 })
 export class ShoppingListService {
+
   private baseUrl = 'http://localhost:8080/api/shoppingList';
 
   constructor(private httpClient: HttpClient) {
@@ -31,6 +32,11 @@ export class ShoppingListService {
   updateList(list: ShoppingList) : Observable<any> {
     const url = `${this.baseUrl}/edit/listId/${list.id}`;
     return this.httpClient.put(url, list);
+  }
+
+  createList(list: ShoppingList): Observable<any> {
+    const url = `${this.baseUrl}/new`;
+    return this.httpClient.post(url, list);
   }
 }
   

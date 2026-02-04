@@ -3,13 +3,31 @@
     <div class="row">
         <main class="contentProduct">
             <div class="items-box" >
-                <div class="elem-box text-success" (click)="onCreate()">
-                    <h4>Utwórz nową</h4>
-                    <h4>listę zakupów</h4>
-                    <h2>+</h2>
+                <div class="elem-box text-success" click-stop-propagation (click)="showCreateView()">
+                    <p>Utwórz nową listę zakupów</p>
+
+                    <div *ngIf="createMode" class="createMode" [class.d-none]="!createMode">
+                        <input type="text" [(ngModel)]="shoppingList!.listTitle" placeholder="Tytuł listy zakupów" class="form-control m-1"/>
+                        <select size ="3" [(ngModel)]="shoppingList!.recurrencePattern" class="m-1 form-select text-center">
+                            <option disabled>Wybierz cykliczność</option>
+                            <option>BRAK </option>
+                            <option>DAILY </option>
+                            <option>WEEKLY </option>
+                            <option>MONTHLY </option>
+                            <option>YEARLY </option>
+                        </select>
+                        <div *ngIf="shoppingList!.recurrencePattern !== 'BRAK'">
+                            <p>Ustaw datę zaczynającą cykl:
+                            <input type="Date" [(ngModel)]="shoppingList!.startOccurrenceDate" class="m-1 form-control"/>
+                        </div>    
+                        <div class="text-center m-3">
+                            <button type="submit" class="btn btn-info" click-stop-propagation (click)="onCreate(shoppingList!)"> Zapisz </button>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
-            <div *ngFor="let list of shoppingList" class="items-box">
+            <div *ngFor="let list of shoppingLists" class="items-box">
                 <div class="elem-box">
                     <div class="shoppingListElem" [class.d-none]="editingListId === list.id">
                             <div class="mb-3 ms-auto">
