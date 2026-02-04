@@ -92,6 +92,7 @@ class ShoppingListController {
     }
 
     //list ---->
+    //http://localhost:8080/api/shoppingList
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<ShoppingListDto>> readAllShoppingLists(){
         listLogger.info("Read all shopping lists");
@@ -103,7 +104,8 @@ class ShoppingListController {
             dto.setId(entity.getId());
             dto.setListTitle(entity.getTitle());
             dto.setRecurrencePattern(entity.getRecurrencePattern());
-            dto.setStartOccurrenceDate(entity.getNextOccurrenceDate());
+            dto.setNextOccurrenceDate(entity.getNextOccurrenceDate());
+            dto.setStartOccurrenceDate(entity.getStartOccurrenceDate());
             return dto;
         }).toList();
         

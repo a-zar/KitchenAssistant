@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
+import static com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern.BRAK;
+
 @Service
 public class ShoppingListService {
 
@@ -57,6 +59,7 @@ public class ShoppingListService {
         response.setId(savedList.getId());
         response.setListTitle(savedList.getTitle());
         response.setNextOccurrenceDate(savedList.getNextOccurrenceDate());
+        response.setStartOccurrenceDate(savedList.getStartOccurrenceDate());
         return response;
     }
 
@@ -73,15 +76,19 @@ public class ShoppingListService {
 
         RecurrencePattern recurrencePattern = list.getRecurrencePattern();
 
-        LocalDate startOccurrenceDate = listToMap.getStartOccurrenceDate();
+        LocalDate startOccurrenceDate = listToMap.getStartOccurrenceDate() == null ? LocalDate.now() : listToMap.getStartOccurrenceDate();
 
-        if (recurrencePattern != null) {
+        if (recurrencePattern != BRAK) {
             list.setIsRecurring(true);
+
+            list.setStartOccurrenceDate(startOccurrenceDate);
+
             setNextOccurrenceDateToShoppingList(startOccurrenceDate,recurrencePattern, list);
         } else {
             list.setIsRecurring(false);
             list.setRecurrencePattern(null);
             list.setNextOccurrenceDate(null);
+            list.setStartOccurrenceDate(null);
         }
         return list;
     }

@@ -10,14 +10,18 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ShoppingListDto {
-    @NotNull
     private Integer id;
 
     @NotBlank(message = "Nazwa listy jest wymagana.")
     private String listTitle;
-    private RecurrencePattern recurrencePattern;
+    private RecurrencePattern recurrencePattern = RecurrencePattern.BRAK;
     private LocalDate startOccurrenceDate;
+    private LocalDate nextOccurrenceDate;
 
-//  private LocalDate nextOccurrenceDate;
-//    private Set<ShoppingListItemDto> shoppingListItems;
+    public void setRecurrencePattern (RecurrencePattern recurrence) {
+        if(recurrencePattern == null){
+            this.recurrencePattern = RecurrencePattern.BRAK;
+        }
+        else this.recurrencePattern = recurrence;
+    }
 }
