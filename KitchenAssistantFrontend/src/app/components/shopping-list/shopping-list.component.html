@@ -7,16 +7,24 @@
                     <p>Utwórz nową listę zakupów</p>
 
                     <div *ngIf="createMode" class="createMode" [class.d-none]="!createMode">
-                        <input type="text" [(ngModel)]="shoppingList!.listTitle" placeholder="Tytuł listy zakupów" class="form-control m-1"/>
-                        <select size ="3" [(ngModel)]="shoppingList!.recurrencePattern" class="m-1 form-select text-center">
-                            <option disabled>Wybierz cykliczność</option>
-                            <option>BRAK </option>
-                            <option>DAILY </option>
-                            <option>WEEKLY </option>
-                            <option>MONTHLY </option>
-                            <option>YEARLY </option>
+                        <input type="text" 
+                        #titleInput="ngModel"
+                        [(ngModel)]="shoppingList!.listTitle" 
+                        placeholder="Tytuł listy zakupów" 
+                        class="form-control m-1"
+                        required 
+                        minlength="3"
+                        [class.is-invalid]="titleInput.invalid && titleInput.touched"/>
+                        <div *ngIf="titleInput.invalid && titleInput.touched" class="text-danger small ms-1">
+                            Tytuł musi mieć co najmniej 3 znaki.
+                        </div>
+                        <select size ="2" [(ngModel)]="shoppingList!.recurrencePattern" class="m-1 form-select text-center">
+                            <option selected disabled [value]="RecurrencePattern.BRAK">Wybierz cykliczność</option>
+                            <option *ngFor="let option of recurrenceOptions" [value]="option">
+                                {{labels[option]}}
+                            </option>
                         </select>
-                        <div *ngIf="shoppingList!.recurrencePattern !== 'BRAK'">
+                        <div *ngIf="shoppingList!.recurrencePattern !== RecurrencePattern.BRAK">
                             <p>Ustaw datę zaczynającą cykl:
                             <input type="Date" [(ngModel)]="shoppingList!.startOccurrenceDate" class="m-1 form-control"/>
                         </div>    
@@ -49,14 +57,22 @@
                         </a>
                     </div>
                     <div class= "d-none shoppingListEdit" [class.d-none]="editingListId !== list.id" >
-                        <input type="text" [(ngModel)]="list.listTitle" class="m-1 form-control" />
-                        <select size ="3" [(ngModel)]="list.recurrencePattern" class="m-1 form-select text-center">
-                            <option disabled>Wybierz cykliczność</option>
-                            <option>BRAK </option>
-                            <option>DAILY </option>
-                            <option>WEEKLY </option>
-                            <option>MONTHLY </option>
-                            <option>YEARLY </option>
+                        <input type="text" 
+                        [(ngModel)]="list.listTitle"
+                        class="m-1 form-control" 
+                        #titleInput="ngModel"
+                        required 
+                        minlength="3"
+                        placeholde = "Tytuł listy zakupów"
+                        [class.is-invalid]="titleInput.invalid && titleInput.touched"/>
+                        <div *ngIf="titleInput.invalid && titleInput.touched" class="text-danger small ms-1">
+                            Tytuł musi mieć co najmniej 3 znaki.
+                        </div>
+                        <select size ="1" [(ngModel)]="list.recurrencePattern" class="m-1 form-select text-center">
+                            <option selected disabled [value]="RecurrencePattern.BRAK">Wybierz cykliczność</option>
+                            <option *ngFor="let option of recurrenceOptions" [value]="option">
+                                {{labels[option]}}
+                            </option>
                         </select>
                         <div *ngIf="list.recurrencePattern !== 'BRAK'">
                             <p>Ustaw datę zaczynającą cykl:

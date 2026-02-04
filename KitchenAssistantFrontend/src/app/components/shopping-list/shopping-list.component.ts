@@ -3,6 +3,7 @@ import { ShoppingList } from 'src/app/common/shopping-list';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { ActivatedRoute } from '@angular/router';
 import { ShoppingListItem } from '../../common/shopping-list-item';
+import { RecurrencePattern } from 'src/app/common/enums/recurrence-pattern';
 
 @Component({
   selector: 'app-shopping-list',
@@ -16,6 +17,17 @@ export class ShoppingListComponent implements OnInit {
   editingListId: number = -1;
   createMode : boolean = false; 
   
+  readonly RecurrencePattern = RecurrencePattern;
+  recurrenceOptions = Object.values(RecurrencePattern);
+
+  labels: Record<RecurrencePattern, string> = {
+    [RecurrencePattern.BRAK]: 'Brak powtarzania',
+    [RecurrencePattern.DAILY]: 'Codziennie',
+    [RecurrencePattern.WEEKLY]: 'Co tydzień',
+    [RecurrencePattern.MONTHLY]: 'Co miesiąc',
+    [RecurrencePattern.YEARLY]: 'Co rok'
+  };  
+
   constructor(private shoppingListService: ShoppingListService, 
     private route: ActivatedRoute
   ) { }
