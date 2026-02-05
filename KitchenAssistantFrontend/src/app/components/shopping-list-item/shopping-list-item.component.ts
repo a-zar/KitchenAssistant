@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ShoppingListItem } from '../../common/shopping-list-item';
 import { ShoppingListItemService } from 'src/app/services/shopping-list-item.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ShoppingListService } from 'src/app/services/shopping-list.service';
 
 @Component({
   selector: 'app-shopping-list-item',
@@ -11,11 +12,26 @@ import { ActivatedRoute } from '@angular/router';
 export class ShoppingListItemComponent implements OnInit {
 
   items: ShoppingListItem[] = [];
+  listName: string | null = '';
+
   constructor(private route: ActivatedRoute,
-              private shoppingListItemService: ShoppingListItemService) { }
+    private Router: Router,
+    private shoppingListItemService: ShoppingListItemService) {}
 
   ngOnInit(): void {
+    this.loadListName();
     this.loadsItems();
+  }
+
+  loadListName(): void {
+    this.route.queryParamMap.subscribe({
+      next: (params) => {
+        // Klucz musi być identyczny jak w URL (?listName=...)
+        this.listName = params.get('listName'); 
+        console.log('Odebrany parametr:', this.listName);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   loadsItems(): void {
@@ -25,7 +41,4 @@ export class ShoppingListItemComponent implements OnInit {
       error: err => console.error('Failed to load shopping list items', err)
     });
   }
-
-
-
 }

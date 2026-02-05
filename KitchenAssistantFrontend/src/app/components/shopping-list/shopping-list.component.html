@@ -53,7 +53,9 @@
                             title="Kliknij, aby usunąć listę zakupów">×
                             </button>
                         </div>
-                        <a [routerLink]="['/shoppingList/', list.id, 'items']" class="text-decoration-none text-dark">
+                        <a [routerLink]="['/shoppingList/', list.id, 'items']"
+                        [queryParams]="{ listName: list.listTitle }"
+                        class="text-decoration-none text-dark">
                             <h3>{{list.listTitle}}</h3>
                             <div *ngIf="list?.recurrencePattern !== 'BRAK'">
                                 <p>cykl: {{list.recurrencePattern}}</p>

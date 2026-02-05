@@ -19,11 +19,6 @@ export class ShoppingListService {
     return this.httpClient.get<ShoppingList[]>(shoppingListUrl);
   }
 
-  getListItems(listId: number): Observable<ShoppingListItem[]> {
-    const url = `${this.baseUrl}/listId/${listId}/items`;
-    return this.httpClient.get<ShoppingListItem[]>(url);
-  }
-
   deleteList(listId: number): Observable<void> {
     const url = `${this.baseUrl}/delete/listId/${listId}`;
     return this.httpClient.delete<void>(url);
