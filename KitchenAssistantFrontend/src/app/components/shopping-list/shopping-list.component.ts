@@ -29,8 +29,7 @@ export class ShoppingListComponent implements OnInit {
   };  
 
   constructor(private shoppingListService: ShoppingListService, 
-    private route: ActivatedRoute
-  ) { }
+              private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.loadLists();

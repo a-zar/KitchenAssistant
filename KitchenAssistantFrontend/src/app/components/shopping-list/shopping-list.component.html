@@ -1,4 +1,3 @@
-
 <div class="container-fluid">
     <div class="row">
         <main class="contentProduct">
@@ -39,9 +38,9 @@
                         </div>
                         
                     </div>
-                </div>
-                
+                </div> 
             </div>
+
             <div *ngFor="let list of shoppingLists" class="items-box">
                 <div class="elem-box">
                     <div class="shoppingListElem position-relative pt-5" [class.d-none]="editingListId === list.id">
@@ -54,7 +53,7 @@
                             title="Kliknij, aby usunąć listę zakupów">×
                             </button>
                         </div>
-                        <a [routerLink]="['/shoppingList/', list.id]">
+                        <a [routerLink]="['/shoppingList/', list.id, 'items']" class="text-decoration-none text-dark">
                             <h3>{{list.listTitle}}</h3>
                             <div *ngIf="list?.recurrencePattern !== 'BRAK'">
                                 <p>cykl: {{list.recurrencePattern}}</p>

@@ -1,0 +1,14 @@
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct">
+            <div class="col-md-6" >
+                <div class="shoppingListItemElem" *ngFor="let item of items">
+                    <h4>listId: {{item.listId}}</h4>
+                    <h4>productId: {{item.productId}}</h4>
+                    <p>Ilość: {{item.quantity}}</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+

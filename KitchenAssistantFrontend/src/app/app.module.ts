@@ -18,12 +18,14 @@ import { ProductFormComponent } from './components/product-form/product-form.com
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 import { ClickStopPropagationDirective } from './shared/directives/click-stop-propagation.directive';
+import { ShoppingListItemComponent } from './components/shopping-list-item/shopping-list-item.component';
 
 const routes: Routes = [
 
   {path: 'shoppingList', component: ShoppingListComponent},
   {path: 'shoppingList/:id', component: ShoppingListComponent},
   // {path: 'shoppingList/**', redirectTo: '/shoppingList', pathMatch: 'full'},
+  {path: 'shoppingList/:listId/items', component: ShoppingListItemComponent},
 
   {path: 'products/new', component: ProductFormComponent},
   {path: 'products/edit/:id', component: ProductFormComponent},
@@ -46,7 +48,8 @@ const routes: Routes = [
     SearchComponent,
     ProductDetailsComponent,
     ProductFormComponent,
-    ShoppingListComponent
+    ShoppingListComponent,
+    ShoppingListItemComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
