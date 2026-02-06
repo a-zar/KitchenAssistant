@@ -70,6 +70,7 @@ class ShoppingListController {
             dto.setQuantity(item.getQuantity());
             dto.setIsPurchased(item.getIsPurchased());
             dto.setNote(item.getNote());
+            dto.setId(item.getId());
             return dto;
         }).collect(Collectors.toList());
 

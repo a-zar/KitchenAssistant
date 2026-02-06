@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ShoppingListItemDto {
+    private Integer id;
     @NotNull
     private  Integer productId;
 

@@ -11,6 +11,7 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./shopping-list-item.component.css']
 })
 export class ShoppingListItemComponent implements OnInit {
+  listId: number = -1;
   showAddItemForm: boolean = false;
   newItem: ShoppingListItem | undefined;
   items: ShoppingListItem[] = [];
@@ -22,11 +23,15 @@ export class ShoppingListItemComponent implements OnInit {
     private productService: ProductService) {}
 
   ngOnInit(): void {
+    this.setListId();
     this.loadListName();
     this.loadsItems();
     this.loadAllProductNamesFromProductService();
   }
 
+  setListId(): void {
+    this.listId = Number(this.route.snapshot.paramMap.get('listId'));
+  }
   loadListName(): void {
     this.route.queryParamMap.subscribe({
       next: (params) => {
@@ -39,8 +44,7 @@ export class ShoppingListItemComponent implements OnInit {
   }
 
   loadsItems(): void {
-    const listId = Number(this.route.snapshot.paramMap.get('listId'));
-    this.shoppingListItemService.getItemsByListId(listId).subscribe({
+    this.shoppingListItemService.getItemsByListId(this.listId).subscribe({
       next: data => this.items = data,
       error: err => console.error('Failed to load shopping list items', err)
     });
@@ -71,19 +75,63 @@ export class ShoppingListItemComponent implements OnInit {
     });
   }
 
-  deleteItem(item: ShoppingListItem) {
-  throw new Error('Method not implemented.');
+  onDeleteItem(item: ShoppingListItem) {
+    // if (!confirm(`Czy na pewno chcesz usunąć "${this.productNames[item.productId]}" z listy zakupów?`)) return;
+
+    this.shoppingListItemService.deleteItem(this.listId, item.id).subscribe({
+      next: () => {
+        this.items = this.items.filter(i => i.id !== item.id);
+      },
+      error: err => console.error('Failed to delete shopping list item', err)
+    });
   }
-  addItem() {
-  throw new Error('Method not implemented.');
+
+  increaseQuantity(item: ShoppingListItem) {
+    item.quantity++;
+    // this.shoppingListItemService.updateItem(item).subscribe({
+    //   next: (updatedItem: ShoppingListItem) => {
+    //     const itemId = this.items.findIndex(i => i.id === updatedItem.id);
+    //     if (itemId !== -1) {
+    //       this.items[itemId] = updatedItem;
+    //     }
+    //   },
+    //   error: err => console.error('Failed to update shopping list item quantity', err)
+    // });
   }
-  increaseQuantity(arg0: any) {
-  throw new Error('Method not implemented.');
-  }
-  decreaseQuantity(arg0: any) {
-  throw new Error('Method not implemented.');
+
+  decreaseQuantity(item: ShoppingListItem) {
+    if (item.quantity > 0) {
+      item.quantity--;
+      if (item.quantity === 0) {
+        this.onDeleteItem(item);
+        return;
+      } 
+      // this.shoppingListItemService.updateItem(item).subscribe({
+      //   next: (updatedItem: ShoppingListItem) => {
+      //     const itemId = this.items.findIndex(i => i.id === updatedItem.id);
+      //     if (itemId !== -1) {
+      //       this.items[itemId] = updatedItem;
+      //     }
+      //   },
+      //   error: err => console.error('Failed to update shopping list item quantity', err)
+      // });
+    }
   }
   onCheckboxChange($event: Event) {
-  throw new Error('Method not implemented.');
+    const checkbox = $event.target as HTMLInputElement;
+    const itemId = Number(checkbox.value);
+    const item = this.items.find(i => i.id === itemId);
+    if (item) {
+      item.isPurchased = checkbox.checked;
+    //   this.shoppingListItemService.updateItem(item).subscribe({
+    //     next: (updatedItem: ShoppingListItem) => {
+    //       const updatedItemId = this.items.findIndex(i => i.id === updatedItem.id);
+    //       if (updatedItemId !== -1) {
+    //         this.items[updatedItemId] = updatedItem;
+    //       }
+    //     },
+    //     error: err => console.error('Failed to update shopping list item isPurchased status', err)
+    //   });
+    }
   }
 }
