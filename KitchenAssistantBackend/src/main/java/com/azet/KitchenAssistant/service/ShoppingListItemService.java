@@ -84,6 +84,7 @@ public class ShoppingListItemService {
         ShoppingListItem item = dataInDb == null ? new ShoppingListItem() : dataInDb;
         item.setQuantity(toMap.getQuantity());
         item.setIsPurchased(toMap.getIsPurchased());
+        item.setNote(toMap.getNote());
         item.setProduct(productRepository.findById(toMap.getProductId()).orElseThrow(() -> new ResourceNotFoundException("product not found with id: "+ toMap.getProductId())));
         item.setShoppingList(shoppingListRepository.findById(toMap.getListId()).orElseThrow(()-> new ResourceNotFoundException("shopping list not found")));
         return item;

@@ -28,13 +28,22 @@
                                     +
                                 </button>
                             </td>
-                            <td>{{item.note}}</td>
+                            <td>
+                                <input type="text" 
+                                [(ngModel)]="item.note"
+                                [value]="item.note || ''"
+                                placeholder="Wpisz treść notatki..." 
+                                (keyup.enter)="onNoteBlur($event, item)" 
+                                (blur)="onNoteBlur($event, item)"
+                                class="form-control form-control-sm mt-1"
+                                />
+                            </td>
                             <td>
                                 <input type="checkbox" 
                                 [(ngModel)]="item.isPurchased"
                                 [value]="item.id" 
                                 class="form-check-input me-2"
-                                (change)="onCheckboxChange($event)"/>
+                                (change)="onCheckboxChange($event, item)"/>
                                 <span *ngIf="item.isPurchased; else notPurchased" 
                                 class="badge bg-success">Tak</span>
                                 <ng-template #notPurchased>

@@ -38,29 +38,30 @@ export class ShoppingListItemComponent implements OnInit {
   }
 
   updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
-  this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
-    next: (updatedItem: ShoppingListItem) => {
-      const index = this.items.findIndex(i => i.id === updatedItem.id);
-      if (index !== -1) {
-        const currentItem = this.items[index];
-        //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
-        this.items[index] = {
-          ...currentItem,    
-          ...updatedItem,     
-        };
-        console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
-    },
-    error: err => {
-      console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
-      // Rollback w przypadku błędu - przywracamy poprzednią wartość
-      const index = this.items.findIndex(i => i.id === snapshot.id);
+    this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
+      next: (updatedItem: ShoppingListItem) => {
+        const index = this.items.findIndex(i => i.id === updatedItem.id);
         if (index !== -1) {
-          this.items[index] = snapshot;
-        }
-      alert('Wystąpił błąd. Przywrócono poprzednie dane.');
-    }
-  });
-}
+          const currentItem = this.items[index];
+          //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
+          this.items[index] = {
+            ...currentItem,    
+            ...updatedItem,     
+          };
+          console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
+      },
+      error: err => {
+        console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
+        // Rollback w przypadku błędu - przywracamy poprzednią wartość
+        const index = this.items.findIndex(i => i.id === snapshot.id);
+          if (index !== -1) {
+            this.items[index] = snapshot;
+          }
+        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
+      }
+    });
+  }
+
   increaseQuantity(item: ShoppingListItem) {
     const snapshotItem = { ...item };
     item.quantity++;
@@ -74,12 +75,18 @@ export class ShoppingListItemComponent implements OnInit {
       this.updateItem(item, snapshotItem);
     }
   }
-  onCheckboxChange($event: Event) {
+
+  onNoteBlur($event: Event, item: ShoppingListItem) {
+    const input = $event.target as HTMLInputElement;
+    const snapshotItem = { ...item };
+    item.note = input.value;
+    this.updateItem(item, snapshotItem);
+  }
+
+  onCheckboxChange($event: Event, item: ShoppingListItem) {
     const checkbox = $event.target as HTMLInputElement;
-    const itemId = Number(checkbox.value);
-    const item = this.items.find(i => i.id === itemId);
-    const snapshotItem = { ...item! };
-    console.log('Checkbox changed for item ID:', itemId, 'Checked:', checkbox.checked, 'Item found:', item);
+    const snapshotItem = { ...item };
+    console.log('Checkbox changed for item ID:', item.id, 'Checked:', checkbox.checked, 'Item found:', item);
     if(item){
       item!.isPurchased = checkbox.checked;
       this.updateItem(item, snapshotItem);
