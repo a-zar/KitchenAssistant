@@ -41,8 +41,8 @@ export class ProductService {
     return this.httpClient.get<any>(searchUrl);
   }
 
-  getProductList(): Observable<Product[]>{
-    return this.httpClient.get<any>(this.baseUrl);
+  getProductList(): Observable<GetResponseProducts>{
+    return this.httpClient.get<GetResponseProducts>(this.baseUrl);
   }
 
   searchProducts(theKeyword: string): Observable<Product[]> {

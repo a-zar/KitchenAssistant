@@ -22,4 +22,8 @@ export class ShoppingListItemService {
     return this.httpClient.delete(url);
   }
 
+  updateItem(listId: number, itemId: number, item: ShoppingListItem): Observable<any> {
+    const url = `${this.baseUrl}/listId/${listId}/update/itemId/${itemId}`;
+    return this.httpClient.put(url, item);
+  }
 }

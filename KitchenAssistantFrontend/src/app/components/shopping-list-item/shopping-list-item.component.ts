@@ -11,12 +11,13 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./shopping-list-item.component.css']
 })
 export class ShoppingListItemComponent implements OnInit {
+  listName: string | null = '';
   listId: number = -1;
   showAddItemForm: boolean = false;
   newItem: ShoppingListItem | undefined;
+
   items: ShoppingListItem[] = [];
-  listName: string | null = '';
-  productNames: { [productId: number]: string } = {};
+  productNames: { [productId: string]: string } = {};
 
   constructor(private route: ActivatedRoute,
     private shoppingListItemService: ShoppingListItemService,
@@ -29,20 +30,6 @@ export class ShoppingListItemComponent implements OnInit {
     this.loadAllProductNamesFromProductService();
   }
 
-  setListId(): void {
-    this.listId = Number(this.route.snapshot.paramMap.get('listId'));
-  }
-  loadListName(): void {
-    this.route.queryParamMap.subscribe({
-      next: (params) => {
-        // Klucz musi być identyczny jak w URL (?listName=...)
-        this.listName = params.get('listName'); 
-        console.log('Odebrany parametr:', this.listName);
-      },
-      error: (err) => console.error(err)
-    });
-  }
-
   loadsItems(): void {
     this.shoppingListItemService.getItemsByListId(this.listId).subscribe({
       next: data => this.items = data,
@@ -50,34 +37,57 @@ export class ShoppingListItemComponent implements OnInit {
     });
   }
 
-  loadProductNameById(productId: number): string {
-    if (this.productNames[productId]) {
-      return this.productNames[productId];
-    } else {
-      this.productService.getProduct(productId).subscribe({
-        next: product => {
-          this.productNames[productId] = product.name;
-        },
-        error: err => console.error(`Failed to load product name for ID ${productId}`, err)
-      });
-      return this.productNames[productId]??'Ładowanie...';
+  updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
+  this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
+    next: (updatedItem: ShoppingListItem) => {
+      const index = this.items.findIndex(i => i.id === updatedItem.id);
+      if (index !== -1) {
+        const currentItem = this.items[index];
+        //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
+        this.items[index] = {
+          ...currentItem,    
+          ...updatedItem,     
+        };
+        console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
+    },
+    error: err => {
+      console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
+      // Rollback w przypadku błędu - przywracamy poprzednią wartość
+      const index = this.items.findIndex(i => i.id === snapshot.id);
+        if (index !== -1) {
+          this.items[index] = snapshot;
+        }
+      alert('Wystąpił błąd. Przywrócono poprzednie dane.');
     }
+  });
+}
+  increaseQuantity(item: ShoppingListItem) {
+    const snapshotItem = { ...item };
+    item.quantity++;
+    this.updateItem(item, snapshotItem);
   }
 
-  loadAllProductNamesFromProductService(): void {
-    this.productService.getProductList().subscribe({
-      next: products => {
-        products.forEach(product => {
-          this.productNames[product.id] = product.name;
-        }); 
-      },
-      error: err => console.error('Failed to load product names', err)
-    });
+  decreaseQuantity(item: ShoppingListItem) {
+    const snapshotItem = { ...item };
+    if (item.quantity > 1) {
+      item.quantity--;
+      this.updateItem(item, snapshotItem);
+    }
+  }
+  onCheckboxChange($event: Event) {
+    const checkbox = $event.target as HTMLInputElement;
+    const itemId = Number(checkbox.value);
+    const item = this.items.find(i => i.id === itemId);
+    const snapshotItem = { ...item! };
+    console.log('Checkbox changed for item ID:', itemId, 'Checked:', checkbox.checked, 'Item found:', item);
+    if(item){
+      item!.isPurchased = checkbox.checked;
+      this.updateItem(item, snapshotItem);
+    }
   }
 
   onDeleteItem(item: ShoppingListItem) {
     // if (!confirm(`Czy na pewno chcesz usunąć "${this.productNames[item.productId]}" z listy zakupów?`)) return;
-
     this.shoppingListItemService.deleteItem(this.listId, item.id).subscribe({
       next: () => {
         this.items = this.items.filter(i => i.id !== item.id);
@@ -86,52 +96,33 @@ export class ShoppingListItemComponent implements OnInit {
     });
   }
 
-  increaseQuantity(item: ShoppingListItem) {
-    item.quantity++;
-    // this.shoppingListItemService.updateItem(item).subscribe({
-    //   next: (updatedItem: ShoppingListItem) => {
-    //     const itemId = this.items.findIndex(i => i.id === updatedItem.id);
-    //     if (itemId !== -1) {
-    //       this.items[itemId] = updatedItem;
-    //     }
-    //   },
-    //   error: err => console.error('Failed to update shopping list item quantity', err)
-    // });
+  getProductName(productId: number): string {
+    return this.productNames[productId] || 'Nieznany produkt';
+  } 
+
+  setListId(): void {
+    this.listId = Number(this.route.snapshot.paramMap.get('listId'));
   }
 
-  decreaseQuantity(item: ShoppingListItem) {
-    if (item.quantity > 0) {
-      item.quantity--;
-      if (item.quantity === 0) {
-        this.onDeleteItem(item);
-        return;
-      } 
-      // this.shoppingListItemService.updateItem(item).subscribe({
-      //   next: (updatedItem: ShoppingListItem) => {
-      //     const itemId = this.items.findIndex(i => i.id === updatedItem.id);
-      //     if (itemId !== -1) {
-      //       this.items[itemId] = updatedItem;
-      //     }
-      //   },
-      //   error: err => console.error('Failed to update shopping list item quantity', err)
-      // });
-    }
+  loadListName(): void {
+    this.route.queryParamMap.subscribe({
+      next: (params) => {
+        this.listName = params.get('listName'); 
+        console.log('Odebrany parametr:', this.listName);
+      },
+      error: (err) => console.error(err)
+    });
   }
-  onCheckboxChange($event: Event) {
-    const checkbox = $event.target as HTMLInputElement;
-    const itemId = Number(checkbox.value);
-    const item = this.items.find(i => i.id === itemId);
-    if (item) {
-      item.isPurchased = checkbox.checked;
-    //   this.shoppingListItemService.updateItem(item).subscribe({
-    //     next: (updatedItem: ShoppingListItem) => {
-    //       const updatedItemId = this.items.findIndex(i => i.id === updatedItem.id);
-    //       if (updatedItemId !== -1) {
-    //         this.items[updatedItemId] = updatedItem;
-    //       }
-    //     },
-    //     error: err => console.error('Failed to update shopping list item isPurchased status', err)
-    //   });
-    }
+
+  loadAllProductNamesFromProductService(): void {
+    this.productService.getProductList().subscribe({
+    next: response => {
+      response._embedded.products.forEach(product => {
+          this.productNames[product.id] = product.name;
+        });
+    console.log('Słownik załadowany pomyślnie.');
+    },
+    error: (err) => console.error('Błąd ładowania słownika:', err)
+    });
   }
 }

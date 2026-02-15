@@ -10,7 +10,6 @@ import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemResponse;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
 import com.azet.KitchenAssistant.service.ShoppingListItemService;
 import com.azet.KitchenAssistant.service.ShoppingListService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
@@ -59,21 +56,10 @@ class ShoppingListController {
     //item ---->
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "/listId/{listId}/items")
     ResponseEntity<List<ShoppingListItemDto>> readAllListItems(@PathVariable int listId){
-        itemLogger.info("all list items");
+        itemLogger.info("all items for list with id: "+ listId);
 
-        List<ShoppingListItem> items = shoppingListItemRepository.findByShoppingListId(listId);
-
-        List<ShoppingListItemDto> dtos = items.stream().map(item -> {
-            ShoppingListItemDto dto = new ShoppingListItemDto();
-            dto.setProductId(item.getProduct().getId());
-            dto.setListId(item.getShoppingList().getId());
-            dto.setQuantity(item.getQuantity());
-            dto.setIsPurchased(item.getIsPurchased());
-            dto.setNote(item.getNote());
-            dto.setId(item.getId());
-            return dto;
-        }).collect(Collectors.toList());
-
+        List<ShoppingListItem> items =shoppingListItemService.findItemByShoppingListId(listId);
+        List<ShoppingListItemDto> dtos = shoppingListItemService.getShoppingListItemDtos(items);
         return ResponseEntity.ok(dtos);
     }
 
@@ -87,9 +73,18 @@ class ShoppingListController {
     @DeleteMapping(value = "/listId/{listId}/delete/itemId/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable int listId,@PathVariable int itemId){
         listLogger.info("Attempting to delete item id: " + itemId + " from shopping list: " + listId);
-        ShoppingListItemResponse response = shoppingListItemService.deleteShoppingListItem(itemId); //if not found code 404
+        shoppingListItemService.deleteShoppingListItem(itemId); //if not found code 404
         listLogger.info("Deleted item id: " +itemId);
         return  ResponseEntity.noContent().build(); //code 204
+    }
+
+    //#TODO patrz na response
+    @PutMapping(value = "/listId/{listId}/update/itemId/{itemId}")
+    public ResponseEntity<ShoppingListItemResponse> updateItem(@PathVariable int listId,@PathVariable int itemId, @Valid @RequestBody ShoppingListItemDto req){
+        listLogger.info("Attempting to update item id: " + itemId + " from shopping list: " + listId);
+        ShoppingListItemResponse response =  shoppingListItemService.updateShoppingListItem(itemId, req); //if not found code 404
+        listLogger.info("Updated item id: " +itemId);
+        return ResponseEntity.ok().body(response);
     }
 
     //list ---->
