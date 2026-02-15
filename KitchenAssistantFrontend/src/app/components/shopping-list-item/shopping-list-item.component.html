@@ -59,6 +59,31 @@
                     </tbody>
                 </table>
             </div>
+            <div class="col-md-2">
+                <h5>Dodaj produkt</h5>
+                <form (ngSubmit)="addItem()" #itemForm="ngForm">
+                    <select (change)="onCategoryChange($event)">
+                        <option [value]="null">Wszystkie kategorie</option>
+                        <option *ngFor="let cat of categories" [value]="cat.id">
+                            {{ cat.name }}
+                        </option>
+                    </select>
+                    <div class="mb-3">
+                        <label for="productSelect" class="form-label">Wybierz produkt:</label>
+                        <select class="form-select" id="productSelect" name="productId" required>
+                            <option value="">Wybierz produkt</option>
+                            <option *ngFor="let product of allProducts" [value]="product.id">
+                                {{product.name}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantityInput" class="form-label">Ilość:</label>
+                        <input type="number" class="form-control" id="quantityInput" name="quantity" value="1" min="1" required/>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Dodaj do listy</button>
+                </form>
+            </div>
         </main>
     </div>
 </div>

@@ -4,6 +4,9 @@ import { ShoppingListItemService } from 'src/app/services/shopping-list-item.ser
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShoppingListService } from 'src/app/services/shopping-list.service';
 import { ProductService } from '../../services/product.service';
+import { Product } from 'src/app/common/product';
+import { Category } from 'src/app/common/category';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-shopping-list-item',
@@ -11,6 +14,12 @@ import { ProductService } from '../../services/product.service';
   styleUrls: ['./shopping-list-item.component.css']
 })
 export class ShoppingListItemComponent implements OnInit {
+onCategoryChange($event: Event) {
+throw new Error('Method not implemented.');
+}
+addItem() {
+throw new Error('Method not implemented.');
+}
   listName: string | null = '';
   listId: number = -1;
   showAddItemForm: boolean = false;
@@ -18,16 +27,31 @@ export class ShoppingListItemComponent implements OnInit {
 
   items: ShoppingListItem[] = [];
   productNames: { [productId: string]: string } = {};
+  allProducts: Product[] = [];
+  filteredProducts: Product[] = [];
+  categories: Category[] = [];
+
 
   constructor(private route: ActivatedRoute,
     private shoppingListItemService: ShoppingListItemService,
-    private productService: ProductService) {}
+    private productService: ProductService,
+    private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     this.setListId();
     this.loadListName();
     this.loadsItems();
     this.loadAllProductNamesFromProductService();
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategoryList().subscribe({
+      next: data => {
+        this.categories = data._embedded.categories;
+      },
+      error: (err) => console.error('Błąd ładowania kategorii:', err)
+    });
   }
 
   loadsItems(): void {
@@ -124,6 +148,8 @@ export class ShoppingListItemComponent implements OnInit {
   loadAllProductNamesFromProductService(): void {
     this.productService.getProductList().subscribe({
     next: response => {
+      this.allProducts = response._embedded.products;
+
       response._embedded.products.forEach(product => {
           this.productNames[product.id] = product.name;
         });
