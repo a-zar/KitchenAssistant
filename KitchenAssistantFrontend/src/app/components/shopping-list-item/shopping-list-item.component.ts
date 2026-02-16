@@ -14,23 +14,22 @@ import { CategoryService } from '../../services/category.service';
   styleUrls: ['./shopping-list-item.component.css']
 })
 export class ShoppingListItemComponent implements OnInit {
-onCategoryChange($event: Event) {
-throw new Error('Method not implemented.');
-}
 addItem() {
 throw new Error('Method not implemented.');
 }
   listName: string | null = '';
   listId: number = -1;
+
   showAddItemForm: boolean = false;
   newItem: ShoppingListItem | undefined;
-
   items: ShoppingListItem[] = [];
+
   productNames: { [productId: string]: string } = {};
   allProducts: Product[] = [];
   filteredProducts: Product[] = [];
-  categories: Category[] = [];
 
+  categories: Category[] = [];
+  selectedCategoryId: number = -1; 
 
   constructor(private route: ActivatedRoute,
     private shoppingListItemService: ShoppingListItemService,
@@ -43,6 +42,27 @@ throw new Error('Method not implemented.');
     this.loadsItems();
     this.loadAllProductNamesFromProductService();
     this.loadCategories();
+  }
+
+  onCategoryChange($event: Event) {
+    const select = $event.target as HTMLSelectElement;
+    const categoryId = Number(select.value);
+    this.selectedCategoryId = categoryId;
+    this.filterByCategory();
+  }
+
+  filterByCategory(): void {
+    console.log('Filtrowanie produktów dla kategorii ID:', this.selectedCategoryId);
+    if (this.selectedCategoryId === -1) {
+      this.filteredProducts = this.allProducts.sort((a, b) => a.name.localeCompare(b.name));
+    }else{
+     this.productService.getProductListByCategoryPagination(this.selectedCategoryId, 0, 100).subscribe({
+      next: response => {
+        this.filteredProducts = response._embedded.products.sort((a, b) => a.name.localeCompare(b.name));
+      },
+      error: (err) => console.error('Błąd filtrowania produktów:', err)
+     });
+    }
   }
 
   loadCategories(): void {
@@ -149,6 +169,7 @@ throw new Error('Method not implemented.');
     this.productService.getProductList().subscribe({
     next: response => {
       this.allProducts = response._embedded.products;
+      this.filterByCategory();
 
       response._embedded.products.forEach(product => {
           this.productNames[product.id] = product.name;
