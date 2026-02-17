@@ -44,66 +44,12 @@ throw new Error('Method not implemented.');
     this.loadCategories();
   }
 
+  ///buttons or selects handlers
   onCategoryChange($event: Event) {
     const select = $event.target as HTMLSelectElement;
     const categoryId = Number(select.value);
     this.selectedCategoryId = categoryId;
     this.filterByCategory();
-  }
-
-  filterByCategory(): void {
-    console.log('Filtrowanie produktów dla kategorii ID:', this.selectedCategoryId);
-    if (this.selectedCategoryId === -1) {
-      this.filteredProducts = this.allProducts.sort((a, b) => a.name.localeCompare(b.name));
-    }else{
-     this.productService.getProductListByCategoryPagination(this.selectedCategoryId, 0, 100).subscribe({
-      next: response => {
-        this.filteredProducts = response._embedded.products.sort((a, b) => a.name.localeCompare(b.name));
-      },
-      error: (err) => console.error('Błąd filtrowania produktów:', err)
-     });
-    }
-  }
-
-  loadCategories(): void {
-    this.categoryService.getCategoryList().subscribe({
-      next: data => {
-        this.categories = data._embedded.categories;
-      },
-      error: (err) => console.error('Błąd ładowania kategorii:', err)
-    });
-  }
-
-  loadsItems(): void {
-    this.shoppingListItemService.getItemsByListId(this.listId).subscribe({
-      next: data => this.items = data,
-      error: err => console.error('Failed to load shopping list items', err)
-    });
-  }
-
-  updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
-    this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
-      next: (updatedItem: ShoppingListItem) => {
-        const index = this.items.findIndex(i => i.id === updatedItem.id);
-        if (index !== -1) {
-          const currentItem = this.items[index];
-          //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
-          this.items[index] = {
-            ...currentItem,    
-            ...updatedItem,     
-          };
-          console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
-      },
-      error: err => {
-        console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
-        // Rollback w przypadku błędu - przywracamy poprzednią wartość
-        const index = this.items.findIndex(i => i.id === snapshot.id);
-          if (index !== -1) {
-            this.items[index] = snapshot;
-          }
-        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
-      }
-    });
   }
 
   increaseQuantity(item: ShoppingListItem) {
@@ -147,10 +93,51 @@ throw new Error('Method not implemented.');
     });
   }
 
+//properties and methods
   getProductName(productId: number): string {
     return this.productNames[productId] || 'Nieznany produkt';
   } 
 
+  updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
+    this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
+      next: (updatedItem: ShoppingListItem) => {
+        const index = this.items.findIndex(i => i.id === updatedItem.id);
+        if (index !== -1) {
+          const currentItem = this.items[index];
+          //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
+          this.items[index] = {
+            ...currentItem,    
+            ...updatedItem,     
+          };
+          console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
+      },
+      error: err => {
+        console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
+        // Rollback w przypadku błędu - przywracamy poprzednią wartość
+        const index = this.items.findIndex(i => i.id === snapshot.id);
+          if (index !== -1) {
+            this.items[index] = snapshot;
+          }
+        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
+      }
+    });
+  }
+
+  filterByCategory(): void {
+    console.log('Filtrowanie produktów dla kategorii ID:', this.selectedCategoryId);
+    if (this.selectedCategoryId === -1) {
+      this.filteredProducts = this.allProducts.sort((a, b) => a.name.localeCompare(b.name));
+    }else{
+    this.productService.getProductListByCategory(this.selectedCategoryId).subscribe({
+      next: response => {
+        this.filteredProducts = response._embedded.products.sort((a, b) => a.name.localeCompare(b.name));
+      },
+      error: (err) => console.error('Błąd filtrowania produktów:', err)
+    });
+    }
+  }
+
+//loading data
   setListId(): void {
     this.listId = Number(this.route.snapshot.paramMap.get('listId'));
   }
@@ -177,6 +164,22 @@ throw new Error('Method not implemented.');
     console.log('Słownik załadowany pomyślnie.');
     },
     error: (err) => console.error('Błąd ładowania słownika:', err)
+    });
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategoryList().subscribe({
+      next: data => {
+        this.categories = data._embedded.categories;
+      },
+      error: (err) => console.error('Błąd ładowania kategorii:', err)
+    });
+  }
+
+  loadsItems(): void {
+    this.shoppingListItemService.getItemsByListId(this.listId).subscribe({
+      next: data => this.items = data,
+      error: err => console.error('Failed to load shopping list items', err)
     });
   }
 }

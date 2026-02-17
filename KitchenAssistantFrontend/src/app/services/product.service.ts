@@ -33,12 +33,12 @@ export class ProductService {
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
   
-  getProductListByCategory(theCategoryId: number): Observable<Product[]>{
+  getProductListByCategory(theCategoryId: number): Observable<GetResponseProducts>{
     const searchUrl = `${this.baseUrl}/search/by-category?id=${theCategoryId}`;
 
         console.log('getProductListByCategory '+searchUrl);
 
-    return this.httpClient.get<any>(searchUrl);
+    return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 
   getProductList(): Observable<GetResponseProducts>{
