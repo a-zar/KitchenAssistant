@@ -26,4 +26,9 @@ export class ShoppingListItemService {
     const url = `${this.baseUrl}/listId/${listId}/update/itemId/${itemId}`;
     return this.httpClient.put(url, item);
   }
+
+  createItem(item: ShoppingListItem): Observable<any>{
+    const url = `${this.baseUrl}/items/new`;
+    return this.httpClient.post(url, item);
+  }
 }

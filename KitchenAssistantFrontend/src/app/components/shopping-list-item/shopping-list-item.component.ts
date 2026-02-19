@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ShoppingListItem } from '../../common/shopping-list-item';
 import { ShoppingListItemService } from 'src/app/services/shopping-list-item.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,7 @@ import { ProductService } from '../../services/product.service';
 import { Product } from 'src/app/common/product';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from '../../services/category.service';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-shopping-list-item',
@@ -14,14 +15,13 @@ import { CategoryService } from '../../services/category.service';
   styleUrls: ['./shopping-list-item.component.css']
 })
 export class ShoppingListItemComponent implements OnInit {
-addItem() {
-throw new Error('Method not implemented.');
-}
+
+  productForm!: FormGroup;
+
   listName: string | null = '';
   listId: number = -1;
 
   showAddItemForm: boolean = false;
-  newItem: ShoppingListItem | undefined;
   items: ShoppingListItem[] = [];
 
   productNames: { [productId: string]: string } = {};
@@ -34,7 +34,9 @@ throw new Error('Method not implemented.');
   constructor(private route: ActivatedRoute,
     private shoppingListItemService: ShoppingListItemService,
     private productService: ProductService,
-    private categoryService: CategoryService) {}
+    private categoryService: CategoryService,
+    private formBuilder: FormBuilder,
+    private cdr: ChangeDetectorRef ) {}
 
   ngOnInit(): void {
     this.setListId();
@@ -42,9 +44,69 @@ throw new Error('Method not implemented.');
     this.loadsItems();
     this.loadAllProductNamesFromProductService();
     this.loadCategories();
+    this.initializeForm();
+  }
+
+  private initializeForm() {
+    this.productForm = this.formBuilder.group({
+      categoryId: [-1, Validators.required],
+      productId: ["", Validators.required],
+      quantity: [1, [Validators.required, Validators.min(1)]],
+      note: ['']
+    });
   }
 
   ///buttons or selects handlers
+  addItem() {
+    const selectedProductId = this.productForm.get('productId')!.value;
+    const quantityValue = this.productForm.get('quantity')!.value;
+    const noteValue = this.productForm.get('note')!.value
+    const isPurchase = false;
+
+    const newItem = new ShoppingListItem(
+        selectedProductId,
+        this.listId,
+        quantityValue,
+        isPurchase,
+        noteValue
+      );
+
+    const snaphotItems = {...this.items};
+
+    if(this.productForm.valid){ 
+      this.shoppingListItemService.createItem(newItem).subscribe({
+        next: (savedItem) => { //w zwracanych danych responsceItem powinien byc productId
+          console.log("Dodano produkt, savedItem:", savedItem);
+          
+          const index = this.items.findIndex(i => i.productId === savedItem.productId);
+          const productDuplicated = {...this.items[index]};
+
+          if(!productDuplicated?.productId){ //if dont exist id in items
+            this.items.push(savedItem);
+            } else {
+              const quntity = savedItem.quantity + productDuplicated.quantity;
+              const snapshotItem = { ...this.items[index] };
+              const updatedProduct = {...productDuplicated}
+              updatedProduct.quantity = quntity;
+              this.updateItem(updatedProduct, snapshotItem);
+            }
+          alert("Dodano " + this.getProductName(newItem.productId) +" do listy zakupów");
+          this.showAddItemForm = false;
+          this.productForm.reset({
+            categoryId: -1,
+            productId: "",
+            quantity: 1,
+            note: ''
+          }); 
+        },
+        error: err => {
+          console.error('Failed to load shopping lists', err);
+          this.items = snaphotItems;
+        },
+      })
+    };
+  }
+
   onCategoryChange($event: Event) {
     const select = $event.target as HTMLSelectElement;
     const categoryId = Number(select.value);
@@ -85,7 +147,7 @@ throw new Error('Method not implemented.');
 
   onDeleteItem(item: ShoppingListItem) {
     // if (!confirm(`Czy na pewno chcesz usunąć "${this.productNames[item.productId]}" z listy zakupów?`)) return;
-    this.shoppingListItemService.deleteItem(this.listId, item.id).subscribe({
+    this.shoppingListItemService.deleteItem(this.listId, item.id!).subscribe({
       next: () => {
         this.items = this.items.filter(i => i.id !== item.id);
       },
@@ -99,7 +161,7 @@ throw new Error('Method not implemented.');
   } 
 
   updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
-    this.shoppingListItemService.updateItem(this.listId, item.id, item).subscribe({
+    this.shoppingListItemService.updateItem(this.listId, item.id!, item).subscribe({
       next: (updatedItem: ShoppingListItem) => {
         const index = this.items.findIndex(i => i.id === updatedItem.id);
         if (index !== -1) {
@@ -109,6 +171,9 @@ throw new Error('Method not implemented.');
             ...currentItem,    
             ...updatedItem,     
           };
+          console.log('current: ',currentItem);
+          console.log('updatedItem: ',updatedItem);
+
           console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
       },
       error: err => {

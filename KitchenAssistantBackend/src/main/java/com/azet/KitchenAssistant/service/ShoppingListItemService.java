@@ -76,14 +76,19 @@ public class ShoppingListItemService {
         ShoppingListItemResponse response = new ShoppingListItemResponse();
         response.setId(savedItem.getId());
         response.setProductName(savedItem.getProduct().getName());
+        response.setProductId(savedItem.getProduct().getId());
+        response.setShoppingListId(savedItem.getShoppingList().getId());
         response.setShoppingListName(savedItem.getShoppingList().getTitle());
+        response.setQuantity(savedItem.getQuantity());
+        response.setNote(savedItem.getNote());
+        response.setIsPurchased(savedItem.getIsPurchased());
         return response;
     }
 
     private ShoppingListItem mapShoppingListItemToEntity(ShoppingListItemDto toMap, ShoppingListItem dataInDb) {
         ShoppingListItem item = dataInDb == null ? new ShoppingListItem() : dataInDb;
         item.setQuantity(toMap.getQuantity());
-        item.setIsPurchased(toMap.getIsPurchased());
+        if(toMap.getIsPurchased() == null) {item.setIsPurchased(false);} else {item.setIsPurchased(toMap.getIsPurchased());}
         item.setNote(toMap.getNote());
         item.setProduct(productRepository.findById(toMap.getProductId()).orElseThrow(() -> new ResourceNotFoundException("product not found with id: "+ toMap.getProductId())));
         item.setShoppingList(shoppingListRepository.findById(toMap.getListId()).orElseThrow(()-> new ResourceNotFoundException("shopping list not found")));

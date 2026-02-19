@@ -6,8 +6,13 @@
                 <button (click)="showAddItemForm = !showAddItemForm" class="btn btn-light shadow-sm btn-sm m-1 mb-3"><span  *ngIf="showAddItemForm">Ukryj formularz</span><span *ngIf="!showAddItemForm">Dodaj produkt</span></button>
                 <div class="col-md-4 mx-auto mb-5" *ngIf="showAddItemForm">
                     <h5 class="text-center text-success p-2">Dodaj produkt do listy</h5>
-                    <form (ngSubmit)="addItem()" #itemForm="ngForm">
-                        <select (change)="onCategoryChange($event)" class="form-select text-center mb-3" name="categoryId" required>
+                    <form (ngSubmit)="addItem()" [formGroup]="productForm">
+                        <select (change)="onCategoryChange($event)" 
+                                class="form-select text-center mb-3" 
+                                name="categoryId" 
+                                required
+                                formControlName="categoryId"
+                                required>
                             <option [value]="-1">Wszystkie kategorie</option>
                             <option *ngFor="let cat of categories" [value]="cat.id">
                                 {{ cat.name }}
@@ -15,7 +20,11 @@
                         </select>
                         <div class="mb-3">
                             <label for="productSelect" class="form-label pt-1">Wybierz produkt:</label>
-                            <select class="form-select text-center" id="productSelect" name="productId" required>
+                            <select class="form-select text-center" 
+                                id="productSelect" 
+                                name="productId" 
+                                required
+                                formControlName="productId">
                                 <option value="">...</option>
                                 <option *ngFor="let product of filteredProducts" [value]="product.id">
                                     {{product.name}}
@@ -31,13 +40,29 @@
                                 value="1" 
                                 min="1" 
                                 required
+                                formControlName="quantity"
                             />
                         </div>
-                        <button 
-                            type="submit" 
-                            class="btn btn-success shadow-sm btn-sm m-1 mb-3">
-                            Dodaj
-                        </button>
+                        <div class="mb-3">
+                            <label for="noteInput" class="form-label">Notatka (opcjonalnie):</label>
+                            <input type="text" class="form-control" 
+                                id="noteInput" name="note" 
+                                placeholder="Wpisz treść notatki..."
+                                formControlName="note"/>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" 
+                                class="btn btn-secondary btn-sm m-1 border shadow-sm"
+                                aria-label="Add product"
+                                [disabled]="productForm.invalid">
+                                Dodaj produkt
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm m-1 border shadow-sm text-secondary"
+                            aria-label="Cancel"
+                            title="Kliknij, aby ukryć formularz dodawania produktu"
+                            (click)="showAddItemForm = false">Anuluj
+                            </button>   
+                        </div>
                     </form>
                 </div>
                 <table class="table table-striped">
