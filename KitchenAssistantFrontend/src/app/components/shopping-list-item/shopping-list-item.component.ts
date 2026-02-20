@@ -56,7 +56,15 @@ export class ShoppingListItemComponent implements OnInit {
     });
   }
 
-  ///buttons or selects handlers
+  /** 
+   * @description Dodawanie produktów do danej listy zakupów. 
+   * Produkt jest wyszukiwany z listy wszystkich produktów, możliwe jest filtrowanie po kategorii
+   * @requires newItem: ShoppingListItem
+   * @returns Po weryfikacji czy produkt jest już na liście zakupów 
+   * i w zależnosci od wyniku dodanie do listy lub zwiększenie ilości danego produktu
+   * @back Po nieudanym update rollback do poprzedniego widoku. 
+   * Dodany jest snaphot
+   */  
   addItem() {
     const selectedProductId = this.productForm.get('productId')!.value;
     const quantityValue = this.productForm.get('quantity')!.value;
@@ -128,6 +136,10 @@ export class ShoppingListItemComponent implements OnInit {
     }
   }
 
+  
+  /**
+  * Notatka jest zapisywana po opuszczeniu pola przez uzytkownika 
+  */
   onNoteBlur($event: Event, item: ShoppingListItem) {
     const input = $event.target as HTMLInputElement;
     const snapshotItem = { ...item };
@@ -135,6 +147,10 @@ export class ShoppingListItemComponent implements OnInit {
     this.updateItem(item, snapshotItem);
   }
 
+  /**
+   * @Description Zaznaczenie lub odznaczenie checkbox ustawia odpoweidnia isPurchased na true lub false
+   * @param item: ShoppingListItem 
+   */
   onCheckboxChange($event: Event, item: ShoppingListItem) {
     const checkbox = $event.target as HTMLInputElement;
     const snapshotItem = { ...item };
