@@ -80,7 +80,7 @@
                             <td>{{getProductName(item.productId)}}</td>
                             <td>
                                 <button (click)="decreaseQuantity(item)" 
-                                [disabled]="item.quantity <= 0"
+                                [disabled]="item.quantity <= 1"
                                 class="m-1 btn btn-light border shadow-sm btn-sm">
                                     -
                                 </button>

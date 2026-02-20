@@ -1,13 +1,12 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ShoppingListItem } from '../../common/shopping-list-item';
 import { ShoppingListItemService } from 'src/app/services/shopping-list-item.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ShoppingListService } from 'src/app/services/shopping-list.service';
+import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../services/product.service';
 import { Product } from 'src/app/common/product';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from '../../services/category.service';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-shopping-list-item',
@@ -52,7 +51,7 @@ export class ShoppingListItemComponent implements OnInit {
       categoryId: [-1, Validators.required],
       productId: ["", Validators.required],
       quantity: [1, [Validators.required, Validators.min(1)]],
-      note: ['']
+      note: [""]
     });
   }
 
@@ -60,13 +59,19 @@ export class ShoppingListItemComponent implements OnInit {
    * @description Dodawanie produktów do danej listy zakupów. 
    * Produkt jest wyszukiwany z listy wszystkich produktów, możliwe jest filtrowanie po kategorii
    * @requires newItem: ShoppingListItem
-   * @returns Po weryfikacji czy produkt jest już na liście zakupów 
-   * i w zależnosci od wyniku dodanie do listy lub zwiększenie ilości danego produktu
+   * @returns
+   * Jesli produkt istnieje juz na liscie zakupów -> update:
+   * - zwiększenie ilości danego produktu
+   * - nowa notatka nadpisuje starą
+   * 
+   * Inaczej dodaje nowy element do listy zakupów
    * @back Po nieudanym update rollback do poprzedniego widoku. 
    * Dodany jest snaphot
    */  
   addItem() {
-    const selectedProductId = this.productForm.get('productId')!.value;
+    const snaphotItems = {...this.items};
+    const rawProductId = this.productForm.get('productId')!.value;
+    const selectedProductId = Number(rawProductId);
     const quantityValue = this.productForm.get('quantity')!.value;
     const noteValue = this.productForm.get('note')!.value
     const isPurchase = false;
@@ -79,33 +84,28 @@ export class ShoppingListItemComponent implements OnInit {
         noteValue
       );
 
-    const snaphotItems = {...this.items};
+    if(this.productForm.invalid) return;
 
-    if(this.productForm.valid){ 
+    //veryfy if product exist
+    const index = this.items.findIndex(i => i.productId === selectedProductId);  
+    const productExist = {...this.items[index]};
+
+    if(productExist){ 
+        const snapshotItem = this.setSnaphotItem(productExist);
+        const updatedProduct = {
+          ...productExist, 
+          quantity: productExist.quantity + newItem.quantity,
+          note: newItem.note || productExist.note
+        }
+        this.updateItem(updatedProduct, snapshotItem);
+        this.resetProductForm(); 
+    } else {
       this.shoppingListItemService.createItem(newItem).subscribe({
-        next: (savedItem) => { //w zwracanych danych responsceItem powinien byc productId
-          console.log("Dodano produkt, savedItem:", savedItem);
-          
-          const index = this.items.findIndex(i => i.productId === savedItem.productId);
-          const productDuplicated = {...this.items[index]};
-
-          if(!productDuplicated?.productId){ //if dont exist id in items
-            this.items.push(savedItem);
-            } else {
-              const quntity = savedItem.quantity + productDuplicated.quantity;
-              const snapshotItem = { ...this.items[index] };
-              const updatedProduct = {...productDuplicated}
-              updatedProduct.quantity = quntity;
-              this.updateItem(updatedProduct, snapshotItem);
-            }
+        next: (savedItem) => {
+          this.items.push(savedItem);
           alert("Dodano " + this.getProductName(newItem.productId) +" do listy zakupów");
           this.showAddItemForm = false;
-          this.productForm.reset({
-            categoryId: -1,
-            productId: "",
-            quantity: 1,
-            note: ''
-          }); 
+          this.resetProductForm(); 
         },
         error: err => {
           console.error('Failed to load shopping lists', err);
@@ -155,8 +155,8 @@ export class ShoppingListItemComponent implements OnInit {
 
     if (index !== -1) {
       this.items[index] = updated;
+      this.updateItem(updated, snapshotItem);
     }
-    this.updateItem(item, snapshotItem);
   }
 
   /**
@@ -170,8 +170,8 @@ export class ShoppingListItemComponent implements OnInit {
     const index = this.items.findIndex(i => i.id === item.id);
     if (index !== -1) {
       this.items[index] = updated;
+      this.updateItem(updated, snapshotItem);
     }
-    this.updateItem(updated, snapshotItem);
   }
 
   onDeleteItem(item: ShoppingListItem) {
@@ -229,6 +229,14 @@ export class ShoppingListItemComponent implements OnInit {
     }
   }
 
+  private resetProductForm() {
+    this.productForm.reset({
+      categoryId: -1,
+      productId: "",
+      quantity: 1,
+      note: ""
+    });
+  }
 //loading data
   private setSnaphotItem(item: ShoppingListItem) {
     // const index = this.items.indexOf(item);
