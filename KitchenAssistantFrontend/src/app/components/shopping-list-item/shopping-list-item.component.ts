@@ -63,6 +63,7 @@ export class ShoppingListItemComponent implements OnInit {
    * Jesli produkt istnieje juz na liscie zakupów -> update:
    * - zwiększenie ilości danego produktu
    * - nowa notatka nadpisuje starą
+   * - zmiana statusa isPurchase na false
    * 
    * Inaczej dodaje nowy element do listy zakupów
    * @back Po nieudanym update rollback do poprzedniego widoku. 
@@ -74,13 +75,13 @@ export class ShoppingListItemComponent implements OnInit {
     const selectedProductId = Number(rawProductId);
     const quantityValue = this.productForm.get('quantity')!.value;
     const noteValue = this.productForm.get('note')!.value
-    const isPurchase = false;
+    const isPurchased = false;
 
     const newItem = new ShoppingListItem(
         selectedProductId,
         this.listId,
         quantityValue,
-        isPurchase,
+        isPurchased,
         noteValue
       );
 
@@ -95,9 +96,11 @@ export class ShoppingListItemComponent implements OnInit {
         const updatedProduct = {
           ...productExist, 
           quantity: productExist.quantity + newItem.quantity,
-          note: newItem.note || productExist.note
+          note: newItem.note || productExist.note,
+          isPurchased: false
         }
         this.updateItem(updatedProduct, snapshotItem);
+        this.showAddItemForm = false;
         this.resetProductForm(); 
     } else {
       this.shoppingListItemService.createItem(newItem).subscribe({
