@@ -1,0 +1,127 @@
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct">
+            <div class="col-md-10 text-center" >
+                <h4 class="text-center">Lista zakupów: <b>{{listName}}</b></h4>
+                <button (click)="showAddItemForm = !showAddItemForm" class="btn btn-light shadow-sm btn-sm m-1 mb-3"><span  *ngIf="showAddItemForm">Ukryj formularz</span><span *ngIf="!showAddItemForm">Dodaj produkt</span></button>
+                <div class="col-md-4 mx-auto mb-5" *ngIf="showAddItemForm">
+                    <h5 class="text-center text-success p-2">Dodaj produkt do listy</h5>
+                    <form (ngSubmit)="addItem()" [formGroup]="productForm">
+                        <select (change)="onCategoryChange($event)" 
+                                class="form-select text-center mb-3" 
+                                name="categoryId" 
+                                required
+                                formControlName="categoryId"
+                                required>
+                            <option [value]="-1">Wszystkie kategorie</option>
+                            <option *ngFor="let cat of categories" [value]="cat.id">
+                                {{ cat.name }}
+                            </option>
+                        </select>
+                        <div class="mb-3">
+                            <label for="productSelect" class="form-label pt-1">Wybierz produkt:</label>
+                            <select class="form-select text-center" 
+                                id="productSelect" 
+                                name="productId" 
+                                required
+                                formControlName="productId">
+                                <option value="">...</option>
+                                <option *ngFor="let product of filteredProducts" [value]="product.id">
+                                    {{product.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantityInput" class="form-label">Ilość:</label>
+                            <input type="number" 
+                                class="form-control text-center" 
+                                id="quantityInput" 
+                                name="quantity" 
+                                value="1" 
+                                min="1" 
+                                required
+                                formControlName="quantity"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="noteInput" class="form-label">Notatka (opcjonalnie):</label>
+                            <input type="text" class="form-control" 
+                                id="noteInput" name="note" 
+                                placeholder="Wpisz treść notatki..."
+                                formControlName="note"/>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" 
+                                class="btn btn-secondary btn-sm m-1 border shadow-sm"
+                                aria-label="Add product"
+                                [disabled]="productForm.invalid">
+                                Dodaj produkt
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm m-1 border shadow-sm text-secondary"
+                            aria-label="Cancel"
+                            title="Kliknij, aby ukryć formularz dodawania produktu"
+                            (click)="showAddItemForm = false">Anuluj
+                            </button>   
+                        </div>
+                    </form>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>Ilość</th>
+                            <th>Notatka</th>
+                            <th>Zakupiono</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of items">
+                            <td>{{getProductName(item.productId)}}</td>
+                            <td>
+                                <button (click)="decreaseQuantity(item)" 
+                                [disabled]="item.quantity <= 1"
+                                class="m-1 btn btn-light border shadow-sm btn-sm">
+                                    -
+                                </button>
+                                {{item.quantity}}
+                                <button (click)="increaseQuantity(item)" 
+                                class="m-1 btn btn-light border shadow-sm btn-sm">
+                                    +
+                                </button>
+                            </td>
+                            <td>
+                                <input type="text" 
+                                [(ngModel)]="item.note"
+                                [value]="item.note || ''"
+                                placeholder="Wpisz treść notatki..." 
+                                (keyup.enter)="onNoteBlur($event, item)" 
+                                (blur)="onNoteBlur($event, item)"
+                                class="form-control form-control-sm mt-1"
+                                />
+                            </td>
+                            <td>
+                                <input type="checkbox" 
+                                [(ngModel)]="item.isPurchased"
+                                [value]="item.id" 
+                                class="form-check-input me-2"
+                                (change)="onCheckboxChange($event, item)"/>
+                                <span *ngIf="item.isPurchased; else notPurchased" 
+                                class="badge bg-success">Tak</span>
+                                <ng-template #notPurchased>
+                                    <span class="badge bg-warning">Nie</span>
+                                </ng-template>
+                            </td>
+                            <td>
+                                <button (click)="onDeleteItem(item)" class="btn btn-danger btn-sm">
+                                    Usuń
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+

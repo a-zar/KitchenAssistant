@@ -3,6 +3,7 @@ package com.azet.KitchenAssistant.dto.shoppingList;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum RecurrencePattern {
+    BRAK,
     DAILY,
     WEEKLY,
     MONTHLY,

@@ -32,6 +32,9 @@ public class ShoppingList {
     @Column(name = "next_occurrence_date")
     private LocalDate nextOccurrenceDate;
 
+    @Column(name = "start_occurrence_date")
+    private LocalDate startOccurrenceDate;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "shoppingList")
     @JsonIgnore
     private Set<ShoppingListItem> shoppingListItems;

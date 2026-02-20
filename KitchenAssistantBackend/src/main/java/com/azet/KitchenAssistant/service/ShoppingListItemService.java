@@ -8,51 +8,90 @@ import com.azet.KitchenAssistant.dao.ShoppingListItemRepository;
 import com.azet.KitchenAssistant.dao.ShoppingListRepository;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemDto;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListItemResponse;
-import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShoppingListItemService {
     @Autowired
     private ShoppingListItemRepository shoppingListItemRepository;
-
     @Autowired
     private ProductRepository productRepository;
-
     @Autowired
     private ShoppingListRepository shoppingListRepository;
 
-    public ShoppingListItemResponse createListItem(ShoppingListItemDto newListItem){
-        ShoppingListItemResponse response= new ShoppingListItemResponse();
-
-        ShoppingListItem request = new ShoppingListItem();
-        request.setQuantity(newListItem.getQuantity());
-        request.setIsPurchased(newListItem.getIsPurchased());
-        request.setProduct(productRepository.findById(newListItem.getProductId()).orElseThrow(() -> new ResourceNotFoundException("product not found with id: "+ newListItem.getProductId())));
-        request.setShoppingList(shoppingListRepository.findById(newListItem.getListId()).orElseThrow(()-> new ResourceNotFoundException("shopping list not found")));
-
-        shoppingListItemRepository.save(request);
-
-        response.setId(request.getId());
-        response.setShoppingListName(request.getShoppingList().getTitle());
-        response.setProductName(request.getProduct().getName());
-        return response;
+    public ShoppingListItemResponse createListItem(ShoppingListItemDto newListItemDto){
+        final ShoppingListItem itemToCreate = mapShoppingListItemToEntity(newListItemDto, null);
+        shoppingListItemRepository.save(itemToCreate);
+        return getShoppingListItemResponse(itemToCreate);
     }
 
-    public ShoppingListItemResponse deleteShoppingListItem(final int id) {
+    public ShoppingListItemResponse updateShoppingListItem(final int itemId, ShoppingListItemDto listItemDtoToUpdate) {
+        ShoppingListItem oldItem = getListItemIfExistOrThrowException(itemId);
+        final ShoppingListItem itemToUpdate = mapShoppingListItemToEntity(listItemDtoToUpdate, oldItem);
+        shoppingListItemRepository.save(itemToUpdate);
+        return getShoppingListItemResponse(itemToUpdate);
+    }
+
+    public void deleteShoppingListItem(final int id) {
         ShoppingListItem item = shoppingListItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found id: "+id));
         shoppingListItemRepository.deleteById(id);
-        return getShoppingListItemResponse(item);
+        getShoppingListItemResponse(item);
     }
 
-    private static ShoppingListItemResponse getShoppingListItemResponse(final ShoppingListItem savedItem) {
+    public List<ShoppingListItemDto> getShoppingListItemDtos(final List<ShoppingListItem> items) {
+        return items.stream().map(item -> {
+            ShoppingListItemDto dto = new ShoppingListItemDto();
+            dto.setProductId(item.getProduct().getId());
+            dto.setListId(item.getShoppingList().getId());
+            dto.setQuantity(item.getQuantity());
+            dto.setIsPurchased(item.getIsPurchased());
+            dto.setNote(item.getNote());
+            dto.setId(item.getId());
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<ShoppingListItem> findItemByShoppingListId(final int listId){
+        verifyIfListExistOrThrowException(listId);
+        return shoppingListItemRepository.findByShoppingListId(listId);
+    }
+
+    private void verifyIfListExistOrThrowException(final int listId) {
+        if (!shoppingListRepository.existsById(listId)) {
+            throw new ResourceNotFoundException("Shopping List not found with id: " + listId);
+        }
+    }
+
+    private ShoppingListItem getListItemIfExistOrThrowException(final int listIdUrl) {
+        return shoppingListItemRepository.findById(listIdUrl).orElseThrow(
+                () -> new ResourceNotFoundException("Shopping List item not found with id: " + listIdUrl));
+    }
+
+    private ShoppingListItemResponse getShoppingListItemResponse(final ShoppingListItem savedItem) {
         ShoppingListItemResponse response = new ShoppingListItemResponse();
         response.setId(savedItem.getId());
         response.setProductName(savedItem.getProduct().getName());
+        response.setProductId(savedItem.getProduct().getId());
+        response.setShoppingListId(savedItem.getShoppingList().getId());
         response.setShoppingListName(savedItem.getShoppingList().getTitle());
+        response.setQuantity(savedItem.getQuantity());
+        response.setNote(savedItem.getNote());
+        response.setIsPurchased(savedItem.getIsPurchased());
         return response;
+    }
+
+    private ShoppingListItem mapShoppingListItemToEntity(ShoppingListItemDto toMap, ShoppingListItem dataInDb) {
+        ShoppingListItem item = dataInDb == null ? new ShoppingListItem() : dataInDb;
+        item.setQuantity(toMap.getQuantity());
+        if(toMap.getIsPurchased() == null) {item.setIsPurchased(false);} else {item.setIsPurchased(toMap.getIsPurchased());}
+        item.setNote(toMap.getNote());
+        item.setProduct(productRepository.findById(toMap.getProductId()).orElseThrow(() -> new ResourceNotFoundException("product not found with id: "+ toMap.getProductId())));
+        item.setShoppingList(shoppingListRepository.findById(toMap.getListId()).orElseThrow(()-> new ResourceNotFoundException("shopping list not found")));
+        return item;
     }
 }

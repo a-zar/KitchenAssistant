@@ -1,0 +1,104 @@
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct">
+            <div class="items-box" >
+                <div class="create-box" click-stop-propagation (click)="showCreateView()">
+                    <p class="text-success">Utwórz nową listę zakupów</p>
+                    <div *ngIf="createMode" class="createMode" [class.d-none]="!createMode">
+                        <input type="text" 
+                        #titleInput="ngModel"
+                        [(ngModel)]="shoppingList!.listTitle" 
+                        placeholder="Tytuł listy zakupów" 
+                        class="form-control m-1"
+                        required 
+                        minlength="3"
+                        [class.is-invalid]="titleInput.invalid && titleInput.touched"/>
+                        <div *ngIf="titleInput.invalid && titleInput.touched" class="text-danger small ms-1">
+                            Tytuł musi mieć co najmniej 3 znaki.
+                        </div>
+                        <select size ="2" [(ngModel)]="shoppingList!.recurrencePattern" class="m-1 form-select text-center">
+                            <option selected disabled [value]="RecurrencePattern.BRAK">Wybierz cykliczność</option>
+                            <option *ngFor="let option of recurrenceOptions" [value]="option">
+                                {{labels[option]}}
+                            </option>
+                        </select>
+                        <div *ngIf="shoppingList!.recurrencePattern !== RecurrencePattern.BRAK">
+                            <p>Ustaw datę zaczynającą cykl:
+                            <input type="Date" [(ngModel)]="shoppingList!.startOccurrenceDate" class="m-1 form-control"/>
+                        </div>    
+                        <div class="text-center m-3">
+                            <!-- submit button-->
+                            <button type="submit" class="btn btn-info btn-sm m-1 border shadow-sm" click-stop-propagation (click)="onCreate(shoppingList!)"> Zapisz </button>
+                            <!-- cancel button-->
+                            <button class="btn btn-light btn-sm m-1 border shadow-sm text-secondary" 
+                            aria-label="Cancel"
+                            title="Kliknij, aby wrócić do poprzedniego widoku"
+                            (click)="cancelCreateMode()" click-stop-propagation >Anuluj
+                        </button>
+                        </div>
+                        
+                    </div>
+                </div> 
+            </div>
+
+            <div *ngFor="let list of shoppingLists" class="items-box">
+                <div class="elem-box">
+                    <div class="shoppingListElem position-relative pt-5" [class.d-none]="editingListId === list.id">
+                        <div class="mb-3 ms-auto position-absolute top-0 end-0 d-flex">
+                            <button class="btn btn-light border shadow-sm text-secondary btn-sm m-1" aria-label="Edit" title="Kliknij, aby edytować listę zakupów"
+                            click-stop-propagation (click)="setEditingListId(list.id!)">
+                            ...</button>
+                            <button click-stop-propagation (click)="onDelete(list.id!)" 
+                            type="button" class="btn btn-danger shadow-sm btn-sm m-1" aria-label="Close" 
+                            title="Kliknij, aby usunąć listę zakupów">×
+                            </button>
+                        </div>
+                        <a [routerLink]="['/shoppingList/', list.id, 'items']"
+                        [queryParams]="{ listName: list.listTitle }"
+                        class="text-decoration-none text-dark">
+                            <h3>{{list.listTitle}}</h3>
+                            <div *ngIf="list?.recurrencePattern !== 'BRAK'">
+                                <p>cykl: {{list.recurrencePattern}}</p>
+                                <p>początek cyklu: {{list.startOccurrenceDate}}</p>
+                                <p>koniec cyklu: {{list.nextOccurrenceDate}}</p>
+                            </div>    
+                        </a>
+                    </div>
+                    <div class= "d-none shoppingListEdit position-relative pt-5 p-3" [class.d-none]="editingListId !== list.id" >
+                        <!-- back button-->
+                        <button class="btn btn-light btn-sm m-1 border shadow-sm text-secondary position-absolute top-0 end-0 d-flex align-items-center" 
+                            aria-label="Back"
+                            title="Kliknij, aby wrócić do poprzedniego widoku"
+                            (click)="toggleEditMode()" click-stop-propagation >Powrót
+                        </button>
+                        <input type="text" 
+                            [(ngModel)]="list.listTitle"
+                            class="m-1 form-control" 
+                            #titleInput="ngModel"
+                            required 
+                            minlength="3"
+                            placeholder = "Tytuł listy zakupów"
+                            [class.is-invalid]="titleInput.invalid && titleInput.touched"/>
+                        <div *ngIf="titleInput.invalid && titleInput.touched" class="text-danger small ms-1">
+                            Tytuł musi mieć co najmniej 3 znaki.
+                        </div>
+                        <select size ="1" [(ngModel)]="list.recurrencePattern" class="m-1 form-select text-center">
+                            <option selected disabled [value]="RecurrencePattern.BRAK">Wybierz cykliczność</option>
+                            <option *ngFor="let option of recurrenceOptions" [value]="option">
+                                {{labels[option]}}
+                            </option>
+                        </select>
+                        <div *ngIf="list.recurrencePattern !== 'BRAK'">
+                            <p>Ustaw datę zaczynającą cykl:
+                            <input type="Date" [(ngModel)]="list.startOccurrenceDate" class="m-1 form-control"/>
+                        </div>    
+                        <!-- submit button-->
+                        <div class="text-center m-3">
+                            <button type="submit" class="btn btn-info btn-sm m-1 border shadow-sm" (click)="onUpdate(list)"> Zapisz </button>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

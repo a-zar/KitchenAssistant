@@ -11,4 +11,6 @@ public class ShoppingListResponse {
     private int id;
     private String listTitle;
     private LocalDate nextOccurrenceDate;
+    private LocalDate startOccurrenceDate;
+
 }
