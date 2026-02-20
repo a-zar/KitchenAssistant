@@ -123,27 +123,39 @@ export class ShoppingListItemComponent implements OnInit {
   }
 
   increaseQuantity(item: ShoppingListItem) {
-    const snapshotItem = { ...item };
-    item.quantity++;
-    this.updateItem(item, snapshotItem);
-  }
+    const snapshotItem = this.setSnaphotItem(item);
+    const index = this.items.findIndex(i => i.id === item.id);
+    const updated = {...item, quantity: item.quantity + 1};
 
-  decreaseQuantity(item: ShoppingListItem) {
-    const snapshotItem = { ...item };
-    if (item.quantity > 1) {
-      item.quantity--;
-      this.updateItem(item, snapshotItem);
+    if (index !== -1) {
+      this.items[index] = updated;
+      this.updateItem(updated, snapshotItem);
     }
   }
 
+  decreaseQuantity(item: ShoppingListItem) {
+    const snapshotItem = this.setSnaphotItem(item);
+    const index = this.items.findIndex(i => i.id === item.id);
+    const updated = {...item, quantity: item.quantity - 1};
+
+    if (index !== -1 && item.quantity > 1 ) {
+      this.items[index] = updated;
+      this.updateItem(updated, snapshotItem);
+    }
+  }
   
   /**
   * Notatka jest zapisywana po opuszczeniu pola przez uzytkownika 
   */
   onNoteBlur($event: Event, item: ShoppingListItem) {
     const input = $event.target as HTMLInputElement;
-    const snapshotItem = { ...item };
-    item.note = input.value;
+    const snapshotItem = this.setSnaphotItem(item);
+    const updated = {...item, note: input.value};
+    const index = this.items.findIndex(i => i.id === item.id);
+
+    if (index !== -1) {
+      this.items[index] = updated;
+    }
     this.updateItem(item, snapshotItem);
   }
 
@@ -153,30 +165,32 @@ export class ShoppingListItemComponent implements OnInit {
    */
   onCheckboxChange($event: Event, item: ShoppingListItem) {
     const checkbox = $event.target as HTMLInputElement;
-    const snapshotItem = { ...item };
-    console.log('Checkbox changed for item ID:', item.id, 'Checked:', checkbox.checked, 'Item found:', item);
-    if(item){
-      item!.isPurchased = checkbox.checked;
-      this.updateItem(item, snapshotItem);
+    const snapshotItem = this.setSnaphotItem(item);
+    const updated = {...item, isPurchased:checkbox.checked};
+    const index = this.items.findIndex(i => i.id === item.id);
+    if (index !== -1) {
+      this.items[index] = updated;
     }
+    this.updateItem(updated, snapshotItem);
   }
 
   onDeleteItem(item: ShoppingListItem) {
-    // if (!confirm(`Czy na pewno chcesz usunąć "${this.productNames[item.productId]}" z listy zakupów?`)) return;
+    const snaphotItems = [...this.items];
     this.shoppingListItemService.deleteItem(this.listId, item.id!).subscribe({
       next: () => {
+        //update UI
         this.items = this.items.filter(i => i.id !== item.id);
-      },
-      error: err => console.error('Failed to delete shopping list item', err)
+        console.log("Deleted item with id: ", item.id)
+      }, 
+      error: err => {
+        console.error('Failed to delete shopping list item', err);
+        this.items = [...snaphotItems];
+      }
     });
   }
 
 //properties and methods
-  getProductName(productId: number): string {
-    return this.productNames[productId] || 'Nieznany produkt';
-  } 
-
-  updateItem(item: ShoppingListItem, snapshot: ShoppingListItem): void {
+  updateItem(item: ShoppingListItem, snapshotItem: ShoppingListItem): void {
     this.shoppingListItemService.updateItem(this.listId, item.id!, item).subscribe({
       next: (updatedItem: ShoppingListItem) => {
         const index = this.items.findIndex(i => i.id === updatedItem.id);
@@ -187,17 +201,14 @@ export class ShoppingListItemComponent implements OnInit {
             ...currentItem,    
             ...updatedItem,     
           };
-          console.log('current: ',currentItem);
-          console.log('updatedItem: ',updatedItem);
-
-          console.log('Stan lokalny zaktualizowany dla ID:', updatedItem.id);      }
+        console.log('Local state updated with id:', updatedItem.id);      }
       },
       error: err => {
-        console.log('Błąd aktualizacji, przywracanie poprzedniego stanu dla ID:', snapshot.id, 'Błąd:', err);
+        console.log('Update error: ', err);
         // Rollback w przypadku błędu - przywracamy poprzednią wartość
-        const index = this.items.findIndex(i => i.id === snapshot.id);
+        const index = this.items.findIndex(i => i.id === snapshotItem.id);
           if (index !== -1) {
-            this.items[index] = snapshot;
+            this.items[index] = snapshotItem;
           }
         alert('Wystąpił błąd. Przywrócono poprzednie dane.');
       }
@@ -219,6 +230,20 @@ export class ShoppingListItemComponent implements OnInit {
   }
 
 //loading data
+  private setSnaphotItem(item: ShoppingListItem) {
+    // const index = this.items.indexOf(item);
+    const index = this.items.findIndex(i => i.id === item.id); 
+    if(index === -1){
+      return {...item};
+    }
+    const snapshotItem = { ...this.items[index] };
+    console.log("ustawiono snapshot dla items[id] with id: ", index)
+    return snapshotItem;
+  }
+  
+  getProductName(productId: number): string {
+    return this.productNames[productId] || 'Nieznany produkt';
+  } 
   setListId(): void {
     this.listId = Number(this.route.snapshot.paramMap.get('listId'));
   }
