@@ -19,8 +19,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ShoppingListComponent } from './components/shopping-list/shopping-list.component';
 import { ClickStopPropagationDirective } from './shared/directives/click-stop-propagation.directive';
 import { ShoppingListItemComponent } from './components/shopping-list-item/shopping-list-item.component';
+import { RecipeComponent } from './components/recipe/recipe.component';
 
 const routes: Routes = [
+
+  {path: 'recipes', component: RecipeComponent},
 
   {path: 'shoppingList', component: ShoppingListComponent},
   {path: 'shoppingList/:id', component: ShoppingListComponent},
@@ -49,7 +52,8 @@ const routes: Routes = [
     ProductDetailsComponent,
     ProductFormComponent,
     ShoppingListComponent,
-    ShoppingListItemComponent
+    ShoppingListItemComponent,
+    RecipeComponent
   ],
   imports: [
     RouterModule.forRoot(routes),
