@@ -1,1 +1,63 @@
-<p>recipe works!</p>
+<div class="container-fluid">
+    <div class="row">
+        <main class="contentProduct col-12">
+            <button (click)="createMode = !createMode" class="create-button mx-auto d-block w-50" *ngIf="!createMode">
+                <span>Dodaj przepis</span>
+            </button>
+            <div class="create-box mx-auto d-block" *ngIf="createMode">
+                <p class="text-success">Utwórz nowy przepis</p>
+                <form (ngSubmit)="addRecipe()" [formGroup]="recipeForm">
+                    <input type="text" 
+                        formControlName="recipeTitle"
+                        placeholder="Tytuł przepisu" 
+                        class="form-control m-1"
+                        required 
+                        minlength="3"
+                        aria-label="Recipe title"/>
+                    <div *ngIf="recipeForm.get('recipeTitle')?.invalid && (recipeForm.get('recipeTitle')?.dirty || recipeForm.get('recipeTitle')?.touched)" class="text-danger m-1">
+                        <div *ngIf="recipeForm.get('recipeTitle')?.errors?.['required']">
+                            Tytuł przepisu jest wymagany.
+                        </div>
+                        <div *ngIf="recipeForm.get('recipeTitle')?.errors?.['minlength']">
+                            Tytuł przepisu musi mieć co najmniej 3 znaki.
+                        </div>
+                    </div>
+                    <textarea 
+                        formControlName="recipeInstructions"
+                        placeholder="Opis przepisu"
+                        class="form-control m-1"
+                        minlength="3"
+                        aria-label="Recipe instructions">
+                    </textarea>
+                    <div *ngIf="recipeForm.get('recipeInstructions')?.invalid && 
+                        (recipeForm.get('recipeInstructions')?.dirty || recipeForm.get('recipeInstructions')?.touched)" 
+                        class="text-danger m-1">
+                        <div *ngIf="recipeForm.get('recipeInstructions')?.errors?.['minlength']">
+                            Opis przepisu musi mieć co najmniej 3 znaki.
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button
+                            class="btn btn-secondary btn-sm m-1 border shadow-sm" 
+                            type="submit"
+                            aria-label="Add recipe"
+                            [disabled]="recipeForm.invalid">
+                            Zapisz przepis
+                        </button>
+                        <button 
+                            class="btn btn-light btn-sm m-1 border shadow-sm text-secondary" 
+                            type="button"
+                            aria-label="Cancel"
+                            (click)="createMode = !createMode">
+                            Anuluj
+                        </button>
+                    </div>
+                </form>
+            </div>
+        
+            <div class="items-box" >
+
+            </div>
+        </main>
+    </div>
+<div>

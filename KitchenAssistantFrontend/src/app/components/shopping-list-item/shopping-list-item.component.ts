@@ -111,7 +111,8 @@ export class ShoppingListItemComponent implements OnInit {
           this.resetProductForm(); 
         },
         error: err => {
-          console.error('Failed to load shopping lists', err);
+          console.error('Failed to create shopping list item', err);
+          alert("Coś poszło nie tak... Spróbuj ponownie później");
           this.items = snaphotItems;
         },
       })

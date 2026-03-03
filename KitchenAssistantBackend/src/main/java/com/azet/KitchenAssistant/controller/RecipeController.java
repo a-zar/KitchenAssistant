@@ -55,8 +55,10 @@ class RecipeController {
     @PostMapping(value = "/new")
     public ResponseEntity<RecipeResponse> saveRecipe(@Valid @RequestBody RecipeDto req){
         // Delegacja logiki do Serwisu
+
         RecipeResponse response = recipeService.createRecipe(req);
-        recipeLogger.info("New recipe created: {}", req.getTitle());
+
+        recipeLogger.info("New recipe created: {}, instructions: {}", req.getTitle(), req.getInstruction());
         //201 Created
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
