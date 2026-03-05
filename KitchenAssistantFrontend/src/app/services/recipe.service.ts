@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class RecipeService {
+
   private baseUrl = 'http://localhost:8080/api/recipe';
 
   constructor(private httpClient: HttpClient) {}
@@ -19,5 +20,10 @@ export class RecipeService {
   getRecipes(): Observable<Recipe[]> {
     const url = this.baseUrl;
     return this.httpClient.get<Recipe[]>(url);
+  }
+
+  deleteRecipe(recipeId: Number) {
+    const url = `${this.baseUrl}/delete/recipeId/${recipeId}`;
+    return this.httpClient.delete(url);
   }
 }

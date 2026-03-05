@@ -40,12 +40,27 @@ export class RecipeComponent implements OnInit {
     });
   }
 
+
+  // TODO dodac snaphot
+  onDelete(recipeId: Number) {
+    this.recipeService.deleteRecipe(recipeId).subscribe({
+      next: () => {
+        this.recipes = this.recipes.filter((recipe) => recipe.id !== recipeId);
+        alert('Przepis został usunięty!');
+      },
+      error: (err) => {
+        console.error('Failed to delete recipe', err);
+        alert('Coś poszło nie tak... Spróbuj ponownie później');
+      },
+    });
+  }
+
   loadRecipes() {
     this.recipeService.getRecipes().subscribe({
       next: (data) => {
         this.recipes = data;
         this.recipes = this.recipes.map((item) => {
-          if(item.createdAt != null) {
+          if (item.createdAt != null) {
             item.createdAt = item.createdAt!.replace('T', ' ').substring(0, 16);
             return item;
           }
@@ -80,7 +95,9 @@ export class RecipeComponent implements OnInit {
 
     this.recipeService.createRecipe(newRecipe).subscribe({
       next: (createdRecipe) => {
-        createdRecipe.created_at = createdRecipe.created_at.replace('T', ' ').substring(0, 19);
+        createdRecipe.created_at = createdRecipe.created_at
+          .replace('T', ' ')
+          .substring(0, 19);
         this.recipes = [...this.snaphotRecipes, createdRecipe];
         this.createMode = false;
         alert('Przepis został dodany!');

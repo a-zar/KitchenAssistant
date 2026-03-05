@@ -59,8 +59,15 @@
         
             <div class="row">
                 <div class="items-box col-12" *ngFor="let recipe of recipes">
-                    <div class="elem-box">
-                        <div class="shoppingListElem position-relative pt-5">
+                    <div class="elem-box position-relative pt-5">
+                        
+                        <button
+                            click-stop-propagation (click)="onDelete(recipe.id!)" 
+                            type="button" class="btn btn-danger shadow-sm btn-sm m-1 position-absolute top-0 end-0" aria-label="Close" 
+                            title="Kliknij, aby usunąć przepis"> ×
+                        </button>
+                    
+                        <div class="shoppingListElem">
                             <h3>title: {{ recipe.title }}</h3>
                             <p>Przepis: {{ recipe.instruction }}</p>
                             <p>Utworzono: {{ recipe.createdAt }}</p>
