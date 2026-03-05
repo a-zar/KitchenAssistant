@@ -126,9 +126,6 @@ li.top-menu-item a {
   cursor: pointer;
   border-color: #008000;
 }
-.create-box:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-}
 
 .elem-box{
   border: 1px solid #e5e7eb; /* gray-200 */
@@ -143,7 +140,7 @@ li.top-menu-item a {
 }
 
 .elem-box:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 .create-button{
   border: 1px solid #e5e7eb; /* gray-200 */
@@ -156,6 +153,14 @@ li.top-menu-item a {
   flex-direction: column; 
   align-items: center; 
   cursor: pointer;
+}
+
+.create-button:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.contentProduct:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
 .items-box{

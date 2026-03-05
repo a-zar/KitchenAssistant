@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -52,14 +53,19 @@ public class RecipeService {
     }
 
     private static Recipe mapRecipeDtoToEntity(final RecipeDto newRecipe, final Recipe request) {
+        request.setCreatedAt(LocalDateTime.now());
         request.setTitle(newRecipe.getTitle());
         request.setInstruction(newRecipe.getInstruction());
+        System.out.println("request.getCreatedAt(): " + request.getCreatedAt());
+
         return request;
     }
 
     private static RecipeResponse getRecipeResponse(final Recipe request) {
         RecipeResponse response = new RecipeResponse();
         response.setRecipeTitle(request.getTitle());
+        response.setInstruction(request.getInstruction());
+        response.setCreated_at(request.getCreatedAt());
         response.setId(request.getId());
         return response;
     }

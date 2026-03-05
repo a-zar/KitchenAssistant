@@ -24,6 +24,7 @@ export class RecipeComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadRecipes();
   }
 
   /**
@@ -36,6 +37,27 @@ export class RecipeComponent implements OnInit {
       recipeTitle: ['', [Validators.required, Validators.minLength(3)]],
       recipeInstructions: ['', [Validators.minLength(3)]],
       createdAt: [''],
+    });
+  }
+
+  loadRecipes() {
+    this.recipeService.getRecipes().subscribe({
+      next: (data) => {
+        this.recipes = data;
+        this.recipes = this.recipes.map((item) => {
+          if(item.createdAt != null) {
+            item.createdAt = item.createdAt!.replace('T', ' ').substring(0, 16);
+            return item;
+          }
+          return item;
+        });
+        // this.recipes = data.map((item) => { item.created_at = item.created_at!.replace('T', ' ').substring(0, 19); return item; });
+        console.log('Loaded recipes:', this.recipes);
+      },
+      error: (err) => {
+        console.error('Failed to load recipes', err);
+        alert('Coś poszło nie tak... Spróbuj ponownie później');
+      },
     });
   }
 
@@ -52,15 +74,18 @@ export class RecipeComponent implements OnInit {
     const newRecipe = new Recipe(
       recipeTitleValue,
       recipeInstructionsValue,
-      undefined, // created_at will be set by the backend
+      undefined, // created_at will be set by the backend in db
       undefined, // recipeId will be set by the backend
     );
 
     this.recipeService.createRecipe(newRecipe).subscribe({
       next: (createdRecipe) => {
+        createdRecipe.created_at = createdRecipe.created_at.replace('T', ' ').substring(0, 19);
         this.recipes = [...this.snaphotRecipes, createdRecipe];
         this.createMode = false;
         alert('Przepis został dodany!');
+        console.log('Created recipe:', createdRecipe);
+        this.recipeForm.reset();
       },
       error: (err) => {
         console.error('Failed to create recipe', err);
