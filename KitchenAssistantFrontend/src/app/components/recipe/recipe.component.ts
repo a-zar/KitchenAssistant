@@ -40,19 +40,22 @@ export class RecipeComponent implements OnInit {
     });
   }
 
-
-  // TODO dodac snaphot
+ 
   onDelete(recipeId: Number) {
-    this.recipeService.deleteRecipe(recipeId).subscribe({
-      next: () => {
-        this.recipes = this.recipes.filter((recipe) => recipe.id !== recipeId);
-        alert('Przepis został usunięty!');
-      },
-      error: (err) => {
-        console.error('Failed to delete recipe', err);
-        alert('Coś poszło nie tak... Spróbuj ponownie później');
-      },
-    });
+    this.snaphotRecipes = [...this.recipes];
+    if (confirm('Czy na pewno chcesz usunąć ten przepis?')) {
+      this.recipeService.deleteRecipe(recipeId).subscribe({
+        next: () => {
+          this.recipes = this.recipes.filter((recipe) => recipe.id !== recipeId);
+          console.log(`Deleted recipe with id: ${recipeId}`);
+        },
+        error: (err) => {
+          this.recipes = this.snaphotRecipes; // revert to snapshot on error
+          console.error('Failed to delete recipe', err);
+          alert('Coś poszło nie tak... Spróbuj ponownie później');
+        },
+      });
+    }
   }
 
   loadRecipes() {
