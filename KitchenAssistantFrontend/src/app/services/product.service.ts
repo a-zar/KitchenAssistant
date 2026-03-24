@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { forkJoin, map, Observable } from 'rxjs';
 import { Product } from '../common/product';
 import { Nutrient } from '../common/nutrient';
 import { Category } from '../common/category';
@@ -12,6 +12,19 @@ export class ProductService {
 
   private baseUrl = 'http://localhost:8080/api/products'
   constructor(private httpClient: HttpClient) {}
+  
+
+
+  getCompleteProduct(theProductId: number): Observable<CompleteProduct> {
+    const data$ = forkJoin({
+    product: this.getProduct(theProductId),
+    category: this.getProductCategory(theProductId),
+    nutrients: this.getProductNutrients(theProductId)
+  });
+  return data$.pipe(
+    map(({ product, category, nutrients }) => ({ ...product, category, nutrients }))
+  );
+  }
 
   getProductListPagination(thePage: number, 
                            thePageSize:number): Observable<GetResponseProducts>{
@@ -85,4 +98,9 @@ interface GetResponseProducts {
     totalPages: number,
     number: number;
   }
+}
+
+interface CompleteProduct extends Product{
+ category: Category;
+ nutrients: Nutrient;
 }

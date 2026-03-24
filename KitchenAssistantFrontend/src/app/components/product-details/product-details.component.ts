@@ -20,27 +20,34 @@ export class ProductDetailsComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.product$ = this.route.paramMap.pipe(
-      switchMap(params => {
-        const theProductId: number =+ params.get('id')!;
-        const relatedData$ = forkJoin ({
-          category: this.productService.getProductCategory(theProductId),
-          nutrients: this.productService.getProductNutrients(theProductId)
-        });
-        return this.productService.getProduct(theProductId).pipe(
-          switchMap(product => {
-            return relatedData$.pipe(
-              map((results): CompleteProduct=> {
-                const completeProduct = product as CompleteProduct;
-                completeProduct.category = results.category;
-                completeProduct.nutrients = results.nutrients;
-                return completeProduct;
-              })
-            );
-          })
-        );
-      })
-    );
+  this.product$ = this.route.paramMap.pipe(
+    // 1. Pobieramy ID z URL
+    map(params => +params.get('id')!),
+    // 2. Prosimy serwis o gotowy, "kompletny" produkt
+    switchMap(id => this.productService.getCompleteProduct(id))
+  );
+
+    // this.product$ = this.route.paramMap.pipe(
+    //   switchMap(params => {
+    //     const theProductId: number =+ params.get('id')!;
+    //     const relatedData$ = forkJoin ({
+    //       category: this.productService.getProductCategory(theProductId),
+    //       nutrients: this.productService.getProductNutrients(theProductId)
+    //     });
+    //     return this.productService.getProduct(theProductId).pipe(
+    //       switchMap(product => {
+    //         return relatedData$.pipe(
+    //           map((results): CompleteProduct=> {
+    //             const completeProduct = product as CompleteProduct;
+    //             completeProduct.category = results.category;
+    //             completeProduct.nutrients = results.nutrients;
+    //             return completeProduct;
+    //           })
+    //         );
+    //       })
+    //     );
+    //   })
+    // );
   }
 }
 
