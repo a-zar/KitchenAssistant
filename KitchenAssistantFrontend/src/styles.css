@@ -94,7 +94,6 @@ li.top-menu-item a {
 
   
 .contentProduct{
-  
   padding-top: 120px;
   float: center;
   padding-bottom: 100px;
@@ -111,7 +110,18 @@ li.top-menu-item a {
   width: 100%;
 }
 
+.content{
+  padding-top: 120px;
+  float: center;
+  padding-bottom: 100px;
+  text-align: center;
+  padding-left: 20px;
 
+  display: flex; 
+  flex-wrap: wrap;
+  gap: 1rem; 
+  justify-content: flex-start;
+}
 
 .create-box{
   border: 1px solid #e5e7eb; /* gray-200 */

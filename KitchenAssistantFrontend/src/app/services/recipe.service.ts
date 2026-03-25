@@ -26,4 +26,9 @@ export class RecipeService {
     const url = `${this.baseUrl}/delete/recipeId/${recipeId}`;
     return this.httpClient.delete(url);
   }
+
+  getRecipeItems(recipeId: number): Observable<any> {
+    const url = `${this.baseUrl}/recipeId/${recipeId}/recipeItems`;
+    return this.httpClient.get(url);
+  }
 }

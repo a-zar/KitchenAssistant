@@ -59,8 +59,9 @@
         
             <div class="row">
                 <div class="items-box col-12" *ngFor="let recipe of recipes">
-                    <div class="elem-box position-relative pt-5">
-                        
+                    <div class="elem-box position-relative pt-5"
+                        [routerLink]="['/recipe-details', recipe.id]"
+                        style="cursor: pointer;">
                         <button
                             click-stop-propagation (click)="onDelete(recipe.id!)" 
                             type="button" class="btn btn-danger shadow-sm btn-sm m-1 position-absolute top-0 end-0" aria-label="Close" 

@@ -20,14 +20,16 @@ import { ShoppingListComponent } from './components/shopping-list/shopping-list.
 import { ClickStopPropagationDirective } from './shared/directives/click-stop-propagation.directive';
 import { ShoppingListItemComponent } from './components/shopping-list-item/shopping-list-item.component';
 import { RecipeComponent } from './components/recipe/recipe.component';
+import { RecipeFieldsComponent } from './shared/recipe-fields/recipe-fields.component';
+import { RecipeDetailsComponent } from './components/recipe-details/recipe-details.component';
 
 const routes: Routes = [
 
   {path: 'recipes', component: RecipeComponent},
+  {path: 'recipe-details/:id', component: RecipeDetailsComponent},
 
   {path: 'shoppingList', component: ShoppingListComponent},
   {path: 'shoppingList/:id', component: ShoppingListComponent},
-  // {path: 'shoppingList/**', redirectTo: '/shoppingList', pathMatch: 'full'},
   {path: 'shoppingList/:listId/items', component: ShoppingListItemComponent},
 
   {path: 'products/new', component: ProductFormComponent},
@@ -53,7 +55,9 @@ const routes: Routes = [
     ProductFormComponent,
     ShoppingListComponent,
     ShoppingListItemComponent,
-    RecipeComponent
+    RecipeComponent,
+    RecipeFieldsComponent,
+    RecipeDetailsComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

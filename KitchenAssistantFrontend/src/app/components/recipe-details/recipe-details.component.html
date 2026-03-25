@@ -1,0 +1,45 @@
+<p>recipe-details works!</p>
+
+<div class="container-fluid">
+    <div class="row">
+        <main class="content">
+            <button (click)="toggleEdit()">{{ isEditable ? 'Anuluj' : 'Edytuj' }}</button>
+            <form [formGroup]="mainForm" 
+                    (ngSubmit)="save()"
+                    class="mx-auto d-block col-8">
+                <h3 class="my-4">Dane Przepisu</h3>
+                <app-recipe-fields [group]="mainForm.get('recipe')"></app-recipe-fields>
+
+                <hr>
+
+                <h3 class="my-4">Składniki</h3>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nazwa produktu</th>
+                            <th>Waga</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of recipeItems">
+                            <td>{{ getProductName(item.productId) }}</td>
+                            <td>{{ item.weightGrams }} g</td>
+                        </tr>
+
+                </table>
+    
+
+
+
+                
+
+                <button type="submit" *ngIf="isEditable" 
+                    [disabled]="mainForm.invalid" 
+                    class="btn btn-secondary shadow-sm btn-sm m-3">
+                    Zapisz zmiany
+                </button>
+            </form>
+        </main>
+    </div>
+</div>
