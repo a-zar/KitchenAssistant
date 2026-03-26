@@ -7,32 +7,60 @@
             <form [formGroup]="mainForm" 
                     (ngSubmit)="save()"
                     class="mx-auto d-block col-8">
-                <h3 class="my-4">Dane Przepisu</h3>
+
+                <h4 class="my-4 p-3 bg-light rounded shadow-sm fw-semibold border-start border-4 border-primary d-flex align-items-center">
+                    <i class="bi bi-journal-text me-2 text-primary"></i>
+                    Przepis
+                </h4>
                 <app-recipe-fields [group]="mainForm.get('recipe')"></app-recipe-fields>
 
                 <hr>
 
-                <h3 class="my-4">Składniki</h3>
-
                 <table class="table table-striped">
                     <thead>
-                        <tr>
-                            <th>Nazwa produktu</th>
-                            <th>Waga</th>
+                        <tr class="small">
+                            <th rowspan="2">Nazwa produktu</th>
+                            <th rowspan="2">Waga [g]</th>
+                            <th colspan="6">Makroskładniki w przeliczeniu na wagę produktu</th>
+                        </tr>
+                        <tr class="small align-middle">
+                            <th> Ocena </th>
+                            <th> Kalorie [kcal]</th>
+                            <th> Węglowodany [g]</th>
+                            <th> Cukry [g]</th>
+                            <th> Białka [g]</th>
+                            <th> Tłuszcze [g]</th>
+                            <th> Tłuszcze nasycone [g]</th>
+                            <th> Błonnik [g]</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let item of recipeItems">
-                            <td>{{ getProductName(item.productId) }}</td>
-                            <td>{{ item.weightGrams }} g</td>
+                        <tr *ngFor="let item of recipeItems" class="align-middle text-center small">
+                            <td> {{ getProductDetails(item.productId)?.name }}</td>
+                            <td>{{ item.weightGrams | number:'1.0-2'}} g</td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.nutritionGrade }} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.energy | number:'1.2-2'}} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.carbohydrate | number:'1.2-2'}} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.sugar | number:'1.2-2'}} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.protein | number:'1.2-2'}} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.fat | number:'1.2-2' }} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.saturatedFat | number:'1.2-2' }} </td>
+                            <td> {{ getProductDetails(item.productId)?.nutrients?.fiber | number:'1.2-2' }} </td>
                         </tr>
-
-                </table>
-    
-
-
-
-                
+                    </tbody>
+                    <tfoot>
+                        <tr style="font-weight: bold; background-color: #f9f9f9;" class="align-middle text-center small">
+                            <td colspan="3" style="text-align: left;"> Podsumowanie: </td>
+                            <td> {{ totals.energy | number:'1.2-2'}} </td>
+                            <td> {{ totals.carbohydrate | number:'1.2-2'}} </td>
+                            <td> {{ totals.sugar | number:'1.2-2'}} </td>
+                            <td> {{ totals.protein | number:'1.2-2'}} </td>
+                            <td> {{ totals.fat | number:'1.2-2'}} </td>
+                            <td> {{ totals.saturatedFat | number:'1.2-2'}} </td>
+                            <td> {{ totals.fiber | number:'1.2-2'}} </td>
+                        </tr>
+                    </tfoot>
+                </table>    
 
                 <button type="submit" *ngIf="isEditable" 
                     [disabled]="mainForm.invalid" 

@@ -1,7 +1,7 @@
 package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.Recipe;
-import com.azet.KitchenAssistant.Entity.RecipeItem;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.RecipeItemRepository;
 import com.azet.KitchenAssistant.dao.RecipeRepository;
 import com.azet.KitchenAssistant.dto.recipe.RecipeDto;
@@ -22,27 +22,20 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/recipe")
-class RecipeController {
+public class RecipeController {
 
-    @Autowired
     private final RecipeService recipeService;
 
-    @Autowired
     private final RecipeRepository recipeRepository;
 
-    @Autowired
-    private final RecipeItemRepository recipeItemRepository;
+    String responseMessage ="";
 
     private static final Logger recipeLogger = LoggerFactory.getLogger(RecipeService.class);
 
-    RecipeController(RecipeService recipeService, RecipeRepository recipeRepository, RecipeItemRepository recipeItemRepository) {
+    RecipeController(RecipeService recipeService, RecipeRepository recipeRepository) {
         this.recipeService = recipeService;
         this.recipeRepository = recipeRepository;
-        this.recipeItemRepository = recipeItemRepository;
     }
-
-    RecipeResponse recipeResponse = null;
-    String responseMessage ="";
 
     //recipe --->
 
@@ -50,6 +43,13 @@ class RecipeController {
     public ResponseEntity<List<Recipe>> readAllRecipes(){
         recipeLogger.info("Read all recipes");
         return ResponseEntity.ok(recipeRepository.findAll());
+    }
+
+    @GetMapping(value ="/recipeId/{recipeId}")
+    public ResponseEntity<Recipe> readOneRecipe(@PathVariable int recipeId){
+        recipeLogger.info("read recipe with id: {}", recipeId);
+        //201
+        return ResponseEntity.ok(recipeRepository.findById(recipeId).orElseThrow(() -> new ResourceNotFoundException("recipe not found")));
     }
 
     @PostMapping(value = "/new")

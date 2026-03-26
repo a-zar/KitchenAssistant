@@ -17,6 +17,11 @@ export class RecipeService {
     return this.httpClient.post(url, newRecipe);
   }
 
+  getRecipe(recipeId: number): Observable<any> {
+    const url = `${this.baseUrl}/recipeId/${recipeId}`;
+    return this.httpClient.get(url);
+  }
+
   getRecipes(): Observable<Recipe[]> {
     const url = this.baseUrl;
     return this.httpClient.get<Recipe[]>(url);

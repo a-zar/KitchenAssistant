@@ -26,7 +26,7 @@ import { RecipeDetailsComponent } from './components/recipe-details/recipe-detai
 const routes: Routes = [
 
   {path: 'recipes', component: RecipeComponent},
-  {path: 'recipe-details/:id', component: RecipeDetailsComponent},
+  {path: 'recipe-details/:recipeId', component: RecipeDetailsComponent},
 
   {path: 'shoppingList', component: ShoppingListComponent},
   {path: 'shoppingList/:id', component: ShoppingListComponent},

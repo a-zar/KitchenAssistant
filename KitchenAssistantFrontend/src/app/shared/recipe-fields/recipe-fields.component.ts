@@ -4,10 +4,15 @@ import { AbstractControl, FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-recipe-fields',
   template: `
-    <div [formGroup]="group">
+    <div [formGroup]="group" class="text-start small">
+      <label for="recipeTitle" class="form-label d-block fw-bold text-secondary mt-3 mb-1"
+       style="text-shadow: 1px 1px 2px rgba(0,0,0,0.1); letter-spacing: 0.5px; font-size: 0.7rem;">
+        <span *ngIf ="group.get('recipeTitle')?.disabled" >Tytuł przepisu</span>
+      </label>
       <input type="text" 
             formControlName="recipeTitle"
             placeholder="Tytuł przepisu" 
+            title="Tytuł przepisu"
             class="form-control m-1"
             required 
             minlength="3">
@@ -18,9 +23,15 @@ import { AbstractControl, FormGroup } from '@angular/forms';
         <div *ngIf="group.get('recipeTitle')?.errors?.['minlength']">Minimum 3 znaki.</div>
       </div>
 
+
+      <label for="recipeTitle" class="form-label d-block fw-bold text-secondary mt-3 mb-1"
+       style="text-shadow: 1px 1px 2px rgba(0,0,0,0.1); letter-spacing: 0.5px; font-size: 0.7rem;">
+        <span *ngIf ="group.get('recipeInstructions')?.disabled" >Opis przepisu</span>
+      </label>
       <textarea 
             formControlName="recipeInstructions"
             placeholder="Opis przepisu"
+            title="Opis przepisu"
             class="form-control m-1"
             minlength="3">
       </textarea>
