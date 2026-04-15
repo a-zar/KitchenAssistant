@@ -54,16 +54,6 @@ export class RecipeDetailsComponent implements OnInit {
         recipeTitle: ['', Validators.required],
         recipeInstructions: ['']
       })
-      // Grupa dla RecipeItemDto
-      // item: this.fb.group({
-      //   weightGrams: [0, [Validators.required, Validators.min(0)]],
-      //   productId: [null, Validators.required]
-      // }),
-      // Grupa dla ProductDto (tylko do wyświetlania, więc bez walidatorów)
-      // product: this.fb.group({
-      //   name: [{ value: '', disabled: true }],
-      //   category: [{ value: '', disabled: true }]   
-      // })
     });
   }
 
@@ -71,13 +61,6 @@ export class RecipeDetailsComponent implements OnInit {
     this.mainForm.disable(); // Na początku wszystko jest nieedytowalne
     this.setRecipeId();
     this.loadRecipe();
-  }
-
-  updateView(){
-    this.finalRecipeItems = {...this.recipeItems.map(item => ({
-      ...item,
-      product: this.completeProducts.find(p => p.id === item.productId)
-    }))};
   }
 
   setRecipeId(): void {
@@ -149,11 +132,6 @@ export class RecipeDetailsComponent implements OnInit {
     };
   }
 
-  // getProductDetails(productId: number): CompleteProduct | undefined {
-
-  //   return this.completeProducts.find(p => p.id === productId);
-  // }
-
   getProductDetails(productId: number, products: CompleteProduct[]) {
     return products.find(p => p.id === productId);
   }
@@ -170,18 +148,6 @@ export class RecipeDetailsComponent implements OnInit {
       return acc;
     }, { energy: 0, carbohydrate: 0, protein: 0, fat: 0, saturatedFat: 0, sugar: 0, fiber: 0 });
   }
-  save() {
-    if (this.mainForm.valid) {
-      const recipeData = this.mainForm.get('recipe')?.value;
-      const itemData = this.mainForm.get('item')?.value;
-      const productData = this.mainForm.get('product')?.value;
-
-      console.log('Saving recipe with data:', { recipeData, itemData, productData });
-      // #TODO  zapis do bazy danych
-    } else {
-      alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
-    }
-  }
   
   toggleEdit() {
     this.isEditable = !this.isEditable;
@@ -193,30 +159,22 @@ export class RecipeDetailsComponent implements OnInit {
     }
   } 
 
-  // onDeleteItem(item: RecipeItem) {
-  //   const snaphotItems = [...this.recipeItems];
-  //   if (confirm('Czy na pewno chcesz usunąć ten składnik?')) {
-  //     this.recipeService.deleteRecipeItem(item.id!).subscribe({
-  //       next: () => {
-  //         // Po udanym usunięciu, odśwież listę składników
-  //         this.recipeItems = this.recipeItems.filter(i => i.id !== item.id);
-  //         this.completeProducts = this.completeProducts.filter(p => p.id !== item.productId);
-  //         alert('Składnik został usunięty.');     
+    save() {
+    if (this.mainForm.valid) {
+      const recipeData = this.mainForm.get('recipe')?.value;
+      const itemData = this.mainForm.get('item')?.value;
+      const productData = this.mainForm.get('product')?.value;
 
-  //         //aktualizacja strumienia produktów po usunięciu składnika
-  //         this.updateProducts(this.completeProducts); 
-  //       },
-  //       error: err => {
-  //         console.error('Failed to delete recipe item', err);
-  //         this.recipeItems = [...snaphotItems]; // Przywróć poprzedni stan w przypadku błędu
-  //         alert('Nie można usunąć tego składnika. Spróbuj ponownie później.');
-  //       }
-  //     });
-  //   }
-  // }
+      console.log('Saving recipe with data:', { recipeData, itemData, productData });
+      // #TODO  zapis do bazy danych
+    } else {
+      alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
+    }
+  }
 
   onDeleteItem(item: RecipeItem) {
-    console.log('Próba usunięcia elementu o ID:', item.id); // Sprawdź to w konsoli F12!
+    const snaphotItems = [...this.recipeItems];
+    const snapshotProducts = [...this.completeProducts];
     this.recipeService.deleteRecipeItem(item.id!).subscribe({
       next: () => {
         // 1. Usuwamy z listy recipeItems (widok wierszy)
@@ -224,24 +182,24 @@ export class RecipeDetailsComponent implements OnInit {
         this.recipeItems = [...this.recipeItems.filter(i => i.id !== item.id)];
 
         // 2. Usuwamy z listy produktów (widok szczegółów/makro)
-        // Używamy != zamiast !== na wypadek gdyby jedno ID było stringiem a drugie numberem
         this.completeProducts = this.completeProducts.filter(p => p.id != item.productId);
 
-        // 3. KLUCZOWE: Wysyłamy KOPIĘ tablicy do strumienia
+        // 3.Wysyłamy KOPIĘ tablicy do strumienia
         this.updateProducts([...this.completeProducts]);
         
         console.log('Po usunięciu:', this.recipeItems);
       },
       error: err => {
         console.error('Failed to delete recipe item', err);
+        this.recipeItems = [...snaphotItems]; // Przywróć poprzedni stan w przypadku błędu
+        this.completeProducts = [...snapshotProducts]; // Przywróć poprzedni stan produktów
+        this.updateProducts([...this.completeProducts]);
         alert('Nie można usunąć składnika.');
       }
     });
-  
-}
+  }
 
 }
-
 
 interface CompleteProduct extends Product{
  category: Category;
