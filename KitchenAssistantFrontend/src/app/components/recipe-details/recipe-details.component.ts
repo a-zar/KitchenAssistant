@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, map } from 'rxjs';
 import { Category } from 'src/app/common/category';
 import { Nutrient } from 'src/app/common/nutrient';
 import { Product } from 'src/app/common/product';
@@ -15,6 +16,13 @@ import { RecipeService } from 'src/app/services/recipe.service';
   styleUrls: ['./recipe-details.component.css']
 })
 export class RecipeDetailsComponent implements OnInit {
+  
+  private productsSubject = new BehaviorSubject<CompleteProduct[]>([]);
+  products$ = this.productsSubject.asObservable();
+
+  updateProducts(newProducts: CompleteProduct[]) {
+  this.productsSubject.next([...newProducts]);
+}
 
   mainForm!: FormGroup;
   isEditable = false;
@@ -25,6 +33,8 @@ export class RecipeDetailsComponent implements OnInit {
   recipeItems: RecipeItem[] = []; 
 
   completeProducts: CompleteProduct[] = [];
+
+  finalRecipeItems: any[] = [];
 
   productsToSelect : Product[] = []; //#TODO
   selectedProductId: number = -1;    //#TODO
@@ -63,6 +73,13 @@ export class RecipeDetailsComponent implements OnInit {
     this.loadRecipe();
   }
 
+  updateView(){
+    this.finalRecipeItems = {...this.recipeItems.map(item => ({
+      ...item,
+      product: this.completeProducts.find(p => p.id === item.productId)
+    }))};
+  }
+
   setRecipeId(): void {
     this.recipeId = Number(this.route.snapshot.paramMap.get('recipeId'));
   }
@@ -79,12 +96,12 @@ export class RecipeDetailsComponent implements OnInit {
             recipeInstructions: data.instruction
           }
         });
-        console.log("Dane odebrane ze Springa:", this.recipe); // TUTAJ sprawdź wynikconsole.log("Dane odebrane ze Springa:", this.recipe); // TUTAJ sprawdź wynik
+        console.log("recipe data:", this.recipe); // TUTAJ sprawdź wynikconsole.log("Dane odebrane ze Springa:", this.recipe); // TUTAJ sprawdź wynik
       },
       error: err => console.error('Failed to load recipe details', err)
     });
 
-    this.loadRecipeItems(); // Załaduj dane przepisów do formularza
+    this.loadRecipeItems(); // Załaduj szczegółowe dane przesu
 
 
     console.log("recipe id: "+ this.recipeId);
@@ -98,10 +115,10 @@ export class RecipeDetailsComponent implements OnInit {
         this.recipeItems.forEach(item => {
           this.productService.getCompleteProduct(item.productId).subscribe({
             next: product => {
-
               const calculatedNutrients = this.calcuateNutrients(item.weightGrams, product.nutrients);
               product.nutrients = calculatedNutrients; // Dodaj obliczone wartości odżywcze do produktu
               this.completeProducts.push(product);
+              this.updateProducts([...this.completeProducts]);
             },
             error: err => {
               console.error('Failed to load product details for item', item, err);
@@ -132,8 +149,13 @@ export class RecipeDetailsComponent implements OnInit {
     };
   }
 
-  getProductDetails(productId: number): CompleteProduct | undefined {
-    return this.completeProducts.find(p => p.id === productId);
+  // getProductDetails(productId: number): CompleteProduct | undefined {
+
+  //   return this.completeProducts.find(p => p.id === productId);
+  // }
+
+  getProductDetails(productId: number, products: CompleteProduct[]) {
+    return products.find(p => p.id === productId);
   }
 
   get totals() {
@@ -171,8 +193,54 @@ export class RecipeDetailsComponent implements OnInit {
     }
   } 
 
+  // onDeleteItem(item: RecipeItem) {
+  //   const snaphotItems = [...this.recipeItems];
+  //   if (confirm('Czy na pewno chcesz usunąć ten składnik?')) {
+  //     this.recipeService.deleteRecipeItem(item.id!).subscribe({
+  //       next: () => {
+  //         // Po udanym usunięciu, odśwież listę składników
+  //         this.recipeItems = this.recipeItems.filter(i => i.id !== item.id);
+  //         this.completeProducts = this.completeProducts.filter(p => p.id !== item.productId);
+  //         alert('Składnik został usunięty.');     
+
+  //         //aktualizacja strumienia produktów po usunięciu składnika
+  //         this.updateProducts(this.completeProducts); 
+  //       },
+  //       error: err => {
+  //         console.error('Failed to delete recipe item', err);
+  //         this.recipeItems = [...snaphotItems]; // Przywróć poprzedni stan w przypadku błędu
+  //         alert('Nie można usunąć tego składnika. Spróbuj ponownie później.');
+  //       }
+  //     });
+  //   }
+  // }
+
+  onDeleteItem(item: RecipeItem) {
+    console.log('Próba usunięcia elementu o ID:', item.id); // Sprawdź to w konsoli F12!
+    this.recipeService.deleteRecipeItem(item.id!).subscribe({
+      next: () => {
+        // 1. Usuwamy z listy recipeItems (widok wierszy)
+        console.log('Usuwanie elementu o ID:', item.id); // Sprawdź to w konsoli F12!
+        this.recipeItems = [...this.recipeItems.filter(i => i.id !== item.id)];
+
+        // 2. Usuwamy z listy produktów (widok szczegółów/makro)
+        // Używamy != zamiast !== na wypadek gdyby jedno ID było stringiem a drugie numberem
+        this.completeProducts = this.completeProducts.filter(p => p.id != item.productId);
+
+        // 3. KLUCZOWE: Wysyłamy KOPIĘ tablicy do strumienia
+        this.updateProducts([...this.completeProducts]);
+        
+        console.log('Po usunięciu:', this.recipeItems);
+      },
+      error: err => {
+        console.error('Failed to delete recipe item', err);
+        alert('Nie można usunąć składnika.');
+      }
+    });
+  
 }
 
+}
 
 
 interface CompleteProduct extends Product{

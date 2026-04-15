@@ -36,4 +36,9 @@ export class RecipeService {
     const url = `${this.baseUrl}/recipeId/${recipeId}/recipeItems`;
     return this.httpClient.get(url);
   }
+
+  deleteRecipeItem(recipeItemId: number) {
+    const url = `${this.baseUrl}/delete/recipeItemId/${recipeItemId}`;
+    return this.httpClient.delete(url);
+  }
 }

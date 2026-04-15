@@ -1,12 +1,11 @@
-<p>recipe-details works!</p>
-
 <div class="container-fluid">
     <div class="row">
         <main class="content">
-            <button (click)="toggleEdit()">{{ isEditable ? 'Anuluj' : 'Edytuj' }}</button>
+            <button (click)="toggleEdit()"
+                    class= "rounded bg-light shadow-sm fw-semibold">{{ isEditable ? 'Anuluj' : 'Edytuj' }}</button>
             <form [formGroup]="mainForm" 
                     (ngSubmit)="save()"
-                    class="mx-auto d-block col-8">
+                    class="mx-auto d-block col-10">
 
                 <h4 class="my-4 p-3 bg-light rounded shadow-sm fw-semibold border-start border-4 border-primary d-flex align-items-center">
                     <i class="bi bi-journal-text me-2 text-primary"></i>
@@ -21,7 +20,7 @@
                         <tr class="small">
                             <th rowspan="2">Nazwa produktu</th>
                             <th rowspan="2">Waga [g]</th>
-                            <th colspan="6">Makroskładniki w przeliczeniu na wagę produktu</th>
+                            <th colspan="8">Makroskładniki w przeliczeniu na wagę produktu</th>
                         </tr>
                         <tr class="small align-middle">
                             <th> Ocena </th>
@@ -32,21 +31,32 @@
                             <th> Tłuszcze [g]</th>
                             <th> Tłuszcze nasycone [g]</th>
                             <th> Błonnik [g]</th>
+                            <th *ngIf="isEditable"></th>
                         </tr>
                     </thead>
                     <tbody>
+                        <ng-container *ngIf = "products$ | async as allProducts">
                         <tr *ngFor="let item of recipeItems" class="align-middle text-center small">
-                            <td> {{ getProductDetails(item.productId)?.name }}</td>
-                            <td>{{ item.weightGrams | number:'1.0-2'}} g</td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.nutritionGrade }} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.energy | number:'1.2-2'}} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.carbohydrate | number:'1.2-2'}} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.sugar | number:'1.2-2'}} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.protein | number:'1.2-2'}} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.fat | number:'1.2-2' }} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.saturatedFat | number:'1.2-2' }} </td>
-                            <td> {{ getProductDetails(item.productId)?.nutrients?.fiber | number:'1.2-2' }} </td>
+                            <ng-container *ngIf= "getProductDetails(item.productId, allProducts) as product">
+                                <td> {{ product?.name }}</td>
+                                <td> {{ item.weightGrams | number:'1.0-2'}} g</td>
+                                <td> {{ product?.nutrients?.nutritionGrade }} </td>
+                                <td> {{ product?.nutrients?.energy | number:'1.2-2'}} </td>
+                                <td> {{ product?.nutrients?.carbohydrate | number:'1.2-2'}} </td>
+                                <td> {{ product?.nutrients?.sugar | number:'1.2-2'}} </td>
+                                <td> {{ product?.nutrients?.protein | number:'1.2-2'}} </td>
+                                <td> {{ product?.nutrients?.fat | number:'1.2-2' }} </td>
+                                <td> {{ product?.nutrients?.saturatedFat | number:'1.2-2' }} </td>
+                                <td> {{ product?.nutrients?.fiber | number:'1.2-2' }} </td>
+
+                                <td *ngIf="isEditable">
+                                    <button type="button" (click)="onDeleteItem(item)" class="btn btn-danger btn-sm">
+                                        Usuń
+                                    </button>
+                                </td>
+                            </ng-container>
                         </tr>
+                        </ng-container>
                     </tbody>
                     <tfoot>
                         <tr style="font-weight: bold; background-color: #f9f9f9;" class="align-middle text-center small">
