@@ -15,31 +15,31 @@
 
                 <hr>
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr class="small">
-                            <th rowspan="2">Nazwa produktu</th>
-                            <th rowspan="2">Waga [g]</th>
-                            <th colspan="8">Makroskładniki w przeliczeniu na wagę produktu</th>
-                        </tr>
-                        <tr class="small align-middle">
-                            <th> Ocena </th>
-                            <th> Kalorie [kcal]</th>
-                            <th> Węglowodany [g]</th>
-                            <th> Cukry [g]</th>
-                            <th> Białka [g]</th>
-                            <th> Tłuszcze [g]</th>
-                            <th> Tłuszcze nasycone [g]</th>
-                            <th> Błonnik [g]</th>
-                            <th *ngIf="isEditable"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <ng-container *ngIf = "products$ | async as allProducts">
-                        <tr *ngFor="let item of recipeItems" class="align-middle text-center small">
-                            <ng-container *ngIf= "getProductDetails(item.productId, allProducts) as product">
+                <ng-container *ngIf = "products$ | async as allProducts; else loadingorEmpty">
+                    <ng-container *ngIf="allProducts.length>0;  else emptyList" >
+                    <table class="table table-striped">
+                        <thead>
+                            <tr class="small">
+                                <th rowspan="2">Nazwa produktu</th>
+                                <th rowspan="2">Waga [g]</th>
+                                <th colspan="8">Makroskładniki w przeliczeniu na wagę produktu</th>
+                            </tr>
+                            <tr class="small align-middle">
+                                <th> Ocena </th>
+                                <th> Kalorie [kcal]</th>
+                                <th> Węglowodany [g]</th>
+                                <th> Cukry [g]</th>
+                                <th> Białka [g]</th>
+                                <th> Tłuszcze [g]</th>
+                                <th> Tłuszcze nasycone [g]</th>
+                                <th> Błonnik [g]</th>
+                                <th *ngIf="isEditable"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of allProducts" class="align-middle text-center small">
                                 <td> {{ product?.name }}</td>
-                                <td> {{ item.weightGrams | number:'1.0-2'}} g</td>
+                                <td> {{ product?.weightGrams | number:'1.1-2'}} g</td>
                                 <td> {{ product?.nutrients?.nutritionGrade }} </td>
                                 <td> {{ product?.nutrients?.energy | number:'1.2-2'}} </td>
                                 <td> {{ product?.nutrients?.carbohydrate | number:'1.2-2'}} </td>
@@ -48,29 +48,36 @@
                                 <td> {{ product?.nutrients?.fat | number:'1.2-2' }} </td>
                                 <td> {{ product?.nutrients?.saturatedFat | number:'1.2-2' }} </td>
                                 <td> {{ product?.nutrients?.fiber | number:'1.2-2' }} </td>
-
                                 <td *ngIf="isEditable">
-                                    <button type="button" (click)="onDeleteItem(item)" class="btn btn-danger btn-sm">
+                                    <button type="button" (click)="onDeleteItem(product.itemId)" class="btn btn-danger btn-sm">
                                         Usuń
                                     </button>
                                 </td>
-                            </ng-container>
-                        </tr>
-                        </ng-container>
-                    </tbody>
-                    <tfoot>
-                        <tr style="font-weight: bold; background-color: #f9f9f9;" class="align-middle text-center small">
-                            <td colspan="3" style="text-align: left;"> Podsumowanie: </td>
-                            <td> {{ totals.energy | number:'1.2-2'}} </td>
-                            <td> {{ totals.carbohydrate | number:'1.2-2'}} </td>
-                            <td> {{ totals.sugar | number:'1.2-2'}} </td>
-                            <td> {{ totals.protein | number:'1.2-2'}} </td>
-                            <td> {{ totals.fat | number:'1.2-2'}} </td>
-                            <td> {{ totals.saturatedFat | number:'1.2-2'}} </td>
-                            <td> {{ totals.fiber | number:'1.2-2'}} </td>
-                        </tr>
-                    </tfoot>
-                </table>    
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr style="font-weight: bold; background-color: #f9f9f9;" class="align-middle text-center small">
+                                <td colspan="3" style="text-align: left;"> Podsumowanie: </td>
+                                <td> {{ totals.energy | number:'1.2-2'}} </td>
+                                <td> {{ totals.carbohydrate | number:'1.2-2'}} </td>
+                                <td> {{ totals.sugar | number:'1.2-2'}} </td>
+                                <td> {{ totals.protein | number:'1.2-2'}} </td>
+                                <td> {{ totals.fat | number:'1.2-2'}} </td>
+                                <td> {{ totals.saturatedFat | number:'1.2-2'}} </td>
+                                <td> {{ totals.fiber | number:'1.2-2'}} </td>
+                            </tr>
+                        </tfoot>
+                    </table> 
+                    </ng-container>   
+                </ng-container>
+
+                <ng-template #loadingorEmpty>
+                    <p class="text-center text-muted">Ładowanie danych...</p>
+                </ng-template>
+
+                <ng-template #emptyList>
+                    <p class="text-center text-muted">Brak dodanych produktów w tym przepisie.</p>
+                </ng-template>
 
                 <button type="submit" *ngIf="isEditable" 
                     [disabled]="mainForm.invalid" 

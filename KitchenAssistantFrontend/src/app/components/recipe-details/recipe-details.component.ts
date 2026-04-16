@@ -17,12 +17,8 @@ import { RecipeService } from 'src/app/services/recipe.service';
 })
 export class RecipeDetailsComponent implements OnInit {
   
-  private productsSubject = new BehaviorSubject<CompleteProduct[]>([]);
+  private productsSubject = new BehaviorSubject<FinalProduct[]>([]);
   products$ = this.productsSubject.asObservable();
-
-  updateProducts(newProducts: CompleteProduct[]) {
-  this.productsSubject.next([...newProducts]);
-}
 
   mainForm!: FormGroup;
   isEditable = false;
@@ -31,10 +27,7 @@ export class RecipeDetailsComponent implements OnInit {
   recipe!: Recipe;
 
   recipeItems: RecipeItem[] = []; 
-
-  completeProducts: CompleteProduct[] = [];
-
-  finalRecipeItems: any[] = [];
+  completeProducts: FinalProduct[] = [];
 
   productsToSelect : Product[] = []; //#TODO
   selectedProductId: number = -1;    //#TODO
@@ -63,6 +56,10 @@ export class RecipeDetailsComponent implements OnInit {
     this.loadRecipe();
   }
 
+  updateProducts(newProducts: FinalProduct[]) {
+    this.productsSubject.next([...newProducts]);
+  }
+
   setRecipeId(): void {
     this.recipeId = Number(this.route.snapshot.paramMap.get('recipeId'));
   }
@@ -79,16 +76,11 @@ export class RecipeDetailsComponent implements OnInit {
             recipeInstructions: data.instruction
           }
         });
-        console.log("recipe data:", this.recipe); // TUTAJ sprawdź wynikconsole.log("Dane odebrane ze Springa:", this.recipe); // TUTAJ sprawdź wynik
       },
       error: err => console.error('Failed to load recipe details', err)
     });
 
     this.loadRecipeItems(); // Załaduj szczegółowe dane przesu
-
-
-    console.log("recipe id: "+ this.recipeId);
-    console.log( "recipe object called: ", this.recipe);
   }
 
   loadRecipeItems(){
@@ -100,8 +92,11 @@ export class RecipeDetailsComponent implements OnInit {
             next: product => {
               const calculatedNutrients = this.calcuateNutrients(item.weightGrams, product.nutrients);
               product.nutrients = calculatedNutrients; // Dodaj obliczone wartości odżywcze do produktu
+              product.weightGrams = item.weightGrams; // Dodaj wagę produktu do obiektu
+              product.itemId = item.id!; // Przypisz ID RecipeItem do produktu
               this.completeProducts.push(product);
               this.updateProducts([...this.completeProducts]);
+              console.log('Loaded product for item:', item, 'Product details:', product);
             },
             error: err => {
               console.error('Failed to load product details for item', item, err);
@@ -130,10 +125,6 @@ export class RecipeDetailsComponent implements OnInit {
       fiber: Number((nutrients.fiber * factor).toFixed(2)),
       nutritionGrade: nutrients.nutritionGrade
     };
-  }
-
-  getProductDetails(productId: number, products: CompleteProduct[]) {
-    return products.find(p => p.id === productId);
   }
 
   get totals() {
@@ -172,17 +163,17 @@ export class RecipeDetailsComponent implements OnInit {
     }
   }
 
-  onDeleteItem(item: RecipeItem) {
+  onDeleteItem(itemId: number) {
     const snaphotItems = [...this.recipeItems];
     const snapshotProducts = [...this.completeProducts];
-    this.recipeService.deleteRecipeItem(item.id!).subscribe({
+    this.recipeService.deleteRecipeItem(itemId).subscribe({
       next: () => {
+        const item = snaphotItems.find(i => i.id === itemId);
         // 1. Usuwamy z listy recipeItems (widok wierszy)
-        console.log('Usuwanie elementu o ID:', item.id); // Sprawdź to w konsoli F12!
-        this.recipeItems = [...this.recipeItems.filter(i => i.id !== item.id)];
-
+        console.log('Usuwanie elementu o ID:',itemId); // Sprawdź to w konsoli F12!
+        this.recipeItems = [...this.recipeItems.filter(i => i.id !== itemId)];
         // 2. Usuwamy z listy produktów (widok szczegółów/makro)
-        this.completeProducts = this.completeProducts.filter(p => p.id != item.productId);
+        this.completeProducts = this.completeProducts.filter(p => p.id != item?.productId);
 
         // 3.Wysyłamy KOPIĘ tablicy do strumienia
         this.updateProducts([...this.completeProducts]);
@@ -198,10 +189,11 @@ export class RecipeDetailsComponent implements OnInit {
       }
     });
   }
-
 }
 
-interface CompleteProduct extends Product{
- category: Category;
- nutrients: Nutrient;
-}
+  interface FinalProduct extends Product {
+    weightGrams: number;
+    itemId: number;
+    nutrients: Nutrient;
+    category: Category;
+  }

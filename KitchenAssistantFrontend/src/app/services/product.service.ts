@@ -19,10 +19,10 @@ export class ProductService {
     const data$ = forkJoin({
     product: this.getProduct(theProductId),
     category: this.getProductCategory(theProductId),
-    nutrients: this.getProductNutrients(theProductId)
+    nutrients: this.getProductNutrients(theProductId),
   });
   return data$.pipe(
-    map(({ product, category, nutrients }) => ({ ...product, category, nutrients }))
+    map(({ product, category, nutrients }) => ({ ...product, category, nutrients, weightGrams: 0, itemId:-1  }))
   );
   }
 
@@ -103,4 +103,6 @@ interface GetResponseProducts {
 interface CompleteProduct extends Product{
  category: Category;
  nutrients: Nutrient;
+ weightGrams: number;
+ itemId: number;
 }
