@@ -3,6 +3,8 @@
         <main class="content">
             <button (click)="toggleEdit()"
                     class= "rounded bg-light shadow-sm fw-semibold">{{ isEditable ? 'Anuluj' : 'Edytuj' }}</button>
+
+            
             <form [formGroup]="mainForm" 
                     (ngSubmit)="save()"
                     class="mx-auto d-block col-10">
@@ -12,6 +14,12 @@
                     Przepis
                 </h4>
                 <app-recipe-fields [group]="mainForm.get('recipe')"></app-recipe-fields>
+
+                <button type="submit" *ngIf="isEditable" 
+                    [disabled]="mainForm.invalid" 
+                    class="btn btn-secondary shadow-sm btn-sm m-3">
+                    Zapisz zmiany
+                </button>
 
                 <button (click)="showAddItemForm = !showAddItemForm" 
                 class="col-12 btn btn-light shadow-sm btn-sm m-1 mb-3 fw-bold text-secondary"
@@ -142,12 +150,6 @@
                 <ng-template #emptyList>
                     <p class="text-center text-muted">Brak dodanych produktów w tym przepisie.</p>
                 </ng-template>
-
-                <button type="submit" *ngIf="isEditable" 
-                    [disabled]="mainForm.invalid" 
-                    class="btn btn-secondary shadow-sm btn-sm m-3">
-                    Zapisz zmiany
-                </button>
             </form>
         </main>
     </div>

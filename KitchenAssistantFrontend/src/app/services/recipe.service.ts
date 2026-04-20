@@ -33,6 +33,11 @@ export class RecipeService {
     return this.httpClient.delete(url);
   }
 
+  updateRecipe (updatedRecipe: Recipe): Observable<any>{
+    const url = `${this.baseUrl}/edit/recipeId/${updatedRecipe.id}`;
+    return this.httpClient.put(url, updatedRecipe);
+  }
+
   getRecipeItems(recipeId: Number): Observable<any> {
     const url = `${this.baseUrl}/recipeId/${recipeId}/recipeItems`;
     return this.httpClient.get(url);
@@ -43,10 +48,6 @@ export class RecipeService {
     return this.httpClient.delete(url);
   }
 
-  updateRecipe(recipeId: Number, updatedRecipe: Recipe): Observable<any>{
-    const url = `${this.baseUrl}/update/recipeId/${recipeId}`;
-    return this.httpClient.put(url, updatedRecipe);
-  }
 
   addRecipeItem(newItem: RecipeItem): Observable<any> {
     const url = `${this.baseUrl}/recipeItem/new`;

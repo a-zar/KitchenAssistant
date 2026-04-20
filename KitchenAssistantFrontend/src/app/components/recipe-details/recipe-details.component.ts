@@ -242,7 +242,7 @@ export class RecipeDetailsComponent implements OnInit {
     }
   } 
 
-    save() {
+  save() {
     if (this.mainForm.disabled) return;
     if (this.mainForm.valid) {
       const recipeData = this.mainForm.get('recipe')?.value;
@@ -255,17 +255,15 @@ export class RecipeDetailsComponent implements OnInit {
       instruction: recipeData.recipeInstructions
     };
 
-      console.log('Saving recipe with data:', { recipeData});
-      // #TODO  zapis do bazy danych
-      this.recipeService.updateRecipe(this.recipe.id!, updatedRecipe).subscribe({
-        next: () => {
-          console.log('Recipe updated successfully');
-          this.toggleEdit(); // Wyłącz tryb edycji po zapisaniu
-        },
-        error: (err) => {
-          console.error('Failed to update recipe', err);
-          alert('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
-        }
+    this.recipeService.updateRecipe(updatedRecipe).subscribe({
+      next: () => {
+        console.log('Recipe updated successfully: ', updatedRecipe);
+        this.toggleEdit(); // Wyłącz tryb edycji po zapisaniu
+      },
+      error: (err) => {
+        console.error('Failed to update recipe', err);
+        alert('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
+      }
       }); 
 
     } else {
