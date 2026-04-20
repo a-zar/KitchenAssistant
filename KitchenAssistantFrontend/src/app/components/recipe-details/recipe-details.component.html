@@ -13,6 +13,70 @@
                 </h4>
                 <app-recipe-fields [group]="mainForm.get('recipe')"></app-recipe-fields>
 
+                <button (click)="showAddItemForm = !showAddItemForm" 
+                class="col-12 btn btn-light shadow-sm btn-sm m-1 mb-3 fw-bold text-secondary"
+                *ngIf="isEditable == false">
+                    <span *ngIf="showAddItemForm">Ukryj formularz</span>
+                    <span *ngIf="!showAddItemForm">+ Dodaj produkt do przepisu</span>
+                </button>
+                <div class="mx-auto mb-5" *ngIf="showAddItemForm" >
+                    <small class="text-center text-secondary fw-bold mx-auto mb-5"> 
+                        Dodaj produkt do przepisu
+                    </small>
+                    <div [formGroup]="addItemForm" class="border rounded p-3 shadow-sm">
+                        <select (change)="onCategoryChange($event)" 
+                                class="form-select text-center mb-3" 
+                                name="categoryId" 
+                                formControlName="categoryId"
+                                aria-label="Select category">
+                            <option [ngValue]="null">Wszystkie kategorie</option>
+                            <option *ngFor="let cat of categories" [value]="cat.id">
+                                {{ cat.name }}
+                            </option>
+                        </select>
+                        <div class="mb-3">
+                            <label for="productSelect" class="form-label pt-1">Wybierz produkt:</label>
+                            <select class="form-select text-center" 
+                                id="productSelect" 
+                                name="productId" 
+                                required
+                                formControlName="productId">
+                                <option [ngValue]="null">...</option>
+                                <option *ngFor="let product of filteredProducts" [value]="product.id">
+                                    {{product.name}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="weightInput" class="form-label">Waga [g]:</label>
+                            <input type="number" 
+                                class="form-control text-center" 
+                                id="weightInput" 
+                                name="weight" 
+                                value="1.0" 
+                                min="0"
+                                step="0.1" 
+                                max="1000"
+                                required
+                                formControlName="weight"
+                            />
+                        </div>
+                        <div class="text-center">
+                            <button type="button" (click)="addItem()"
+                                class="btn btn-secondary btn-sm m-1 border shadow-sm"
+                                aria-label="Add product"
+                                title="Kliknij, aby dodać produkt do przepisu">
+                                Dodaj produkt
+                            </button>
+                            <button type="button" class="btn btn-light btn-sm m-1 border shadow-sm text-secondary"
+                            aria-label="Cancel"
+                            title="Kliknij, aby ukryć formularz dodawania produktu"
+                            (click)="showAddItemForm = false">Anuluj
+                            </button>   
+                        </div>
+                    </div>
+                </div>
+
                 <hr>
 
                 <ng-container *ngIf = "products$ | async as allProducts; else loadingorEmpty">

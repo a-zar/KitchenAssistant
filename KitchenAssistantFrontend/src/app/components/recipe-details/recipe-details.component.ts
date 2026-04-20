@@ -9,6 +9,8 @@ import { Recipe } from 'src/app/common/recipe';
 import { RecipeItem } from 'src/app/common/recipe-item';
 import { ProductService } from 'src/app/services/product.service';
 import { RecipeService } from 'src/app/services/recipe.service';
+import { CategoryService } from '../../services/category.service';
+import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
 
 @Component({
   selector: 'app-recipe-details',
@@ -21,24 +23,28 @@ export class RecipeDetailsComponent implements OnInit {
   products$ = this.productsSubject.asObservable();
 
   mainForm!: FormGroup;
+  addItemForm!: FormGroup;
+
   isEditable = false;
 
   recipeId: number = -1; 
   recipe!: Recipe;
 
   recipeItems: RecipeItem[] = []; 
-  completeProducts: FinalProduct[] = [];
+  completeProductsForRecipe: FinalProduct[] = [];
 
-  productsToSelect : Product[] = []; //#TODO
-  selectedProductId: number = -1;    //#TODO
-  filteredProducts: Product[] = []; //#TODO
+  allProducts : any[] = [];
+  selectedProductId: number = -1; 
+  filteredProducts: any[] = [];
 
-  categories: Category[] = [];  //#TODO
-  selectedCategoryId: number = -1; //#TODO
+  categories: Category[] = []; 
+  selectedCategoryId: number = -1;
+  showAddItemForm: any;
   
   constructor(private fb: FormBuilder, 
               private recipeService: RecipeService,
               private productService: ProductService,
+              private categoryService: CategoryService,
               private route: ActivatedRoute) { 
 
     this.mainForm = this.fb.group({
@@ -48,15 +54,98 @@ export class RecipeDetailsComponent implements OnInit {
         recipeInstructions: ['']
       })
     });
+
+    this.addItemForm = this.fb.group({
+      categoryId: [null],
+      productId: [null, Validators.required],
+      weight: [1, [Validators.required, Validators.min(0.1)]]
+    });
   }
 
   ngOnInit(): void {
     this.mainForm.disable(); // Na początku wszystko jest nieedytowalne
     this.setRecipeId();
     this.loadRecipe();
+    this.loadCategories();
+    this.loadAllProducts();
+  }
+  
+  loadAllProducts (): void {
+    this.allProducts = [];
+    this.filteredProducts = [];
+
+    console.log('Ładowanie wszystkich produktów z serwisu...');
+    this.productService.getAllProductsWithCategories().subscribe({
+      next: data => {
+        this.allProducts = data;  
+        this.filteredProducts = [...this.allProducts];
+        console.log('Załadowane wszystkie produkty z kategoriami:', this.allProducts);
+      },
+      error: (err) => console.error('Błąd ładowania produktów:', err)
+    });      
+    console.log('Początkowa lista produktów do wyboru:', this.filteredProducts);
+  } 
+
+
+  loadCategories(): void {
+    this.categoryService.getCategoryList().subscribe({
+      next: data => {
+        this.categories = data._embedded.categories;
+        console.log('Załadowane kategorie:', this.categories); // Sprawdź, czy kategorie są poprawnie załadowane
+      },
+      error: (err) => console.error('Błąd ładowania kategorii:', err)
+    });
   }
 
-  updateProducts(newProducts: FinalProduct[]) {
+  onCategoryChange($event: Event) {
+    const select = $event.target as HTMLSelectElement;
+    const categoryId = Number(select.value);
+    this.selectedCategoryId = categoryId;
+
+    console.log('Wybrana kategoria ID:', categoryId);
+    if (categoryId > 0) {
+      this.filteredProducts = this.allProducts
+        .filter(p => p.category.id === categoryId)
+        .map(p => ({ id: p.id, name: p.name } as Product));
+      console.log('Produkty dla wybranej kategorii:', this.filteredProducts); 
+    } else {
+      this.filteredProducts = this.allProducts.map(p => ({ id: p.id, name: p.name } as Product));
+      console.log('Brak kategorii, pokazuję wszystkie produkty:', this.filteredProducts);
+    };
+  }
+
+  addItem() {
+  if (this.addItemForm.valid) {
+    const formValues = this.addItemForm.value;
+    
+    // Tworzymy obiekt RecipeItem do wysłania na backend
+    const newItem: RecipeItem = {
+      recipeId: this.recipeId,
+      productId: formValues.productId,
+      weightGrams: formValues.weight
+    };
+
+    this.recipeService.addRecipeItem(newItem).subscribe({
+      next: (createdItem) => {
+        console.log('Produkt dodany do przepisu:', createdItem);
+        this.addItemForm.reset({ categoryId: null, productId: null, weight: 1 }); // Resetuj formularz po dodaniu
+        this.showAddItemForm = false; // Ukryj formularz po dodaniu produktu
+        this.loadRecipeItems(); // Odśwież listę produktów w przepisie, aby pokazać nowo dodany produkt        
+      },
+      error: (err) => {
+        console.error('Błąd dodawania produktu do przepisu:', err);
+        alert('Nie można dodać produktu do przepisu. Spróbuj ponownie później.');
+      }
+    });
+
+  } else {
+    console.log('Błędy w formularzu dodawania:', this.addItemForm.errors);
+    alert('Formularz dodawania produktu jest niepoprawny.');
+  }
+
+}
+
+  updateProductsView(newProducts: FinalProduct[]) {
     this.productsSubject.next([...newProducts]);
   }
 
@@ -84,6 +173,9 @@ export class RecipeDetailsComponent implements OnInit {
   }
 
   loadRecipeItems(){
+    this.recipeItems = [];
+    this.completeProductsForRecipe = [];
+
     this.recipeService.getRecipeItems(this.recipeId).subscribe({
       next: data => {
         this.recipeItems = data;
@@ -94,8 +186,8 @@ export class RecipeDetailsComponent implements OnInit {
               product.nutrients = calculatedNutrients; // Dodaj obliczone wartości odżywcze do produktu
               product.weightGrams = item.weightGrams; // Dodaj wagę produktu do obiektu
               product.itemId = item.id!; // Przypisz ID RecipeItem do produktu
-              this.completeProducts.push(product);
-              this.updateProducts([...this.completeProducts]);
+              this.completeProductsForRecipe.push(product);
+              this.updateProductsView([...this.completeProductsForRecipe]);
               console.log('Loaded product for item:', item, 'Product details:', product);
             },
             error: err => {
@@ -109,7 +201,7 @@ export class RecipeDetailsComponent implements OnInit {
     }); 
 
     console.log('Recipe items after loadRecipeItems call:', this.recipeItems);
-    console.log('Complete products to calculate after loadRecipeItems call:', this.completeProducts);
+    console.log('Complete products to calculate after loadRecipeItems call:', this.completeProductsForRecipe);
   }
 
   calcuateNutrients(weightGrams: number, nutrients: Nutrient): Nutrient {
@@ -128,7 +220,7 @@ export class RecipeDetailsComponent implements OnInit {
   }
 
   get totals() {
-    return this.completeProducts.reduce((acc, product) => {
+    return this.completeProductsForRecipe.reduce((acc, product) => {
       acc.energy += product.nutrients.energy || 0;
       acc.carbohydrate += product.nutrients.carbohydrate || 0;
       acc.protein += product.nutrients.protein || 0;
@@ -151,13 +243,31 @@ export class RecipeDetailsComponent implements OnInit {
   } 
 
     save() {
+    if (this.mainForm.disabled) return;
     if (this.mainForm.valid) {
       const recipeData = this.mainForm.get('recipe')?.value;
-      const itemData = this.mainForm.get('item')?.value;
-      const productData = this.mainForm.get('product')?.value;
+      // const itemData = this.mainForm.get('item')?.value;
+      // const productData = this.mainForm.get('product')?.value;
 
-      console.log('Saving recipe with data:', { recipeData, itemData, productData });
+      const updatedRecipe = {
+      ...this.recipe,
+      title: recipeData.recipeTitle,
+      instruction: recipeData.recipeInstructions
+    };
+
+      console.log('Saving recipe with data:', { recipeData});
       // #TODO  zapis do bazy danych
+      this.recipeService.updateRecipe(this.recipe.id!, updatedRecipe).subscribe({
+        next: () => {
+          console.log('Recipe updated successfully');
+          this.toggleEdit(); // Wyłącz tryb edycji po zapisaniu
+        },
+        error: (err) => {
+          console.error('Failed to update recipe', err);
+          alert('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
+        }
+      }); 
+
     } else {
       alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
     }
@@ -165,7 +275,7 @@ export class RecipeDetailsComponent implements OnInit {
 
   onDeleteItem(itemId: number) {
     const snaphotItems = [...this.recipeItems];
-    const snapshotProducts = [...this.completeProducts];
+    const snapshotProducts = [...this.completeProductsForRecipe];
     this.recipeService.deleteRecipeItem(itemId).subscribe({
       next: () => {
         const item = snaphotItems.find(i => i.id === itemId);
@@ -173,18 +283,18 @@ export class RecipeDetailsComponent implements OnInit {
         console.log('Usuwanie elementu o ID:',itemId); // Sprawdź to w konsoli F12!
         this.recipeItems = [...this.recipeItems.filter(i => i.id !== itemId)];
         // 2. Usuwamy z listy produktów (widok szczegółów/makro)
-        this.completeProducts = this.completeProducts.filter(p => p.id != item?.productId);
+        this.completeProductsForRecipe = this.completeProductsForRecipe.filter(p => p.id != item?.productId);
 
         // 3.Wysyłamy KOPIĘ tablicy do strumienia
-        this.updateProducts([...this.completeProducts]);
+        this.updateProductsView([...this.completeProductsForRecipe]);
         
         console.log('Po usunięciu:', this.recipeItems);
       },
       error: err => {
         console.error('Failed to delete recipe item', err);
         this.recipeItems = [...snaphotItems]; // Przywróć poprzedni stan w przypadku błędu
-        this.completeProducts = [...snapshotProducts]; // Przywróć poprzedni stan produktów
-        this.updateProducts([...this.completeProducts]);
+        this.completeProductsForRecipe = [...snapshotProducts]; // Przywróć poprzedni stan produktów
+        this.updateProductsView([...this.completeProductsForRecipe]);
         alert('Nie można usunąć składnika.');
       }
     });

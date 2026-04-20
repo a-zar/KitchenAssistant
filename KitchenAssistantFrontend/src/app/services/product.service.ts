@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, map, Observable } from 'rxjs';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { Product } from '../common/product';
 import { Nutrient } from '../common/nutrient';
 import { Category } from '../common/category';
@@ -26,8 +26,33 @@ export class ProductService {
   );
   }
 
-  getProductListPagination(thePage: number, 
-                           thePageSize:number): Observable<GetResponseProducts>{
+  getAllProductsWithCategories(): Observable<ProductWithCategory[]> {
+  return this.getProductList().pipe(
+    map(response => response._embedded.products),
+    switchMap(products => {
+      const productRequests = products.map(product => forkJoin({
+        category: this.getProductCategory(product.id),   
+      }).pipe(
+        map(({ category }) => ({ ...product, category} as ProductWithCategory))
+      ));
+      return forkJoin(productRequests);
+    })
+  );
+}
+  
+    // return this.getProductList().pipe(
+    //   map(response => response._embedded.products),
+    //   map(products => products.map(product => {
+    //     return forkJoin({
+    //       category: this.getProductCategory(product.id),   
+    //       nutrients: this.getProductNutrients(product.id)
+    //     }).pipe(
+    //       map(({ category, nutrients }) => ({ ...product, category, nutrients, weightGrams: 0, itemId: -1 }))
+    //     );
+    //   }))
+    // );
+
+  getProductListPagination(thePage: number, thePageSize:number): Observable<GetResponseProducts>{
     
     const searchUrl = `${this.baseUrl}`
                     + `?page=${thePage}&size=${thePageSize}`;
@@ -105,4 +130,9 @@ interface CompleteProduct extends Product{
  nutrients: Nutrient;
  weightGrams: number;
  itemId: number;
+}
+
+
+interface ProductWithCategory extends Product {
+  category: Category;
 }
