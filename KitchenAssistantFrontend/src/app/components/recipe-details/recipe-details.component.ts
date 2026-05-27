@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, map } from 'rxjs';
 import { Category } from 'src/app/common/category';
@@ -10,7 +10,6 @@ import { RecipeItem } from 'src/app/common/recipe-item';
 import { ProductService } from 'src/app/services/product.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { CategoryService } from '../../services/category.service';
-import { AnyCatcher } from 'rxjs/internal/AnyCatcher';
 
 @Component({
   selector: 'app-recipe-details',
@@ -52,7 +51,8 @@ export class RecipeDetailsComponent implements OnInit {
       recipe: this.fb.group({
         recipeTitle: ['', Validators.required],
         recipeInstructions: ['']
-      })
+      }),
+      items: this.fb.array([])
     });
 
     this.addItemForm = this.fb.group({
@@ -61,6 +61,11 @@ export class RecipeDetailsComponent implements OnInit {
       weight: [1, [Validators.required, Validators.min(0.1)]]
     });
   }
+
+  // Getter dla ułatwienia dostępu do FormArray z template'u
+  get itemsFormArray() {
+  return this.mainForm.get('items') as FormArray;
+}
 
   ngOnInit(): void {
     this.mainForm.disable(); // Na początku wszystko jest nieedytowalne
@@ -157,8 +162,6 @@ export class RecipeDetailsComponent implements OnInit {
     this.recipeService.getRecipe(this.recipeId).subscribe({
       next: data => {
         this.recipe = data;
-        this.mainForm.patchValue({ recipe: this.recipe });
-
         this.mainForm.patchValue({
           recipe: {
             recipeTitle: data.title,       // mapowanie pola title z Javy na recipeTitle w Angularze
@@ -175,6 +178,7 @@ export class RecipeDetailsComponent implements OnInit {
   loadRecipeItems(){
     this.recipeItems = [];
     this.completeProductsForRecipe = [];
+    this.itemsFormArray.clear(); 
 
     this.recipeService.getRecipeItems(this.recipeId).subscribe({
       next: data => {
@@ -189,6 +193,12 @@ export class RecipeDetailsComponent implements OnInit {
               this.completeProductsForRecipe.push(product);
               this.updateProductsView([...this.completeProductsForRecipe]);
               console.log('Loaded product for item:', item, 'Product details:', product);
+
+              // KLUCZ: Dodajemy nowy FormGroup do FormArray dla każdego produktu
+            this.itemsFormArray.push(this.fb.group({
+              itemId: [item.id],
+              weight: [item.weightGrams, [Validators.required, Validators.min(0.1)]]
+            }));
             },
             error: err => {
               console.error('Failed to load product details for item', item, err);
@@ -243,32 +253,69 @@ export class RecipeDetailsComponent implements OnInit {
   } 
 
   save() {
-    if (this.mainForm.disabled) return;
-    if (this.mainForm.valid) {
-      const recipeData = this.mainForm.get('recipe')?.value;
-      // const itemData = this.mainForm.get('item')?.value;
-      // const productData = this.mainForm.get('product')?.value;
+    if (this.mainForm.disabled || !this.mainForm.valid) return;
+    this.updateAllItems();
+  }
 
-      const updatedRecipe = {
+
+  updateAllItems() {
+    const recipeData = this.mainForm.get('recipe')?.value;
+    const itemsData = this.itemsFormArray.value; // Pobierz dane z FormArray
+
+    const updatedRecipe = {
       ...this.recipe,
       title: recipeData.recipeTitle,
       instruction: recipeData.recipeInstructions
     };
 
+    const updatedItems: RecipeItem[] = itemsData.map((item: any) => ({
+      id: item.itemId,
+      recipeId: this.recipeId,
+      productId: this.completeProductsForRecipe.find(p => p.itemId === item.itemId)?.id || -1,
+      weightGrams: item.weight
+    }));
+
+    // PRZERABIAMY obiekty na żądania (strumienie)
+    const itemRequests = updatedItems.map(item => this.recipeService.updateRecipeItem(item));
+    const recipeUpdate$ = this.recipeService.updateRecipe(updatedRecipe);
+
     this.recipeService.updateRecipe(updatedRecipe).subscribe({
       next: () => {
         console.log('Recipe updated successfully: ', updatedRecipe);
-        this.toggleEdit(); // Wyłącz tryb edycji po zapisaniu
       },
       error: (err) => {
         console.error('Failed to update recipe', err);
         alert('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
       }
-      }); 
+    });
 
-    } else {
-      alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
-    }
+    updatedItems.forEach((item, i) => {
+      if (item) {
+        this.recipeService.updateRecipeItem(item).subscribe({
+          next: () => {
+            console.log('Recipe item updated successfully: ', item);
+            console.log(`Updated item ${i + 1} of ${updatedItems.length}`);
+            if (i === updatedItems.length - 1) {
+              // this.loadRecipeItems(); // Odśwież dane po aktualizacji ostatniego elementu
+              this.viewAfterSave();
+            }
+          },
+          error: (err) => {
+            console.error('Failed to update recipe item', err);
+            alert('Nie można zaktualizować jednego ze składników przepisu. Spróbuj ponownie później.');
+          }
+        });
+      } else {
+        alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
+      }
+    });
+  }
+
+  private viewAfterSave() {
+    alert('Wszystkie zmiany zostały zapisane pomyślnie.');
+    this.isEditable = false;
+    this.mainForm.disable();
+    this.loadRecipeItems(); // Odświeżamy widok i przeliczamy makro na bazie nowych wag
   }
 
   onDeleteItem(itemId: number) {

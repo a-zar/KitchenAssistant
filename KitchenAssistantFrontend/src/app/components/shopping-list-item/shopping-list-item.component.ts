@@ -91,7 +91,7 @@ export class ShoppingListItemComponent implements OnInit {
     const index = this.items.findIndex(i => i.productId === selectedProductId);  
     const productExist = {...this.items[index]};
 
-    if(productExist){ 
+    if(index !== -1){ 
         const snapshotItem = this.setSnaphotItem(productExist);
         const updatedProduct = {
           ...productExist, 

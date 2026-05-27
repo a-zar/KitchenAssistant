@@ -53,4 +53,9 @@ export class RecipeService {
     const url = `${this.baseUrl}/recipeItem/new`;
     return this.httpClient.post(url, newItem);
   }
+
+  updateRecipeItem(updatedItem: RecipeItem): Observable<any> {
+    const url = `${this.baseUrl}/edit/recipeItemId/${updatedItem.id}`;
+    return this.httpClient.put(url, updatedItem);
+  }
 }

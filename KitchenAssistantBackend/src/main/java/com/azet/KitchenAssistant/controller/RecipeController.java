@@ -105,12 +105,12 @@ public class RecipeController {
     }
 
     @PutMapping(value = "/edit/recipeItemId/{recipeItemId}")
-    public ResponseEntity<String> editRecipeItem(@PathVariable int recipeItemId, @Valid @RequestBody RecipeItemDto req){
+    public ResponseEntity<?> editRecipeItem(@PathVariable int recipeItemId, @Valid @RequestBody RecipeItemDto req){
         recipeLogger.info("Attempting recipe item to edit id: "+ recipeItemId);
             recipeService.editRecipeItem(recipeItemId, req);
             recipeLogger.info("Edited recipe item id: {}", recipeItemId);
             responseMessage = "Edited recipe item id: "+ recipeItemId + " with product id: "+req.getProductId();
-            //201
-            return new ResponseEntity<>(responseMessage,HttpStatus.OK);
+            //200
+            return ResponseEntity.ok().build();
     }
 }
