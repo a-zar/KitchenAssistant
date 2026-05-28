@@ -43,6 +43,9 @@ class MyDataRestConfig implements RepositoryRestConfigurer {
 
         exposeIds(config);
 
+        config.setDefaultPageSize(100);
+        config.setMaxPageSize(100);
+
         //configure cors mapping
         cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
     }

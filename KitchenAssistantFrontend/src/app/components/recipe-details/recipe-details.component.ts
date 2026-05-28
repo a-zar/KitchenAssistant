@@ -88,7 +88,6 @@ export class RecipeDetailsComponent implements OnInit {
       },
       error: (err) => console.error('Błąd ładowania produktów:', err)
     });      
-    console.log('Początkowa lista produktów do wyboru:', this.filteredProducts);
   } 
 
 
@@ -96,7 +95,6 @@ export class RecipeDetailsComponent implements OnInit {
     this.categoryService.getCategoryList().subscribe({
       next: data => {
         this.categories = data._embedded.categories;
-        console.log('Załadowane kategorie:', this.categories); // Sprawdź, czy kategorie są poprawnie załadowane
       },
       error: (err) => console.error('Błąd ładowania kategorii:', err)
     });
@@ -107,7 +105,6 @@ export class RecipeDetailsComponent implements OnInit {
     const categoryId = Number(select.value);
     this.selectedCategoryId = categoryId;
 
-    console.log('Wybrana kategoria ID:', categoryId);
     if (categoryId > 0) {
       this.filteredProducts = this.allProducts
         .filter(p => p.category.id === categoryId)
@@ -115,7 +112,6 @@ export class RecipeDetailsComponent implements OnInit {
       console.log('Produkty dla wybranej kategorii:', this.filteredProducts); 
     } else {
       this.filteredProducts = this.allProducts.map(p => ({ id: p.id, name: p.name } as Product));
-      console.log('Brak kategorii, pokazuję wszystkie produkty:', this.filteredProducts);
     };
   }
 
@@ -192,9 +188,8 @@ export class RecipeDetailsComponent implements OnInit {
               product.itemId = item.id!; // Przypisz ID RecipeItem do produktu
               this.completeProductsForRecipe.push(product);
               this.updateProductsView([...this.completeProductsForRecipe]);
-              console.log('Loaded product for item:', item, 'Product details:', product);
 
-              // KLUCZ: Dodajemy nowy FormGroup do FormArray dla każdego produktu
+              //Dodajemy nowy FormGroup do FormArray dla każdego produktu
             this.itemsFormArray.push(this.fb.group({
               itemId: [item.id],
               weight: [item.weightGrams, [Validators.required, Validators.min(0.1)]]
@@ -209,9 +204,6 @@ export class RecipeDetailsComponent implements OnInit {
       },
       error: err => console.error('Failed to load recipe items', err)
     }); 
-
-    console.log('Recipe items after loadRecipeItems call:', this.recipeItems);
-    console.log('Complete products to calculate after loadRecipeItems call:', this.completeProductsForRecipe);
   }
 
   calcuateNutrients(weightGrams: number, nutrients: Nutrient): Nutrient {
@@ -279,6 +271,7 @@ export class RecipeDetailsComponent implements OnInit {
     const itemRequests = updatedItems.map(item => this.recipeService.updateRecipeItem(item));
     const recipeUpdate$ = this.recipeService.updateRecipe(updatedRecipe);
 
+    
     this.recipeService.updateRecipe(updatedRecipe).subscribe({
       next: () => {
         console.log('Recipe updated successfully: ', updatedRecipe);
@@ -294,9 +287,7 @@ export class RecipeDetailsComponent implements OnInit {
         this.recipeService.updateRecipeItem(item).subscribe({
           next: () => {
             console.log('Recipe item updated successfully: ', item);
-            console.log(`Updated item ${i + 1} of ${updatedItems.length}`);
             if (i === updatedItems.length - 1) {
-              // this.loadRecipeItems(); // Odśwież dane po aktualizacji ostatniego elementu
               this.viewAfterSave();
             }
           },
@@ -312,7 +303,6 @@ export class RecipeDetailsComponent implements OnInit {
   }
 
   private viewAfterSave() {
-    alert('Wszystkie zmiany zostały zapisane pomyślnie.');
     this.isEditable = false;
     this.mainForm.disable();
     this.loadRecipeItems(); // Odświeżamy widok i przeliczamy makro na bazie nowych wag
@@ -332,8 +322,6 @@ export class RecipeDetailsComponent implements OnInit {
 
         // 3.Wysyłamy KOPIĘ tablicy do strumienia
         this.updateProductsView([...this.completeProductsForRecipe]);
-        
-        console.log('Po usunięciu:', this.recipeItems);
       },
       error: err => {
         console.error('Failed to delete recipe item', err);

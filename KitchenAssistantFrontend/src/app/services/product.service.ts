@@ -39,24 +39,11 @@ export class ProductService {
     })
   );
 }
-  
-    // return this.getProductList().pipe(
-    //   map(response => response._embedded.products),
-    //   map(products => products.map(product => {
-    //     return forkJoin({
-    //       category: this.getProductCategory(product.id),   
-    //       nutrients: this.getProductNutrients(product.id)
-    //     }).pipe(
-    //       map(({ category, nutrients }) => ({ ...product, category, nutrients, weightGrams: 0, itemId: -1 }))
-    //     );
-    //   }))
-    // );
 
   getProductListPagination(thePage: number, thePageSize:number): Observable<GetResponseProducts>{
     
     const searchUrl = `${this.baseUrl}`
                     + `?page=${thePage}&size=${thePageSize}`;
-
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 
@@ -65,17 +52,11 @@ export class ProductService {
                                       thePageSize:number): Observable<GetResponseProducts>{
     const searchUrl = `${this.baseUrl}/search/by-category?id=${theCategoryId}`
                     + `&page=${thePage}&size=${thePageSize}`;
-
-    console.log('getProductListByCategoryPagination '+searchUrl);
-
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
   
   getProductListByCategory(theCategoryId: number): Observable<GetResponseProducts>{
     const searchUrl = `${this.baseUrl}/search/by-category?id=${theCategoryId}`;
-
-        console.log('getProductListByCategory '+searchUrl);
-
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 

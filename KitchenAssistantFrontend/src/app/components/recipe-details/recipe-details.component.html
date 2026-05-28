@@ -15,7 +15,7 @@
                 </h4>
                 <app-recipe-fields [group]="mainForm.get('recipe')"></app-recipe-fields>
 
-                <button (click)="showAddItemForm = !showAddItemForm" 
+                <button (click)="showAddItemForm = !showAddItemForm" type="button"
                 class="col-12 btn btn-light shadow-sm btn-sm m-1 mb-3 fw-bold text-secondary"
                 *ngIf="isEditable == false">
                     <span *ngIf="showAddItemForm">Ukryj formularz</span>
