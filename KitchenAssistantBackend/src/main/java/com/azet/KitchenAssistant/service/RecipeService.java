@@ -9,7 +9,6 @@ import com.azet.KitchenAssistant.dao.RecipeRepository;
 import com.azet.KitchenAssistant.dto.recipe.RecipeDto;
 import com.azet.KitchenAssistant.dto.recipe.RecipeItemDto;
 import com.azet.KitchenAssistant.dto.recipe.RecipeResponse;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

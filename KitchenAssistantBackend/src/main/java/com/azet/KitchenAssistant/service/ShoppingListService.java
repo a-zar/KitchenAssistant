@@ -8,7 +8,6 @@ import com.azet.KitchenAssistant.dao.ShoppingListRepository;
 import com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListDto;
 import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;

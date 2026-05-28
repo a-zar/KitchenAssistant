@@ -11,7 +11,6 @@ import com.azet.KitchenAssistant.dto.productCreation.NutrientData;
 import com.azet.KitchenAssistant.dto.productCreation.ProductCreationRequest;
 import com.azet.KitchenAssistant.dto.productCreation.ProductCreationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service

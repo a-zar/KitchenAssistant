@@ -1,6 +1,5 @@
 package com.azet.KitchenAssistant.service;
 
-import com.azet.KitchenAssistant.Entity.ShoppingList;
 import com.azet.KitchenAssistant.Entity.ShoppingListItem;
 import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.ProductRepository;
