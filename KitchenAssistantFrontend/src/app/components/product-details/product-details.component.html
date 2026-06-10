@@ -5,11 +5,6 @@
     <div class="row">
         <div  class="contentProduct d-flex flex-column align-items-center" *ngIf="product$ | async as product">
             <div class="container text-end mb-3" *ngIf="product$ | async as product">
-                <a routerLink="[]">
-                    <img class="mx-4 rounded" style="height: 35px; width: auto; border: 2px solid green;"
-                    src="../assets/image/food-basket.png" alt="edit" title="Kliknij, aby dodać do listy zakupów"> 
-                </a>
-                
                 <a [routerLink]="['/products/edit', product?.id]">
                     <img style="height: 30px; width: auto" 
                     src="../assets/image/edit.png" alt="edit" title="Edytuj"> 

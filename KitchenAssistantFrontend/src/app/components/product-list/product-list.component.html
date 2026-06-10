@@ -1,10 +1,10 @@
 <app-category-list></app-category-list>
 
 <div class="container-fluid">
-    <div class="row">
-        <main class="contentProduct col-12 col-md-10">
-            <div *ngFor="let tempProduct of products" class="items-box">
-                <a [routerLink]="['/products', tempProduct.id]">
+    <div class="row justify-content-center g-4">
+        <main class="contentProduct col-12 row justify-content-center mx-auto">
+            <div *ngFor="let tempProduct of products" class="items-box col-auto d-flex justify-content-center">
+                <a [routerLink]="['/products', tempProduct.id]" class="w-100">
                     <div class="elem-box">
                         <img [src]="'../assets/' + tempProduct?.image" alt= "{{ tempProduct?.name }}">
                         <p>{{tempProduct.name}}</p>
@@ -20,7 +20,7 @@
 
     <!-- footer-->
     <footer class="footer-pagination" *ngIf="products.length !=0">
-        <div class="row">
+        <div class="row justify-content-center">
             <div class="col-md-6 p-3 m-4">
                 <div class="d-flex align-items-center justify-content-start">
                     <div class="me-4">

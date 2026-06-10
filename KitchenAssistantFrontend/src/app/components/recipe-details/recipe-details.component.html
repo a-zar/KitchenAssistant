@@ -106,7 +106,7 @@
                         </thead>
                         <tbody formArrayName="items">
                             <tr *ngFor="let product of allProducts; let i=index" [formGroupName]="i" class="align-middle text-center small">
-                                <td> {{ product?.name }}</td>
+                                <td> {{ product.name }}</td>
                                 <td>
                                     <ng-container *ngIf="isEditable; else staticWeight">
                                         <input type="number" 
@@ -117,18 +117,18 @@
                                             step="0.1">
                                     </ng-container>
                                     <ng-template #staticWeight>
-                                        {{ product?.weightGrams | number:'1.1-2' }}
+                                        {{ product.weightGrams | number:'1.1-2' }}
                                     </ng-template>
                                 </td>
 
-                                <td> {{ product?.nutrients?.nutritionGrade }} </td>
-                                <td> {{ product?.nutrients?.energy | number:'1.2-2'}} </td>
-                                <td> {{ product?.nutrients?.carbohydrate | number:'1.2-2'}} </td>
-                                <td> {{ product?.nutrients?.sugar | number:'1.2-2'}} </td>
-                                <td> {{ product?.nutrients?.protein | number:'1.2-2'}} </td>
-                                <td> {{ product?.nutrients?.fat | number:'1.2-2' }} </td>
-                                <td> {{ product?.nutrients?.saturatedFat | number:'1.2-2' }} </td>
-                                <td> {{ product?.nutrients?.fiber | number:'1.2-2' }} </td>
+                                <td> {{ product.nutrients.nutritionGrade }} </td>
+                                <td> {{ product.nutrients.energy | number:'1.2-2'}} </td>
+                                <td> {{ product.nutrients.carbohydrate | number:'1.2-2'}} </td>
+                                <td> {{ product.nutrients.sugar | number:'1.2-2'}} </td>
+                                <td> {{ product.nutrients.protein | number:'1.2-2'}} </td>
+                                <td> {{ product.nutrients.fat | number:'1.2-2' }} </td>
+                                <td> {{ product.nutrients.saturatedFat | number:'1.2-2' }} </td>
+                                <td> {{ product.nutrients.fiber | number:'1.2-2' }} </td>
                                 <td *ngIf="isEditable">
                                     <button type="button" (click)="onDeleteItem(product.itemId)" class="btn btn-danger btn-sm">
                                         Usuń
