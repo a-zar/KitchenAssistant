@@ -4,16 +4,15 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { Product } from '../common/product';
 import { Nutrient } from '../common/nutrient';
 import { Category } from '../common/category';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
-  private baseUrl = 'http://localhost:8080/api/products'
+  private baseUrl = `${environment.apiUrl}/products`;
   constructor(private httpClient: HttpClient) {}
-  
-
 
   getCompleteProduct(theProductId: number): Observable<CompleteProduct> {
     const data$ = forkJoin({

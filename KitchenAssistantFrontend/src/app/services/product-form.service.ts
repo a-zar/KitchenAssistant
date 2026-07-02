@@ -3,14 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { ProductForm } from '../common/product-form';
 import { Observable } from 'rxjs';
 import { Product } from '../common/product';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductFormService {
 
-  private productFormUrl = 'http://localhost:8080/api/productCreation'
-
+  private productFormUrl = `${environment.apiUrl}/productCreation`
+  
   constructor(private httpClient: HttpClient) { }
 
   createProduct(productForm: ProductForm): Observable<any>{

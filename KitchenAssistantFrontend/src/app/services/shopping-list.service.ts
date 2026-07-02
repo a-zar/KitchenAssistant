@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ShoppingList } from '../common/shopping-list';
-import { ShoppingListItem } from '../common/shopping-list-item';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShoppingListService {
 
-  private baseUrl = 'http://localhost:8080/api/shoppingList';
+  private baseUrl = `${environment.apiUrl}/shoppingList`;
 
   constructor(private httpClient: HttpClient) {
   }
