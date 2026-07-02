@@ -94,18 +94,8 @@ class ShoppingListController {
         listLogger.info("Read all shopping lists");
 
         List<ShoppingList> list = shoppingListRepository.findAll();
-
-        List<ShoppingListDto> dtos = list.stream().map(entity ->{
-            ShoppingListDto dto = new ShoppingListDto();
-            dto.setId(entity.getId());
-            dto.setListTitle(entity.getTitle());
-            dto.setRecurrencePattern(entity.getRecurrencePattern());
-            dto.setNextOccurrenceDate(entity.getNextOccurrenceDate());
-            dto.setStartOccurrenceDate(entity.getStartOccurrenceDate());
-            return dto;
-        }).toList();
         
-        return ResponseEntity.ok(dtos);
+        return ResponseEntity.ok(shoppingListService.getAllShoppingListDtos());
     }
 
     @PostMapping(value = "/new")

@@ -1,6 +1,7 @@
 package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.Product;
+import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
 import com.azet.KitchenAssistant.dao.ProductRepository;
 import com.azet.KitchenAssistant.dto.productCreation.ProductCreationRequest;
 import com.azet.KitchenAssistant.dto.productCreation.ProductCreationResponse;
@@ -45,15 +46,11 @@ public class ProductCreationController {
     @PutMapping(value = "/edit/{id}")
     public ResponseEntity<ProductCreationResponse> editProduct(@PathVariable int id, @RequestBody ProductCreationRequest toEdit) {
 
-        if (!productRepository.existsById(id)) {
-            logger.info("product not found id= " + id );
-            return ResponseEntity.notFound().build();
-        }
-        if (productRepository.findById(id).isPresent()) {
-            Product oldProduct = productRepository.findById(id).get();
-            logger.info("edited product: id= " + id + ", old name = " + oldProduct.getName() +", new name= " + toEdit.getProductName());
-            response = productCreationService.editProduct(id, toEdit);
-        }
+        Product oldProduct = productRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Product not found id: " + id));
+        logger.info("edited product: id= " + id + ", old name = " + oldProduct.getName() +", new name= " + toEdit.getProductName());
+
+        ProductCreationResponse response = productCreationService.editProduct(id, toEdit);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

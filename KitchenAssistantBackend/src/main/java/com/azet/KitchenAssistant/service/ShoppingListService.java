@@ -11,6 +11,7 @@ import com.azet.KitchenAssistant.dto.shoppingList.ShoppingListResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.azet.KitchenAssistant.dto.shoppingList.RecurrencePattern.BRAK;
 
@@ -35,6 +36,22 @@ public class ShoppingListService {
         ShoppingList request = mapRequestShoppingListEntity(newList, null);
         ShoppingList savedList = shoppingListRepository.save(request);
         return getShoppingListResponse(savedList);
+    }
+
+    public List<ShoppingListDto> getAllShoppingListDtos() {
+        return shoppingListRepository.findAll().stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    private ShoppingListDto mapToDto(ShoppingList entity) {
+        ShoppingListDto dto = new ShoppingListDto();
+        dto.setId(entity.getId());
+        dto.setListTitle(entity.getTitle());
+        dto.setRecurrencePattern(entity.getRecurrencePattern());
+        dto.setNextOccurrenceDate(entity.getNextOccurrenceDate());
+        dto.setStartOccurrenceDate(entity.getStartOccurrenceDate());
+        return dto;
     }
 
     public ShoppingListResponse editShoppingList(final int id, ShoppingListDto listToEdit){
