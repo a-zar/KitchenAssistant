@@ -69,54 +69,84 @@ export class ShoppingListItemComponent implements OnInit {
    * @back Po nieudanym update rollback do poprzedniego widoku. 
    * Dodany jest snaphot
    */  
+
   addItem() {
-    const snaphotItems = {...this.items};
-    const rawProductId = this.productForm.get('productId')!.value;
-    const selectedProductId = Number(rawProductId);
-    const quantityValue = this.productForm.get('quantity')!.value;
-    const noteValue = this.productForm.get('note')!.value
-    const isPurchased = false;
-
-    const newItem = new ShoppingListItem(
-        selectedProductId,
-        this.listId,
-        quantityValue,
-        isPurchased,
-        noteValue
-      );
-
     if(this.productForm.invalid) return;
+    const newItem = this.buildItemFromForm();
+    const existingItem = this.findExistingItem(newItem.productId);
 
-    //veryfy if product exist
-    const index = this.items.findIndex(i => i.productId === selectedProductId);  
-    const productExist = {...this.items[index]};
-
-    if(index !== -1){ 
-        const snapshotItem = this.setSnaphotItem(productExist);
-        const updatedProduct = {
-          ...productExist, 
-          quantity: productExist.quantity + newItem.quantity,
-          note: newItem.note || productExist.note,
-          isPurchased: false
-        }
-        this.updateItem(updatedProduct, snapshotItem);
-        this.showAddItemForm = false;
-        this.resetProductForm(); 
+    if(existingItem){ 
+      this.mergeExistingItem(existingItem, newItem);
     } else {
-      this.shoppingListItemService.createItem(newItem).subscribe({
-        next: (savedItem) => {
-          this.items.push(savedItem);
-          alert("Dodano " + this.getProductName(newItem.productId) +" do listy zakupów");
-          this.showAddItemForm = false;
-          this.resetProductForm(); 
-        },
-        error: err => {
-          console.error('Failed to create shopping list item', err);
-          alert("Coś poszło nie tak... Spróbuj ponownie później");
-          this.items = snaphotItems;
-        },
-      })
+      this.createNewItem(newItem)
     };
+
+    this.showAddItemForm = false;
+    this.resetProductForm();
+
+  }
+
+  private createNewItem(item: ShoppingListItem): void {
+    const snapshot = [...this.items];
+    this.shoppingListItemService.createItem(item).subscribe({
+        next: (saved) => {
+            this.items.push(saved);
+        },
+        error: () => { this.items = snapshot; }
+    });
+}
+
+  private findExistingItem(productId: number): ShoppingListItem | undefined {
+    return this.items.find(i => i.productId === productId);
+}
+
+
+  private mergeExistingItem(existingItem: ShoppingListItem, newItem: ShoppingListItem): void {
+    const snapshotItem = this.setSnaphotItem(existingItem);
+    const updatedProduct = {
+      ...existingItem, 
+      quantity: existingItem.quantity + newItem.quantity,
+      note: newItem.note || existingItem.note,
+      isPurchased: false
+    }
+
+    this.updateItem(updatedProduct, snapshotItem);
+}
+
+private buildItemFromForm(): ShoppingListItem {
+    return new ShoppingListItem(
+        Number(this.productForm.get('productId')!.value),
+        this.listId,
+        this.productForm.get('quantity')!.value,
+        false,
+        this.productForm.get('note')!.value
+    );
+}
+
+  updateItem(item: ShoppingListItem, snapshotItem: ShoppingListItem): void {
+    this.shoppingListItemService.updateItem(this.listId, item.id!, item).subscribe({
+      next: (updatedItem: ShoppingListItem) => {
+        const index = this.items.findIndex(i => i.id === updatedItem.id);
+        if (index !== -1) {
+          const currentItem = this.items[index];
+          //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
+          this.items[index] = {
+            ...currentItem,    
+            ...updatedItem,     
+          };
+        console.log('Local state updated with id:', updatedItem.id);    
+      }
+      },
+      error: err => {
+        console.log('Update error: ', err);
+        // Rollback w przypadku błędu - przywracamy poprzednią wartość
+        const index = this.items.findIndex(i => i.id === snapshotItem.id);
+          if (index !== -1) {
+            this.items[index] = snapshotItem;
+          }
+        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
+      }
+    });
   }
 
   onCategoryChange($event: Event) {
@@ -194,30 +224,6 @@ export class ShoppingListItemComponent implements OnInit {
   }
 
 //properties and methods
-  updateItem(item: ShoppingListItem, snapshotItem: ShoppingListItem): void {
-    this.shoppingListItemService.updateItem(this.listId, item.id!, item).subscribe({
-      next: (updatedItem: ShoppingListItem) => {
-        const index = this.items.findIndex(i => i.id === updatedItem.id);
-        if (index !== -1) {
-          const currentItem = this.items[index];
-          //Aktualizujemy obiekt, łącząc stare dane z nowymi z serwera
-          this.items[index] = {
-            ...currentItem,    
-            ...updatedItem,     
-          };
-        console.log('Local state updated with id:', updatedItem.id);      }
-      },
-      error: err => {
-        console.log('Update error: ', err);
-        // Rollback w przypadku błędu - przywracamy poprzednią wartość
-        const index = this.items.findIndex(i => i.id === snapshotItem.id);
-          if (index !== -1) {
-            this.items[index] = snapshotItem;
-          }
-        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
-      }
-    });
-  }
 
   filterByCategory(): void {
     console.log('Filtrowanie produktów dla kategorii ID:', this.selectedCategoryId);
@@ -242,7 +248,7 @@ export class ShoppingListItemComponent implements OnInit {
     });
   }
 //loading data
-  private setSnaphotItem(item: ShoppingListItem) {
+  private setSnaphotItem (item: ShoppingListItem): ShoppingListItem {
     // const index = this.items.indexOf(item);
     const index = this.items.findIndex(i => i.id === item.id); 
     if(index === -1){
