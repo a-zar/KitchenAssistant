@@ -8,6 +8,7 @@ import { NutrientItem } from 'src/app/common/nutrient-item';
 import { ProductForm } from 'src/app/common/product-form';
 import { Product } from 'src/app/common/product';
 import { ProductService } from '../../services/product.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-product-form',
@@ -29,7 +30,8 @@ export class ProductFormComponent implements OnInit {
               private productFormService: ProductFormService,
               private productService: ProductService,
               private route: ActivatedRoute,
-              private router: Router) { }
+              private router: Router, 
+              private notificationService: NotificationService) { }
 
   ngOnInit(): void {
 
@@ -122,11 +124,13 @@ export class ProductFormComponent implements OnInit {
         this.productFormService.editProduct(theProductId, productForm).subscribe(
           {
             next: response => {
-                alert(`Zmiany zostały zapisane: ${response.productName}`);
+                // alert(`Zmiany zostały zapisane: ${response.productName}`);
+                this.notificationService.success(`Zmiany zostały zapisane: ${response.productName}`);
                 this.resetProductForm();
             },
             error: err => {
-              alert(`Error: ${err.message}`);
+              // alert(`Error: ${err.message}`);
+              this.notificationService.error(`Ups... Spróbuj ponownie później`);
             }
           }
         );
@@ -135,17 +139,19 @@ export class ProductFormComponent implements OnInit {
         this.productFormService.createProduct(productForm).subscribe(
           {
             next: response => {
-              alert(`Nowy produkt został zapisany: ${response.productName}`);
+              // alert(`Nowy produkt został zapisany: ${response.productName}`);
+              this.notificationService.success(`Nowy produkt został zapisany: ${response.productName}`);
 
               this.resetProductForm();
             },
             error: err => {
-              alert(`Error: ${err.message}`);
+              // alert(`Error: ${err.message}`);
+              this.notificationService.error(`Ups... Spróbuj ponownie później`);
+
             }
           }
         );
       }
-    // console.log(JSON.stringify(productForm))
     }
   }
 
