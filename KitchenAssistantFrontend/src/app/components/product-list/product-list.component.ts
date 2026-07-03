@@ -12,6 +12,8 @@ import { ProductService } from 'src/app/services/product.service';
 
 export class ProductListComponent implements OnInit {
 
+  isActive = false;
+  emptyProducts = false;
   products: Product[] =[];
   currentCategoryId: number =1;
   previousCategoryId: number=1;
@@ -34,7 +36,6 @@ export class ProductListComponent implements OnInit {
   }
 
   listProducts() {
-
     this.searchMode = this.route.snapshot.paramMap.has('keyword');
 
     if(this.searchMode){
@@ -59,17 +60,26 @@ export class ProductListComponent implements OnInit {
       this.previousCategoryId = this.currentCategoryId;
       this.productService.getProductListByCategoryPagination(this.currentCategoryId, this.thePageNumber -1, 
                           this.thePageSize)
-                          .subscribe(data => {
-                          this.products = data._embedded.products;
-                          this.thePageNumber = data.page.number + 1;
-                          this.thePageSize = data.page.size;
-                          this.theTotalElements = data.page.totalElements;
+                          .subscribe({
+                            next:
+                              this.processResult(),
+                            error: err => {
+                              console.error('Błąd ładowania produktów:', err);
+                              this.isActive = false;
+                            }
                           });
     }
     else{
      //not category id available .. default to category id 1
     this.productService.getProductListPagination(this.thePageNumber -1, this.thePageSize)
-    .subscribe(this.processResult());
+    .subscribe({
+      next: this.processResult(),
+
+      error: err => {
+        console.error('Błąd ładowania produktów:', err);
+        this.isActive = false;
+      }
+    });
   }
   console.log(`current: ${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
   }
@@ -77,7 +87,16 @@ export class ProductListComponent implements OnInit {
   handleSearchProducts(){
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
     this.productService.searchProductPagination(theKeyword, this.thePageNumber -1, 
-                        this.thePageSize).subscribe(this.processResult());
+                        this.thePageSize).subscribe({
+                          next: (any) => {
+                            this.processResult(),
+                            this.isActive = true;
+                          },
+                          error: err => {
+                            console.error('Błąd wyszukiwania produktów:', err);
+                            this.isActive = false;
+                          }
+                        });
   }
 
   updatePageSize(pageSize: string) {  
@@ -92,6 +111,8 @@ export class ProductListComponent implements OnInit {
       this.thePageNumber = data.page.number + 1;
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
+      this.isActive = true;
+      this.emptyProducts = this.products.length === 0;
     }
   }
 }

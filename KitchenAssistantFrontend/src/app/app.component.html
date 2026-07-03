@@ -1,5 +1,4 @@
-<div class="page-wrapper">
-
+<div class="page-wrapper" *ngIf="loading === false">
     <header>
         <div class="topHeader">
             <!-- Navigation Menu -->
@@ -9,7 +8,6 @@
                     <a routerLink="/products">
                         <img src="../assets/image/logo.png" alt="KuchennyAsystent" />
                     </a>
-                    
                 </div>
                 <ul class="top-menu-list">
                     <li class="top-menu-item" >
@@ -27,15 +25,15 @@
     </header>
 
     <div class="page-container">
-        <router-outlet>
-            <div class="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <div class="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
             <div *ngFor="let toast of notificationService.getToasts()" 
                 [ngClass]="['toast-message', toast.type]">
                 {{ toast.message }}
             </div>
         </div>
-        </router-outlet>        
+        <router-outlet></router-outlet>
     </div>
+
 </div>
 
 

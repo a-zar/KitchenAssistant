@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router, Event, NavigationStart, NavigationEnd, NavigationCancel, NavigationError } from '@angular/router';
 import { NotificationService } from './services/notification.service';
 
 @Component({
@@ -8,5 +9,7 @@ import { NotificationService } from './services/notification.service';
 })
 export class AppComponent {
   title = 'KitchenAssistantFrontend';
+  loading = false;
+
   constructor(public notificationService: NotificationService) {}
 }

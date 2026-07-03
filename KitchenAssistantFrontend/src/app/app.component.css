@@ -16,9 +16,9 @@
 }
 
 .toast-message.success {
-  background-color: #4caf50;
+  background-color: #439746;
 }
 
 .toast-message.error {
-  background-color: #f44336;
+  background-color: #d92b1e;
 }
