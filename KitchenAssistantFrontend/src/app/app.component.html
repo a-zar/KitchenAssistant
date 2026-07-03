@@ -27,11 +27,14 @@
     </header>
 
     <div class="page-container">
-        <!-- main content-->
-        <!-- <app-category-list></app-category-list>-->
-        <router-outlet></router-outlet>
-        
-        <!-- <app-product-list></app-product-list>  -->
+        <router-outlet>
+            <div class="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+            <div *ngFor="let toast of notificationService.getToasts()" 
+                [ngClass]="['toast-message', toast.type]">
+                {{ toast.message }}
+            </div>
+        </div>
+        </router-outlet>        
     </div>
 </div>
 

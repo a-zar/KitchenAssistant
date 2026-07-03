@@ -7,6 +7,7 @@ import { Product } from 'src/app/common/product';
 import { Category } from 'src/app/common/category';
 import { CategoryService } from '../../services/category.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-shopping-list-item',
@@ -35,7 +36,7 @@ export class ShoppingListItemComponent implements OnInit {
     private productService: ProductService,
     private categoryService: CategoryService,
     private formBuilder: FormBuilder,
-    private cdr: ChangeDetectorRef ) {}
+    private notificationService: NotificationService ) {}
 
   ngOnInit(): void {
     this.setListId();
@@ -83,14 +84,15 @@ export class ShoppingListItemComponent implements OnInit {
 
     this.showAddItemForm = false;
     this.resetProductForm();
-
+    this.notificationService.success(`Dodano nowy produkt`);
   }
 
   private createNewItem(item: ShoppingListItem): void {
     const snapshot = [...this.items];
     this.shoppingListItemService.createItem(item).subscribe({
         next: (saved) => {
-            this.items.push(saved);
+          this.items.push(saved);
+          this.notificationService.success(`Do listy zakupów dodano: ${this.productNames[item.productId]}`);
         },
         error: () => { this.items = snapshot; }
     });
@@ -134,7 +136,9 @@ private buildItemFromForm(): ShoppingListItem {
             ...currentItem,    
             ...updatedItem,     
           };
-        console.log('Local state updated with id:', updatedItem.id);    
+        console.log('Local state updated with id:', updatedItem.id);   
+        this.notificationService.success(`Lista zakupów została zaaktualizowana`);
+        this.resetProductForm();
       }
       },
       error: err => {
@@ -144,7 +148,7 @@ private buildItemFromForm(): ShoppingListItem {
           if (index !== -1) {
             this.items[index] = snapshotItem;
           }
-        alert('Wystąpił błąd. Przywrócono poprzednie dane.');
+        this.notificationService.error(`Wystąpił błąd. Przywrócono poprzednie dane.`);
       }
     });
   }
@@ -215,10 +219,12 @@ private buildItemFromForm(): ShoppingListItem {
         //update UI
         this.items = this.items.filter(i => i.id !== item.id);
         console.log("Deleted item with id: ", item.id)
+        this.notificationService.success(`Usunięto produkt: ${this.productNames[item.productId]}`);
       }, 
       error: err => {
         console.error('Failed to delete shopping list item', err);
         this.items = [...snaphotItems];
+        this.notificationService.error(`Wystąpił błąd. Nie udało się usunąć elementu.`);
       }
     });
   }
@@ -234,7 +240,10 @@ private buildItemFromForm(): ShoppingListItem {
       next: response => {
         this.filteredProducts = response._embedded.products.sort((a, b) => a.name.localeCompare(b.name));
       },
-      error: (err) => console.error('Błąd filtrowania produktów:', err)
+      error: (err) => {
+        console.error('Błąd filtrowania produktów:', err);
+        this.notificationService.error(`Wystąpił błąd podczas filtrowania produktów.`);
+      }
     });
     }
   }
