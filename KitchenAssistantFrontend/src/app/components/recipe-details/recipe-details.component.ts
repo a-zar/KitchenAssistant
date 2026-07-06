@@ -10,6 +10,7 @@ import { RecipeItem } from 'src/app/common/recipe-item';
 import { ProductService } from 'src/app/services/product.service';
 import { RecipeService } from 'src/app/services/recipe.service';
 import { CategoryService } from '../../services/category.service';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-recipe-details',
@@ -44,8 +45,19 @@ export class RecipeDetailsComponent implements OnInit {
               private recipeService: RecipeService,
               private productService: ProductService,
               private categoryService: CategoryService,
-              private route: ActivatedRoute) { 
+              private route: ActivatedRoute, 
+              private notificationService: NotificationService) {}
 
+    ngOnInit(): void {
+    this.setMainForm();
+    this.mainForm.disable(); // Na początku wszystko jest nieedytowalne
+    this.setRecipeId();
+    this.loadRecipe();
+    this.loadCategories();
+    this.loadAllProducts();
+  }
+
+  private setMainForm() {
     this.mainForm = this.fb.group({
       // Grupa dla RecipeDto
       recipe: this.fb.group({
@@ -65,16 +77,7 @@ export class RecipeDetailsComponent implements OnInit {
   // Getter dla ułatwienia dostępu do FormArray z template'u
   get itemsFormArray() {
   return this.mainForm.get('items') as FormArray;
-}
-
-  ngOnInit(): void {
-    this.mainForm.disable(); // Na początku wszystko jest nieedytowalne
-    this.setRecipeId();
-    this.loadRecipe();
-    this.loadCategories();
-    this.loadAllProducts();
-  }
-  
+} 
   loadAllProducts (): void {
     this.allProducts = [];
     this.filteredProducts = [];
@@ -131,17 +134,18 @@ export class RecipeDetailsComponent implements OnInit {
         console.log('Produkt dodany do przepisu:', createdItem);
         this.addItemForm.reset({ categoryId: null, productId: null, weight: 1 }); // Resetuj formularz po dodaniu
         this.showAddItemForm = false; // Ukryj formularz po dodaniu produktu
-        this.loadRecipeItems(); // Odśwież listę produktów w przepisie, aby pokazać nowo dodany produkt        
+        this.loadRecipeItems(); // Odśwież listę produktów w przepisie, aby pokazać nowo dodany produkt 
+        this.notificationService.success('Produkt został dodany do przepisu');       
       },
       error: (err) => {
         console.error('Błąd dodawania produktu do przepisu:', err);
-        alert('Nie można dodać produktu do przepisu. Spróbuj ponownie później.');
+        this.notificationService.error('Nie można dodać produktu do przepisu. Spróbuj ponownie później.');
       }
     });
 
   } else {
     console.log('Błędy w formularzu dodawania:', this.addItemForm.errors);
-    alert('Formularz dodawania produktu jest niepoprawny.');
+    this.notificationService.error('Formularz dodawania produktu jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
   }
 
 }
@@ -197,7 +201,7 @@ export class RecipeDetailsComponent implements OnInit {
             },
             error: err => {
               console.error('Failed to load product details for item', item, err);
-              alert('Nie można załadować szczegółów produktu dla jednego z elementów przepisu. Spróbuj ponownie później.');
+              this.notificationService.error('Nie można załadować szczegółów produktu dla jednego z elementów przepisu. Spróbuj ponownie później.');
             }
           });
         });
@@ -275,10 +279,11 @@ export class RecipeDetailsComponent implements OnInit {
     this.recipeService.updateRecipe(updatedRecipe).subscribe({
       next: () => {
         console.log('Recipe updated successfully: ', updatedRecipe);
+        this.notificationService.success('Przepis został zaktualizowany');
       },
       error: (err) => {
         console.error('Failed to update recipe', err);
-        alert('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
+        this.notificationService.error('Nie można zaktualizować przepisu. Spróbuj ponownie później.');
       }
     });
 
@@ -293,11 +298,11 @@ export class RecipeDetailsComponent implements OnInit {
           },
           error: (err) => {
             console.error('Failed to update recipe item', err);
-            alert('Nie można zaktualizować jednego ze składników przepisu. Spróbuj ponownie później.');
+            this.notificationService.error('Nie można zaktualizować jednego ze składników przepisu. Spróbuj ponownie później.');
           }
         });
       } else {
-        alert('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
+        this.notificationService.error('Formularz jest niepoprawny. Proszę popraw błędy i spróbuj ponownie.');
       }
     });
   }
@@ -322,13 +327,14 @@ export class RecipeDetailsComponent implements OnInit {
 
         // 3.Wysyłamy KOPIĘ tablicy do strumienia
         this.updateProductsView([...this.completeProductsForRecipe]);
+        this.notificationService.success('Produkt został usunięty');
       },
       error: err => {
         console.error('Failed to delete recipe item', err);
         this.recipeItems = [...snaphotItems]; // Przywróć poprzedni stan w przypadku błędu
         this.completeProductsForRecipe = [...snapshotProducts]; // Przywróć poprzedni stan produktów
         this.updateProductsView([...this.completeProductsForRecipe]);
-        alert('Nie można usunąć składnika.');
+        this.notificationService.error('Nie można usunąć produktu.');
       }
     });
   }

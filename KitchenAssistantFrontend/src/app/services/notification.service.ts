@@ -28,7 +28,7 @@ export class NotificationService {
   private addToast(message: string, type: 'success' | 'error') {
     const toast: Toast = { id: ++this.nextId, message, type };
     this.toasts.push(toast);
-    setTimeout(() => this.removeToast(toast.id), 30000);
+    setTimeout(() => this.removeToast(toast.id), 10000);
   }
 
   private removeToast(id: number) {

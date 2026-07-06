@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { RecipeService } from '../../services/recipe.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Recipe } from 'src/app/common/recipe';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-recipe',
@@ -20,6 +21,7 @@ export class RecipeComponent implements OnInit {
     private route: ActivatedRoute,
     private recipeService: RecipeService,
     private formBuilder: FormBuilder,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -28,7 +30,7 @@ export class RecipeComponent implements OnInit {
   }
 
   /**
-   * inizalization recipeForm
+   * initialization recipeForm
    */
 
   private initializeForm() {
@@ -48,11 +50,12 @@ export class RecipeComponent implements OnInit {
         next: () => {
           this.recipes = this.recipes.filter((recipe) => recipe.id !== recipeId);
           console.log(`Deleted recipe with id: ${recipeId}`);
+          this.notificationService.success(`Przepis został usunięty`);
         },
         error: (err) => {
           this.recipes = this.snaphotRecipes; // revert to snapshot on error
           console.error('Failed to delete recipe', err);
-          alert('Coś poszło nie tak... Spróbuj ponownie później');
+          this.notificationService.error(`Ups... Spróbuj ponownie później`);
         },
       });
     }
@@ -69,12 +72,12 @@ export class RecipeComponent implements OnInit {
           }
           return item;
         });
-        // this.recipes = data.map((item) => { item.created_at = item.created_at!.replace('T', ' ').substring(0, 19); return item; });
         console.log('Loaded recipes:', this.recipes);
       },
       error: (err) => {
         console.error('Failed to load recipes', err);
-        alert('Coś poszło nie tak... Spróbuj ponownie później');
+        this.notificationService.error(`Ups... Spróbuj ponownie później`);
+
       },
     });
   }
@@ -85,9 +88,7 @@ export class RecipeComponent implements OnInit {
     // const recipeIdValue = this.recipeForm.get('recipeId')!.value;
     const recipeTitleValue = this.recipeForm.get('recipeTitle')!.value;
     const recipeInstructionsValue =
-      this.recipeForm.get('recipeInstructions')!.value;
-    // const now = new Date();
-    // const createdAtValue = now.toISOString().replace('T', ' ').substring(0, 19);
+    this.recipeForm.get('recipeInstructions')!.value;
 
     const newRecipe = new Recipe(
       recipeTitleValue,
@@ -103,14 +104,14 @@ export class RecipeComponent implements OnInit {
           .substring(0, 19);
         this.recipes = [...this.snaphotRecipes, createdRecipe];
         this.createMode = false;
-        alert('Przepis został dodany!');
+        this.notificationService.success(`Przepis został dodany`);
         console.log('Created recipe:', createdRecipe);
         this.recipeForm.reset();
       },
       error: (err) => {
         console.error('Failed to create recipe', err);
         this.recipes = this.snaphotRecipes; // revert to snapshot on error
-        alert('Coś poszło nie tak... Spróbuj ponownie później');
+        this.notificationService.error(`Ups... Spróbuj ponownie później`);
       },
     });
   }
