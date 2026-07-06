@@ -44,7 +44,7 @@ export class ProductFormComponent implements OnInit {
     this.productFormGroup = this.formBuilder.group({
       product: this.formBuilder.group({
         productName: new FormControl('', [Validators.required, Validators.minLength(2),
-        Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s-%()]*[^\\s]$')]),
+        Validators.pattern('^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9]+[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ0-9\\s-%,()]*[^\\s]$')]),
         categoryName: new FormControl('', [Validators.required]),
         codeBar: new FormControl('', [Validators.pattern('^.*[^\\s]$')]),
         productImage: new FormControl('', [Validators.pattern('^[a-zA-Z0-9_.\\-/]+(\\.[a-zA-Z0-9_.\\-/]+)+[^\\s]$')]),
@@ -152,6 +152,7 @@ export class ProductFormComponent implements OnInit {
           }
         );
       }
+    // console.log(JSON.stringify(productForm))
     }
   }
 

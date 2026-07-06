@@ -84,7 +84,6 @@ export class ShoppingListItemComponent implements OnInit {
 
     this.showAddItemForm = false;
     this.resetProductForm();
-    this.notificationService.success(`Dodano nowy produkt`);
   }
 
   private createNewItem(item: ShoppingListItem): void {
@@ -147,8 +146,8 @@ private buildItemFromForm(): ShoppingListItem {
         const index = this.items.findIndex(i => i.id === snapshotItem.id);
           if (index !== -1) {
             this.items[index] = snapshotItem;
-          }
-        this.notificationService.error(`Wystąpił błąd. Przywrócono poprzednie dane.`);
+            this.notificationService.error(`Wystąpił błąd. Przywrócono poprzednie dane.`);
+          }      
       }
     });
   }
