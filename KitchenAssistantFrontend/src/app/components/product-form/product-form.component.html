@@ -16,13 +16,14 @@
                                     <input formControlName="productName" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="productName?.invalid && (productName?.dirty || productName?.touched)">
-                                <div *ngIf="productName?.errors?.['required']"> Nazwa produktu jest wymagana</div>
-                                <div *ngIf="productName?.errors?.['minlength']"> Nazwa produktu musi mieć co najmniej {{ productName?.errors?.['minlength']?.requiredLength }} znaki</div>
-                                <div *ngIf="productName?.errors?.['pattern']"> Nazwa porduktu jest nie prawidłowa 
-                                    <p style="font-size: 0.7rem"> *Nazwa musi zaczynać się od litery i może zawierać dodatkowo tylko cyfry oraz spacje. </p>
-                                </div>
-
+                            <div class="alert alert-danger mt-1" *ngIf="productName?.invalid && (productName!.dirty || productName!.touched)">
+                                <ng-container *ngIf = "productName!.errors as errors"> 
+                                    <div *ngIf="errors['required']"> Nazwa produktu jest wymagana</div>
+                                    <div *ngIf="errors['minlength']"> Nazwa produktu musi mieć co najmniej {{ errors['minlength']?.requiredLength }} znaki</div>
+                                    <div *ngIf="errors['pattern']"> Nazwa porduktu jest nie prawidłowa 
+                                        <p style="font-size: 0.7rem"> *Nazwa musi zaczynać się od litery i może zawierać dodatkowo tylko cyfry, spacje lub przecinek. </p>
+                                    </div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -37,8 +38,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="categoryName?.invalid && categoryName?.touched">
-                                <div *ngIf="categoryName?.errors?.['required']"> Proszę wyrać kategorię produktu</div>
+                            <div class="alert alert-danger mt-1" *ngIf="categoryName?.invalid && categoryName!.touched">
+                                <ng-container *ngIf = "categoryName!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę wyrać kategorię produktu</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -49,8 +52,10 @@
                                     <input formControlName="codeBar" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="codeBar?.invalid && codeBar?.touched">
-                                <div *ngIf="codeBar?.errors?.['pattern']">Proszę usunąć spację</div>
+                            <div class="alert alert-danger mt-1" *ngIf="codeBar?.invalid && codeBar!.touched">
+                                <ng-container *ngIf = "codeBar!.errors as errors">
+                                    <div *ngIf="errors['pattern']">Proszę usunąć spację</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -61,8 +66,10 @@
                                     <input formControlName="productImage" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="productImage?.invalid && productImage?.touched">
-                                <div *ngIf="productImage?.errors?.['pattern']">Błędna nazwa pliku</div>
+                            <div class="alert alert-danger mt-1" *ngIf="productImage?.invalid && productImage!.touched">
+                                <ng-container *ngIf = "productImage!.errors as errors">
+                                    <div *ngIf="errors['pattern']">Proszę wprowadzić poprawną nazwę pliku</div>
+                                </ng-container>
                             </div>
                         </div>
                     </fieldset>
@@ -78,9 +85,11 @@
                                     <input formControlName="energy" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="energy?.invalid && energy?.touched">
-                                <div *ngIf="energy?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="energy?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            <div class="alert alert-danger mt-1" *ngIf="energy?.invalid && energy!.touched">
+                                <ng-container *ngIf = "energy!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -91,9 +100,11 @@
                                     <input formControlName="carbohydrate" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="carbohydrate?.invalid && carbohydrate?.touched">
-                                <div *ngIf="carbohydrate?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="carbohydrate?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            <div class="alert alert-danger mt-1" *ngIf="carbohydrate?.invalid && carbohydrate!.touched">
+                                <ng-container *ngIf = "carbohydrate!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -104,10 +115,11 @@
                                     <input formControlName="sugar" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="sugar?.invalid && sugar?.touched">
-                                <div *ngIf="sugar?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="sugar?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
-
+                            <div class="alert alert-danger mt-1" *ngIf="sugar?.invalid && sugar!.touched">
+                                <ng-container *ngIf = "sugar!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -118,10 +130,11 @@
                                     <input formControlName="fat" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="fat?.invalid && fat?.touched">
-                                <div *ngIf="fat?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="fat?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
-
+                            <div class="alert alert-danger mt-1" *ngIf="fat?.invalid && fat!.touched">
+                                <ng-container *ngIf = "fat!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -132,10 +145,11 @@
                                     <input formControlName="saturatedFat" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="saturatedFat?.invalid && saturatedFat?.touched">
-                                <div *ngIf="saturatedFat?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="saturatedFat?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
-
+                            <div class="alert alert-danger mt-1" *ngIf="saturatedFat?.invalid && saturatedFat!.touched">
+                                <ng-container *ngIf = "saturatedFat!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -146,9 +160,11 @@
                                     <input formControlName="protein" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
-                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="fiber?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber!.touched">
+                                <ng-container *ngIf = "fiber!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -159,9 +175,11 @@
                                     <input formControlName="fiber" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber?.touched">
-                                <div *ngIf="fiber?.errors?.['required']"> Proszę uzupełnić wartość</div>
-                                <div *ngIf="fiber?.errors?.['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                            <div class="alert alert-danger mt-1" *ngIf="fiber?.invalid && fiber!.touched">
+                                <ng-container *ngIf = "fiber!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                    <div *ngIf="errors['pattern']"> Wprowadź liczbę w formacie N.NN</div>
+                                </ng-container>
                             </div>
                         </div>
 
@@ -176,8 +194,10 @@
                                     </select>                                    
                                 </div>
                             </div>
-                            <div class="alert alert-danger mt-1" *ngIf="nutritionGrade?.invalid && nutritionGrade?.touched">
-                                <div *ngIf="nutritionGrade?.errors?.['required']"> Proszę uzupełnić wartość</div>
+                            <div class="alert alert-danger mt-1" *ngIf="nutritionGrade?.invalid && nutritionGrade!.touched">
+                                <ng-container *ngIf = "nutritionGrade!.errors as errors">
+                                    <div *ngIf="errors['required']"> Proszę uzupełnić wartość</div>
+                                </ng-container>
                             </div>
                         </div>
                     </fieldset>
