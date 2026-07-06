@@ -2,7 +2,6 @@ package com.azet.KitchenAssistant.controller;
 
 import com.azet.KitchenAssistant.Entity.Recipe;
 import com.azet.KitchenAssistant.Exception.ResourceNotFoundException;
-import com.azet.KitchenAssistant.dao.RecipeItemRepository;
 import com.azet.KitchenAssistant.dao.RecipeRepository;
 import com.azet.KitchenAssistant.dto.recipe.RecipeDto;
 import com.azet.KitchenAssistant.dto.recipe.RecipeItemDto;
